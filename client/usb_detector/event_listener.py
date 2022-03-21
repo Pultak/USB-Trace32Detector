@@ -3,6 +3,8 @@ import logging
 import getpass
 from datetime import datetime
 
+from api_client import send_data
+
 
 def _get_metadata() -> dict:
     return {
@@ -16,8 +18,7 @@ def _send_payload_to_server(device: dict, status: str):
     payload = _get_metadata()
     payload["device"] = device
     payload["status"] = status
-
-    # TODO send the payload off to the server
+    send_data(payload)
 
 
 def usb_connected_callback(device: dict):
