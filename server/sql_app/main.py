@@ -21,6 +21,11 @@ class USBLog(BaseModel):
 async def root_post(usb_log: USBLog):
 	print(usb_log)
 	return {"message": "Sucess"}
+
+@app.post("/api/v1/devices/")
+async def root_dev_post(device: Device):
+	print(device)
+	return {"message": "Sucess"}
 	
 @app.get("/")
 async def root_read():
