@@ -8,7 +8,7 @@ app = FastAPI()
 class Device(BaseModel):
 	vendor_id: int
 	product_id: int
-	serial_number: int
+	serial_number: str
 
 class USBLog(BaseModel):
 	username: str
