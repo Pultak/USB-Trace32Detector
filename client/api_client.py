@@ -6,6 +6,7 @@ from requests import HTTPError, ConnectionError
 
 from config_manager import server_url, server_port, server_endpoint
 
+
 _uri = server_url + ":" + server_port + server_endpoint
 
 
