@@ -10,9 +10,19 @@ def read_connected_devices():
     for bus in busses:
         devices = bus.devices
         for dev in devices:
-            detected_devices.append({
-                "vendor_id": dev.idVendor,
-                "product_id": dev.idProduct
-            })
+            serial_number = None
+            device_info = usb.core.find(idProduct=dev.idProduct)
+            try:
+                serial_number = usb.util.get_string(device_info, device_info.iSerialNumber)
+            except:
+                # Failed to retrieve information from device
+                pass
+
+            if serial_number is not None:
+                detected_devices.append({
+                    "vendor_id": dev.idVendor,
+                    "product_id": dev.idProduct,
+                    "serial_number": serial_number
+                })
 
     return detected_devices
