@@ -1,6 +1,5 @@
 import logging
 from threading import Thread
-
 from tendo import singleton
 
 from config_manager import logger_format, logger_level
