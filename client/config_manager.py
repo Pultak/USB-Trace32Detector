@@ -32,3 +32,8 @@ elif logger_level_str == "ERROR":
     logger_level = 40
 elif logger_level_str == "CRITICAL":
     logger_level = 50
+
+cache_dir = config[cache_section]["directory"]
+cache_max_entries = int(config[cache_section]["max_entries"])
+cache_max_retries = int(config[cache_section]["max_retries"])
+cache_retry_period_seconds = float(config[cache_section]["retry_period_seconds"])
