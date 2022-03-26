@@ -1,4 +1,3 @@
-import os
 import json
 import logging
 from time import sleep
@@ -39,10 +38,6 @@ def _load_last_connected_devices() -> list:
 
 def usb_detector_run():
     logging.info("USB device detector is now running")
-
-    if not os.path.exists(connected_devices_filename):
-        dir_name = os.path.dirname(connected_devices_filename)
-        os.makedirs(dir_name)
 
     while True:
         last_connected_devices = _load_last_connected_devices()
