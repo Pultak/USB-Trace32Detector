@@ -18,6 +18,7 @@ server_url = config[server_section]["url"]
 server_port = config[server_section]["port"]
 server_endpoint = config[server_section]["end_point"]
 
+logger_config = config[logger_section]["file"]
 logger_format = config[logger_section]["format"]
 logger_level_str = config[logger_section]["level"]
 logger_level = 0
