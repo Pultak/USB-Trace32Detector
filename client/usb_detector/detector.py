@@ -11,6 +11,8 @@ _listeners_disconnected = []
 
 
 def register_listener(callback, connected: bool = True):
+    logging.info(f'Registering callback: {callback}.')
+
     if connected is True:
         _listeners_connected.append(callback)
     else:
@@ -24,15 +26,18 @@ def _notify_listeners(listeners: list, devices: list):
 
 
 def _store_connected_devices(devices: list):
+    logging.debug('storing newly connected devices')
     with open(connected_devices_filename, "w") as file:
         json.dump(devices, file)
 
 
 def _load_last_connected_devices() -> list:
+    logging.debug('loading last connected devices')
     try:
         with open(connected_devices_filename, "r") as file:
             return json.loads(file.read())
     except IOError:
+        logging.error('loading of last connected devices failed')
         return []
 
 
