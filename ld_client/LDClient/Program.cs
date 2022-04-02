@@ -1,19 +1,20 @@
-﻿using LDClient;
-using System;
+﻿using LDClient.utils;
+using LDClient.utils.loggers;
 
+namespace LDClient; 
 
-class Program {
+internal class Program {
 
-    public static LDClient.ConfigLoader Config { get; set; }
+    public static ConfigLoader Config { get; set; } = null!;
 
     // Main Method
-    static public void Main() {
-        Config = new LDClient.ConfigLoader();
+    public static void Main() {
+        Config = new ConfigLoader();
 
         while (true) {
-            Logger.Current.Info("Ok");
-            Logger.Current.Debug("Debug");
-            Logger.Current.Error("Error");
+            ALogger.Current.Info("Ok");
+            ALogger.Current.Debug("Debug");
+            ALogger.Current.Error("Error");
         }
     }
 }
