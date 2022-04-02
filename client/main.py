@@ -4,10 +4,11 @@ from os.path import exists
 from threading import Thread
 from tendo import singleton
 
-from config_manager import logger_format, logger_level, logger_config
+from config_manager import logger_config
 from usb_detector.detector import register_listener, usb_detector_run
 from usb_detector.event_listener import usb_connected_callback, usb_disconnected_callback
 from api_client import api_client_run
+
 
 def init_logging():
     if exists(logger_config):
