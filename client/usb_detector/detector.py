@@ -8,6 +8,7 @@ from config_manager import scan_period_seconds, connected_devices_filename
 
 _listeners_connected = []
 _listeners_disconnected = []
+_last_connected_devices = []
 
 
 def register_listener(callback, connected: bool = True):
@@ -41,18 +42,35 @@ def _load_last_connected_devices() -> list:
         return []
 
 
+def _get_connected_devices(detected_devices: list, last_connected_devices: list) -> list:
+    return [device for device in detected_devices if device not in last_connected_devices]
+
+
+def _get_disconnected_devices(detected_devices: list, last_connected_devices: list) -> list:
+    return [device for device in last_connected_devices if device not in detected_devices]
+
+
+def _update():
+    global _last_connected_devices
+    detected_devices = read_connected_devices()
+
+    connected_devices = _get_connected_devices(detected_devices, _last_connected_devices)
+    disconnected_devices = _get_disconnected_devices(detected_devices, _last_connected_devices)
+
+    _notify_listeners(_listeners_connected, connected_devices)
+    _notify_listeners(_listeners_disconnected, disconnected_devices)
+
+    if len(connected_devices) > 0 or len(disconnected_devices) > 0:
+        _store_connected_devices(detected_devices)
+        _last_connected_devices = detected_devices
+
+
 def usb_detector_run():
     logging.info("USB device detector is now running")
 
+    global _last_connected_devices
+    _last_connected_devices = _load_last_connected_devices()
+
     while True:
-        last_connected_devices = _load_last_connected_devices()
-        detected_devices = read_connected_devices()
-
-        connected_devices = [device for device in detected_devices if device not in last_connected_devices]
-        disconnected_devices = [device for device in last_connected_devices if device not in detected_devices]
-
-        _notify_listeners(_listeners_connected, connected_devices)
-        _notify_listeners(_listeners_disconnected, disconnected_devices)
-
-        _store_connected_devices(detected_devices)
+        _update()
         sleep(scan_period_seconds)
