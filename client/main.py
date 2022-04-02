@@ -3,6 +3,7 @@ import logging.config
 from os.path import exists
 from threading import Thread
 from tendo import singleton
+from sys import exit
 
 from config_manager import logger_config
 from usb_detector.detector import register_listener, usb_detector_run
@@ -19,7 +20,11 @@ def init_logging():
 
 
 if __name__ == "__main__":
-    app_instance = singleton.SingleInstance()
+    try:
+        app_instance = singleton.SingleInstance()
+    except singleton.SingleInstanceException:
+        exit(1)
+
     init_logging()
 
     register_listener(callback=usb_connected_callback, connected=True)
