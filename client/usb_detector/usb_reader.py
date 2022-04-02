@@ -24,7 +24,7 @@ def read_connected_devices():
             device_info = usb.core.find(idProduct=dev.idProduct)
             try:
                 serial_number = usb.util.get_string(device_info, device_info.iSerialNumber)
-            except:
+            except ValueError:
                 if device not in _invalid_devices:
                     logging.warning(f"Could not retrieve serial number from device {device}")
                     _invalid_devices.append(device)
