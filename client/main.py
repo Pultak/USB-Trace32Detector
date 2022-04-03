@@ -1,5 +1,6 @@
 import logging
 import logging.config
+import argparse
 from os.path import exists
 from threading import Thread
 from tendo import singleton
@@ -27,7 +28,11 @@ if __name__ == "__main__":
     except singleton.SingleInstanceException:
         exit(1)
 
-    config = Config("config.ini")
+    arg_parser = argparse.ArgumentParser(description="ZF USB Licence Detector")
+    arg_parser.add_argument("-c", "--config", dest="config", required=True, help="Path to the configuration file")
+    args = arg_parser.parse_args()
+
+    config = Config(args.config)
     init_logging(config)
 
     register_listener(callback=usb_connected_callback, connected=True)
