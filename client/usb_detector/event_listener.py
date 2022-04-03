@@ -7,7 +7,7 @@ from api_client import send_data
 
 
 def _get_metadata() -> dict:
-    logging.debug('getting computer metadata')
+    logging.debug("getting computer metadata")
     return {
         "username": getpass.getuser(),
         "hostname": platform.uname().node,
@@ -16,7 +16,7 @@ def _get_metadata() -> dict:
 
 
 def _send_payload_to_server(device: dict, status: str):
-    logging.debug('payload send preparation')
+    logging.debug("payload send preparation")
     payload = _get_metadata()
     payload["device"] = device
     payload["status"] = status

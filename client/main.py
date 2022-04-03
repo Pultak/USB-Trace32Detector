@@ -1,21 +1,24 @@
 import logging
 import logging.config
+import argparse
 from os.path import exists
 from threading import Thread
 from tendo import singleton
 from sys import exit
 
-from config_manager import logger_config
-from usb_detector.detector import register_listener, usb_detector_run
+from config_manager import Config
+from usb_detector.detector import register_listener, usb_detector_run, usb_detector_set_config
 from usb_detector.event_listener import usb_connected_callback, usb_disconnected_callback
-from api_client import api_client_run
+from api_client import api_client_run, api_client_set_config
 
 
-def init_logging():
-    if exists(logger_config):
-        logging.config.fileConfig(fname=logger_config)
+def init_logging(app_config: Config):
+    if exists(app_config.logger_config_file):
+        logging.config.fileConfig(fname=app_config.logger_config_file)
+        api_client_set_config(app_config)
+        usb_detector_set_config(app_config)
     else:
-        print(f"Cant find logger configuration \"{logger_config}\"! Please specify valid path or define new.")
+        print(f"Cannot find logger configuration \"{app_config.logger_config_file}\"! Please specify valid a path or define a new one.")
         exit(1)
 
 
@@ -25,7 +28,12 @@ if __name__ == "__main__":
     except singleton.SingleInstanceException:
         exit(1)
 
-    init_logging()
+    arg_parser = argparse.ArgumentParser(description="ZF USB Licence Detector")
+    arg_parser.add_argument("-c", "--config", dest="config", required=True, help="Path to the configuration file")
+    args = arg_parser.parse_args()
+
+    config = Config(args.config)
+    init_logging(config)
 
     register_listener(callback=usb_connected_callback, connected=True)
     register_listener(callback=usb_disconnected_callback, connected=False)
@@ -36,13 +44,11 @@ if __name__ == "__main__":
     api_thread = Thread(target=api_client_run)
     api_thread.setDaemon(True)
 
-    logging.info('starting USB detector.')
+    logging.info("Starting USB detector.")
     usb_detector_thread.start()
 
-    logging.info('starting API communication manager.')
+    logging.info("Starting API communication manager.")
     api_thread.start()
 
     usb_detector_thread.join()
     api_thread.join()
-
-    logging.info('application exit.')

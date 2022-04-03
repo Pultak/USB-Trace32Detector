@@ -3,17 +3,21 @@ import logging
 from time import sleep
 
 from .usb_reader import read_connected_devices
-from config_manager import scan_period_seconds, connected_devices_filename
 
 
 _listeners_connected = []
 _listeners_disconnected = []
 _last_connected_devices = []
+_config = None
+
+
+def usb_detector_set_config(config):
+    global _config
+    _config = config
 
 
 def register_listener(callback, connected: bool = True):
-    logging.info(f'Registering callback: {callback}.')
-
+    logging.info(f"Registering callback: {callback}.")
     if connected is True:
         _listeners_connected.append(callback)
     else:
@@ -21,24 +25,26 @@ def register_listener(callback, connected: bool = True):
 
 
 def _notify_listeners(listeners: list, devices: list):
+    if listeners is None or devices is None:
+        return
     for callback in listeners:
         for device in devices:
             callback(device)
 
 
 def _store_connected_devices(devices: list):
-    logging.debug('storing newly connected devices')
-    with open(connected_devices_filename, "w") as file:
+    logging.debug("storing newly connected devices")
+    with open(_config.connected_devices_filename, "w") as file:
         json.dump(devices, file)
 
 
 def _load_last_connected_devices() -> list:
-    logging.debug('loading last connected devices')
+    logging.debug("loading last connected devices")
     try:
-        with open(connected_devices_filename, "r") as file:
+        with open(_config.connected_devices_filename, "r") as file:
             return json.loads(file.read())
     except IOError:
-        logging.error('loading of last connected devices failed')
+        logging.error("loading of last connected devices failed")
         return []
 
 
@@ -73,4 +79,4 @@ def usb_detector_run():
 
     while True:
         _update()
-        sleep(scan_period_seconds)
+        sleep(_config.scan_period_seconds)
