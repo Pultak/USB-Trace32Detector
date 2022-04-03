@@ -5,12 +5,17 @@ from time import sleep
 from diskcache import Deque
 from requests import HTTPError, ConnectionError
 
-from config_manager import server_url, server_port, server_endpoint, cache_dir, \
-    cache_retry_period_seconds, cache_max_retries, cache_max_entries
+
+_uri = None
+_cache = None
+_config = None
 
 
-_cache = Deque(directory=cache_dir)
-_uri = server_url + ":" + server_port + server_endpoint
+def api_client_set_config(config):
+    global _config, _cache, _uri
+    _config = config
+    _cache = Deque(directory=_config.cache_dir)
+    _uri = config.server_url + ":" + config.server_port + config.server_endpoint
 
 
 def send_data(payload: dict):
@@ -27,7 +32,7 @@ def send_data(payload: dict):
 
 
 def _cache_failed_payload(payload: dict):
-    if len(_cache) >= cache_max_entries:
+    if len(_cache) >= _config.cache_max_entries:
         oldest_payload = _cache.pop()
         logging.warning(f"cache is full - discarding payload = {oldest_payload}")
 
@@ -35,11 +40,15 @@ def _cache_failed_payload(payload: dict):
     _cache.append(payload)
 
 
+def _resend_cached_payloads():
+    retries = min(_config.cache_max_retries, len(_cache))
+    logging.info(f"emptying the cache ({retries} records)")
+    for _ in range(0, retries):
+        payload = _cache.pop()
+        send_data(payload)
+
+
 def api_client_run():
     while True:
-        retries = min(cache_max_retries, len(_cache))
-        logging.info(f"emptying the cache ({retries} records)")
-        for _ in range(0, retries):
-            payload = _cache.pop()
-            send_data(payload)
-        sleep(cache_retry_period_seconds)
+        _resend_cached_payloads()
+        sleep(_config.cache_retry_period_seconds)
