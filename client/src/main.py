@@ -28,7 +28,7 @@ if __name__ == "__main__":
     except singleton.SingleInstanceException:
         exit(1)
 
-    arg_parser = argparse.ArgumentParser(description="ZF USB Licence Detector")
+    arg_parser = argparse.ArgumentParser(description="ZF USB License Detector")
     arg_parser.add_argument("-c", "--config", dest="config", required=True, help="Path to the configuration file")
     args = arg_parser.parse_args()
 
