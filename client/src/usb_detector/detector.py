@@ -49,10 +49,18 @@ def _load_last_connected_devices() -> list:
 
 
 def _get_connected_devices(detected_devices: list, last_connected_devices: list) -> list:
+    if last_connected_devices is None and detected_devices is not None:
+        return detected_devices
+    if detected_devices is None:
+        return []
     return [device for device in detected_devices if device not in last_connected_devices]
 
 
 def _get_disconnected_devices(detected_devices: list, last_connected_devices: list) -> list:
+    if last_connected_devices is None:
+        return []
+    if detected_devices is None:
+        return last_connected_devices
     return [device for device in last_connected_devices if device not in detected_devices]
 
 
