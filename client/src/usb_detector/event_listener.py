@@ -3,7 +3,7 @@ import logging
 import getpass
 from datetime import datetime
 
-from ..api_client import send_data
+from .api_client import send_data
 
 
 def _get_metadata() -> dict:

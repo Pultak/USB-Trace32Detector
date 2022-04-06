@@ -1,4 +1,4 @@
-import client.src.api_client as api_client
+from client.src.usb_detector import api_client
 
 
 class CacheMock:
