@@ -22,7 +22,7 @@ class ConfigMock:
 
     def __init__(self):
         self.cache_max_entries = 5
-        self.max_retries = 3
+        self.cache_max_retries = 3
 
 
 payload_mock = {

@@ -49,7 +49,7 @@ def _cache_failed_payload(payload: dict):
 
 
 def _resend_cached_payloads():
-    retries = min(_config.max_retries, len(_cache))
+    retries = min(_config.cache_max_retries, len(_cache))
     logging.info(f"emptying the cache ({retries} records)")
     for _ in range(0, retries):
         payload = _cache.pop()
