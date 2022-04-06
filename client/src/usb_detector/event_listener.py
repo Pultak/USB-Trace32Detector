@@ -3,7 +3,7 @@ import logging
 import getpass
 from datetime import datetime
 
-from api_client import send_data
+from .api_client import send_data
 
 
 def _get_metadata() -> dict:
@@ -11,7 +11,7 @@ def _get_metadata() -> dict:
     return {
         "username": getpass.getuser(),
         "hostname": platform.uname().node,
-        "timestamp": str(datetime.now())
+        "timestamp": str(datetime.now()).split('.')[0]
     }
 
 

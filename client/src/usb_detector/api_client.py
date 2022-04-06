@@ -4,7 +4,7 @@ import logging
 from time import sleep
 from diskcache import Deque
 from requests import HTTPError, ConnectionError
-
+from requests.exceptions import InvalidSchema
 
 _uri = None
 _cache = None
@@ -14,16 +14,24 @@ _config = None
 def api_client_set_config(config):
     global _config, _cache, _uri
     _config = config
-    _cache = Deque(directory=_config.cache_dir)
+    _cache = _init_cache()
     _uri = config.server_url + ":" + config.server_port + config.server_endpoint
 
 
+def _init_cache():
+    return Deque(directory=_config.cache_dir)
+
+
 def send_data(payload: dict):
+    if _uri is None:
+        logging.warning(f"sending payload = {payload} failed because uri is set to None")
+        _cache_failed_payload(payload)
+        return
     try:
         logging.info(f"sending payload = {payload} to {_uri}")
         response = requests.post(url=_uri, data=json.dumps(payload))
         logging.info(f"response text: {response.text}")
-    except ConnectionError:
+    except (ConnectionError, InvalidSchema):
         logging.warning(f"sending payload = {payload} to {_uri} failed")
         _cache_failed_payload(payload)
     except HTTPError as error:

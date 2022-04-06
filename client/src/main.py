@@ -9,7 +9,7 @@ from sys import exit
 from config_manager import Config
 from usb_detector.detector import register_listener, usb_detector_run, usb_detector_set_config
 from usb_detector.event_listener import usb_connected_callback, usb_disconnected_callback
-from api_client import api_client_run, api_client_set_config
+from usb_detector.api_client import api_client_run, api_client_set_config
 
 
 def init_logging(app_config: Config):
