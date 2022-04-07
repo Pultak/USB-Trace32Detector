@@ -10,13 +10,13 @@ _invalid_devices = []
 
 
 def read_connected_devices():
-    """Reads and returns all USB devices currently connected to the computer.
+    """Reads and returns all USB devices that are currently connected to the computer.
 
     It iterates over devices connected to individual buses and for each of
     them, it tries to retrieve its vendor id, product id, and serial number.
-    If the application fails to retrieve the serial number from a device, it
-    will be stored into an in-RAM list to prevent "spam" logs. Once the application
-    successes to read the serial number, the device will be removed from the list.
+    If the application fails to retrieve the serial number of a device, it
+    will store it into an in-RAM list to prevent "spam" logs. Once the application
+    manages to read the serial number, the device will be removed from the list.
 
     :return: list of all USB devices connected to the PC
     """
@@ -44,8 +44,7 @@ def read_connected_devices():
             try:
                 serial_number = usb.util.get_string(device_info, device_info.iSerialNumber)
             except ValueError:
-                # If you fail, store the device into the in-RAM list (if it's
-                # not already there).
+                # If you fail, store the device into the in-RAM list (if it is not already there).
                 if device not in _invalid_devices:
                     logging.warning(f"Could not retrieve serial number from device {device}")
                     _invalid_devices.append(device)

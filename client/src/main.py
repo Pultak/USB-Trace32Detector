@@ -16,9 +16,9 @@ def init_logging(app_config: Config):
     """Initializes logging, api client, and usb detector.
 
     The function checks whether the path to the logger configuration
-    file exists. The path is defined in the logger section of the
+    file is valid or not. The path is defined in the logger section of the
     main configuration file. It also calls api_client_set_config and
-    usb_detector_set_config to initialize the application.
+    usb_detector_set_config to fully initialize the application.
 
     :param app_config: instance of Config (config manager)
     """
@@ -39,11 +39,11 @@ def init_logging(app_config: Config):
 if __name__ == "__main__":
     """Main entry point of the application.
     
-    The application expects one parameter to be passed it -
+    The application expects one parameter to be passed in -
     the path to the configuration file. The user can print out help
     using the '-h' option.
     """
-    # Make sure that there is only one running instance of this application.
+    # Make sure that there is only one running instance (process) of this application.
     try:
         app_instance = singleton.SingleInstance()
     except singleton.SingleInstanceException:

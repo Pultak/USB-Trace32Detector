@@ -30,7 +30,7 @@ def usb_detector_set_config(config):
 def register_listener(callback, connected: bool = True):
     """Registers a new event listener.
 
-    The caller is supposed to passed in a function they
+    The caller is supposed to pass in a function they
     wish to be called whenever an event occurs. What kind
     of event will trigger (call) the callback function is
     determined by the second parameter.
@@ -58,11 +58,11 @@ def _notify_listeners(listeners: list, devices: list):
     Based on the type of the event, the corresponding list of listeners
     is passed in along with a list of all devices involved in the event.
 
-    :param listeners: List of listeners registered for the event.
-    :param devices: List of all USB devices involved in the event
-                    (usually a single device).
+    :param listeners: list of listeners registered for the event
+    :param devices: list of all USB devices involved in the event
+                    (usually a single device)
     """
-    # Make sure both lists are not None
+    # Make sure both lists are not None.
     if listeners is None or devices is None:
         return
 
@@ -74,14 +74,14 @@ def _notify_listeners(listeners: list, devices: list):
 
 
 def _store_connected_devices(devices: list):
-    """Stores the list of currently connected USB devices into a file.
+    """Stores the list of the currently connected USB devices into a file.
 
     This function is called whenever a device is connected or disconnected.
     Its main purpose is to dump the list of the currently plugged devices
-    on the disk (so it's not kept in RAM when the computer shuts down). The
+    on the disk (so it is not kept in RAM when the computer shuts down). The
     list is then loaded upon every start of the application.
 
-    :param devices: List of the devices that are currently connected to the PC.
+    :param devices: list of the devices that are currently connected to the PC
     """
     logging.debug("storing newly connected devices")
 
@@ -98,7 +98,7 @@ def _load_last_connected_devices() -> list:
     that were connected to the PC before it was turned off
     (persistent memory).
 
-    :return: List of the lastly connected USB devices.
+    :return: list of the lastly connected USB devices
     """
     logging.debug("loading last connected devices")
     try:
@@ -113,10 +113,10 @@ def _get_connected_devices(detected_devices: list, last_connected_devices: list)
     """Returns a list of USB devices that were just plugged into the computer.
 
     Using the two lists passed in as parameters, it figures out what devices
-    were just connected to the PC. Essentially, any device of the detected_devices list
+    were just connected to the PC. Essentially, any device in the detected_devices list
     that does not apper in the last_connected_devices list must have been just plugged in.
 
-    :param detected_devices: list of currently plugged USB devices
+    :param detected_devices: list of the currently plugged USB devices
     :param last_connected_devices: list of the lastly connected USB devices
     :return: list of all USB devices that were just plugged into the computer
     """
@@ -140,7 +140,7 @@ def _get_disconnected_devices(detected_devices: list, last_connected_devices: li
     disconnected from the computer. Basically, any device that was seen connected to the PC
     and does not apper in the detected_devices list must have been just unplugged from the PC.
 
-    :param detected_devices: list of currently plugged USB devices
+    :param detected_devices: list of the currently plugged USB devices
     :param last_connected_devices: list of the lastly connected USB devices
     :return: list of all USB devices that were just disconnected from the PC
     """
@@ -205,5 +205,5 @@ def usb_detector_run():
         # Update the USB detector.
         _update()
 
-        # Sleep for a predefined amount of seconds
+        # Sleep for a predefined amount of seconds.
         sleep(_config.scan_period_seconds)

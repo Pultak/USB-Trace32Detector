@@ -38,7 +38,7 @@ def _init_cache():
     """ Initializes and returns a disk-based cache.
 
     The cache holds payloads that the application failed
-    to send to the server. It periodically attempts to resent
+    to send to the server. It periodically attempts to resend
     them to the server. All parameters can be seen in the
     configuration file.
 
@@ -55,10 +55,10 @@ def send_data(payload: dict):
     server is not up and running, the payload will be stored
     into the disk cache.
 
-    :param payload:
+    :param payload: payload to be sent to the server
     """
     # Make sure that the URI has been constructed properly.
-    # It's supposed to be done by calling the api_client_set_config function
+    # It is supposed to be done by calling the api_client_set_config function
     # with appropriate parameters.
     if _uri is None:
         logging.warning(f"sending payload = {payload} failed because uri is set to None")
