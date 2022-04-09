@@ -71,5 +71,18 @@ namespace LDClient.network {
             }
             throw new Exception($"Server responded with error code: {json.statusCode}");
         }
+        
+        private static void Response2Log(string json, HttpResponseMessage response, long durationMs) {
+            var responseToLog = new {
+                statusCode = response.StatusCode,
+                content = response.Content,
+                headers = response.Headers,
+                errorMessage = response.RequestMessage,
+            };
+
+            Program.DefaultLogger.Info($"Request completed in {durationMs} ms,\n" +
+                                 $"Request body: {json},\n" +
+                                 $"Response: {JsonConvert.SerializeObject(responseToLog)}");
+        }
     }
 }
