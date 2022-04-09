@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 namespace LDClient.utils {
     internal class ConfigLoader {
         private const string LoggingSection = "Logging";
+        private const string NetworkSection = "Network";
 
 
         public int LogChunkSize { get; set; }
@@ -15,6 +16,14 @@ namespace LDClient.utils {
         public LogVerbosity LogVerbosityType { get; set; } = LogVerbosity.Full;
 
         public LogFlow LogFlowType { get; set; } = LogFlow.Console;
+
+        public string ApiBaseAddress { get; set; }
+        public string ApiUsbEndPoint { get; set; }
+        public uint ApiPort { get; set; }
+        public uint ApiRetryPeriod { get; set; }
+
+        public string DebuggerAddress { get; set; }
+        public int DebuggerPort { get; set; }
 
         public ConfigLoader() {
             var configuration = new ConfigurationBuilder()
@@ -34,7 +43,16 @@ namespace LDClient.utils {
                 LogCleanupPeriod = int.Parse(logging["LogCleanupPeriod"]);
                 LogFlowType = (LogFlow)int.Parse(logging["LogFlowType"]);
                 LogVerbosityType = (LogVerbosity)int.Parse(logging["LogVerbosityType"]);
+                
+                var network = configuration.GetSection(NetworkSection);
+                ApiBaseAddress = network["ApiBaseAddress"];
+                ApiUsbEndPoint = network["ApiLDEndPoint"];
+                ApiPort = uint.Parse(network["ApiPort"]);
+                ApiRetryPeriod = uint.Parse(network["ApiRetryPeriod"]);
 
+
+                DebuggerAddress = network["DebuggerAddress"];
+                DebuggerPort = int.Parse(network["DebuggerPort"]);
 
                 Console.WriteLine("Configuration successfully loaded!");
             } catch (FormatException e) {
