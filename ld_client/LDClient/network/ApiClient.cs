@@ -50,12 +50,7 @@ namespace LDClient.network {
             try {
                 Stopwatch stopWatch = new();
                 stopWatch.Start();
-
-                var json = JsonConvert.SerializeObject(ExampleInfo);
-                if (json is null) {
-                    Program.DefaultLogger.Error($"Failed to serialize object: {ExampleInfo}");
-                    return;
-                }
+                
                 var response = await _client.PostAsJsonAsync(_uri, payload, new JsonSerializerOptions {
                     Converters = {
                         new JsonStringEnumConverter( JsonNamingPolicy.CamelCase)
@@ -63,26 +58,16 @@ namespace LDClient.network {
 
                 });
                 stopWatch.Stop();
-                Response2Log(json, response, stopWatch.ElapsedMilliseconds);
+                CreateRequestLog(payload, response, stopWatch.ElapsedMilliseconds);
 
                 response.EnsureSuccessStatusCode();
-                var serverResponse = await response.Content.ReadAsStringAsync();
-                CheckResponse(serverResponse);
             } catch (Exception e) {
                 Program.DefaultLogger.Error($"Failed to send {payload} to the server. Due to: {e.Message}");
+                CachePayload(payload);
             }
         }
-        
-        private static bool CheckResponse(string response) {
-            dynamic json = JObject.Parse(response);
 
-            if (json.statusCode < 400) {
-                return true;
-            }
-            throw new Exception($"Server responded with error code: {json.statusCode}");
-        }
-        
-        private static void Response2Log(string json, HttpResponseMessage response, long durationMs) {
+        private static void CreateRequestLog(Payload payload, HttpResponseMessage response, long durationMs) {
             var responseToLog = new {
                 statusCode = response.StatusCode,
                 content = response.Content,
@@ -91,8 +76,10 @@ namespace LDClient.network {
             };
 
             Program.DefaultLogger.Info($"Request completed in {durationMs} ms,\n" +
-                                 $"Request body: {json},\n" +
-                                 $"Response: {JsonConvert.SerializeObject(responseToLog)}");
+                                 $"Request body: {payload},\n" +
+                                 $"Response: {responseToLog}");
+        }
+        
 
         private async Task ResendPayloadsAsync() {
             var numberOfPayloadsToResend = Math.Min(_maxRetries, _cache.EstimatedCountOfItemsInQueue);
