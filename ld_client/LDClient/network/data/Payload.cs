@@ -1,5 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace LDClient.network.data {
     [JsonObject(MemberSerialization.OptIn)]
@@ -25,5 +27,24 @@ namespace LDClient.network.data {
         [JsonPropertyName("status")]
         //[Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
         public ConnectionStatus Status { get; set; }
+
+
+        public override string ToString() {
+            return ParseToJson(this);
+        }
+
+        public string ParseToJson() {
+            return Payload.ParseToJson(this);
+        }
+
+        public static string ParseToJson(Payload payload) {
+            var options = new JsonSerializerOptions {
+                Converters = {
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
+            };
+
+            return JsonSerializer.Serialize(payload, options);
+        }
     }
 }
