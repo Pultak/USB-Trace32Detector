@@ -3,8 +3,13 @@ from fastapi import Depends, FastAPI, HTTPException, APIRouter, Form
 from sqlalchemy.orm import Session
 from ...sql_app import crud, models, schemas
 from ..database import SessionLocal, engine
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 models.Base.metadata.create_all(bind=engine)
+templates = Jinja2Templates(directory="../templates/usb-logs")
 
 usblogs = APIRouter()
 
@@ -16,6 +21,16 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+@usblogs.get("/logs_web/", response_class=HTMLResponse)
+async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    logs = crud.get_logs(db, skip=skip, limit=limit)
+    pcs = []
+    for log in logs:
+        if log.pc_id not in pcs:
+            pcs.append(log.pc_id)
+    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs})
 
 
 @usblogs.post("/usb-logs/", response_model=schemas.USBLog)

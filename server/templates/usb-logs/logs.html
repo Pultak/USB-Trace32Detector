@@ -1,0 +1,25 @@
+<html>
+<head>
+    <title>Logs Details</title>
+</head>
+<body>
+    <table>
+    <TR>
+        <TH>ID</TH>
+        <TH>PC ID</TH>
+        <TH>Timestamp</TH>
+        <TH>Status</TH>
+        <TH>Device ID</TH>
+    </TR>
+    {% for log in logs %}
+    <TR>
+        <TD class="ID">{{log.id}}</TD>
+        <TD class="Username">{{log.pc_id}}</TD>
+        <TD class="Timestamp">{{log.timestamp}}</TD>
+        <TD class="Status">{{log.status}}</TD>
+        <TD class="Device ID">{{log.device_id}}</TD>
+    </TR>
+    {% endfor %}
+</table>
+</body>
+</html>
