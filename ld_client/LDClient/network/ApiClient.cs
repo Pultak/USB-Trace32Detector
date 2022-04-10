@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DiskQueue;
 using LDClient.network.data;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace LDClient.network {
     public class ApiClient : IApiClient {
@@ -22,17 +22,27 @@ namespace LDClient.network {
             Status = ConnectionStatus.Connected
         };
 
+        private bool _running;
+
 
         private readonly string _uri;
         private readonly HttpClient _client;
+        private readonly IPersistentQueue _cache;
         private readonly uint _retryPeriod;
+        private readonly uint _maxEntries;
+        private readonly uint _maxRetries;
+        
 
 
-        public ApiClient(string url, uint port, string path, uint retryPeriod) {
+        public ApiClient(string url, uint port, string path, uint retryPeriod, uint maxEntries, uint maxRetries,
+            string cacheFilename) {
             _uri = $"{url}:{port}{path}";
             _retryPeriod = retryPeriod;
-            
+            _maxEntries = maxEntries;
+            _maxRetries = maxRetries;
+
             _client = new HttpClient();
+            _cache = new PersistentQueue(cacheFilename);
 
         }
 
@@ -83,6 +93,18 @@ namespace LDClient.network {
             Program.DefaultLogger.Info($"Request completed in {durationMs} ms,\n" +
                                  $"Request body: {json},\n" +
                                  $"Response: {JsonConvert.SerializeObject(responseToLog)}");
+
+        public async void Run() {
+            Program.DefaultLogger.Info("Api Client thread has started");
+            _running = true;
+            while (_running) {
+                await ResendPayloadsAsync();
+                Thread.Sleep((int)_retryPeriod);
+            }
+        }
+
+        public void Stop() {
+            _running = false;
         }
     }
 }
