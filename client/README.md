@@ -24,19 +24,11 @@ pip install -r requirements.txt
 
 ### Windows
 
-For the Windows operating system, the user also needs to install the following tool.
+For the Windows operating system, the user also needs to install the LibUSB-Win32 library. The installer can be found over at: https://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/1.2.6.0/libusb-win32-devel-filter-1.2.6.0.exe
 
-- https://sourceforge.net/projects/libusb-win32/
+Upon successful installation of this library, the following file should be created`C:\WINDOWS\system32\libusb0.dll`. The application uses this dynamic library to scan USB devices connected to the PC. The default installation folder of this library is `C:\Program Files\LibUSB-Win32\`. 
 
-Upon successful installation of this library, the following file should be created`C:\WINDOWS\system32\libusb0.dll`. The application uses this file to scan USB devices connected to the PC.
-
-## Build
-
-In order to create an executable file of the application, the user can use the `build.bat` file located in the root directory of the project structure. If everything goes well, a file called `licence_detector.exe` should be created in the same location. This file represents the executable file of the application.
-
-## Execution
-
-Before the very first start of the application, the user is required to execute the following command from the terminal in order to give the client access to all USB devices of the same vendor id and product id.
+Before the very first start of the application, the user is required to execute following command as an administrator in order to give the client access to all USB devices of the same vendor id and product id.
 
 ```
 install-filter.exe install --device=USB\Vid_064f.Pid_2af9.Rev_0100
@@ -44,7 +36,17 @@ install-filter.exe install --device=USB\Vid_064f.Pid_2af9.Rev_0100
 
 Vector Keyman: vendor id = **064f**, product id = **2af9**
 
-After that, they can simply run the application by running the following command from the terminal.
+The `install-filter.exe` executable file can be found in the default LibUSB-Win32 installation folder in sub-folder `bin`, or it can be downloaded from the following link https://sourceforge.net/projects/libusb-win32/. 
+
+
+## Build
+
+In order to create an executable file of the application, the user can use the `build.bat` file located in the root directory of the project structure. If everything goes well, a file called `licence_detector.exe` should be created in the same location. This file represents the executable file of the application.
+
+## Execution
+
+
+After everything is successfully setup, you can simply run the application by running the following command from the terminal.
 
 ```
 licence_detector.exe --help
