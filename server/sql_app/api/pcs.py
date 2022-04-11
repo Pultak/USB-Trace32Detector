@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 models.Base.metadata.create_all(bind=engine)
-templates = Jinja2Templates(directory="../templates/pcs")
+templates = Jinja2Templates(directory="templates/pcs")
 
 pcs = APIRouter()
 
