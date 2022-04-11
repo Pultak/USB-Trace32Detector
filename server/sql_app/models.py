@@ -44,8 +44,8 @@ class DeviceLicense(Base):
     __tablename__ = "devices_licenses"
 
     id = Column(Integer, primary_key=True, index=True)
-    device_id = Column(String, ForeignKey("devices.id"))
-    license_id = Column(String, ForeignKey("licenses.id"))
+    device_id = Column(Integer, ForeignKey("devices.id"))
+    license_id = Column(Integer, ForeignKey("licenses.id"))
     assigned_datetime = Column(String, index=True, nullable=False)
 
     device_lic = relationship("Device", back_populates="licenses")

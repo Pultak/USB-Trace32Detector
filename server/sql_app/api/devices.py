@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException, APIRouter
 from sqlalchemy.orm import Session
-from ...sql_app import crud, models, schemas
+from sql_app import crud, models, schemas
 from ..database import SessionLocal, engine
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse

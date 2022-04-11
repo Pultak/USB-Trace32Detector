@@ -1,9 +1,9 @@
 import uvicorn
-from server.sql_app.api.devices import device
-from server.sql_app.api.licenses import licenses
-from server.sql_app.api.pcs import pcs
-from server.sql_app.api.usb_logs import usblogs
-from server.sql_app.api.teams import teams
+from sql_app.api.devices import device
+from sql_app.api.licenses import licenses
+from sql_app.api.pcs import pcs
+from sql_app.api.usb_logs import usblogs
+from sql_app.api.teams import teams
 from fastapi import FastAPI
 
 
