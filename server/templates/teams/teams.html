@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>Teams Details</title>
+</head>
+<body>
+<table>
+    <TR>
+        <TH>ID</TH>
+        <TH>Name</TH>
+    </TR>
+    {% for team in teams %}
+    <TR>
+        <TD class="ID">{{team.id}}</TD>
+        <TD class="Vendor ID">{{team.name}}</TD>
+    </TR>
+    {% endfor %}
+</table>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title>Licenses Details</title>
+</head>
+<body>
+<table>
+    <TR>
+        <TH>ID</TH>
+        <TH>Name</TH>
+        <TH>Expiration Date</TH>
+    </TR>
+    {% for license in licenses %}
+    <TR>
+        <TD class="ID">{{license.id}}</TD>
+        <TD class="Vendor ID">{{license.name}}</TD>
+        <TD class="Product ID">{{license.expiration_date}}</TD>
+    </TR>
+    {% endfor %}
+</table>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>Devices Details</title>
+</head>
+<body>
+<table>
+    <TR>
+        <TH>ID</TH>
+        <TH>Vendor ID</TH>
+        <TH>Product ID</TH>
+        <TH>Serial Number</TH>
+    </TR>
+    {% for device in devs %}
+    <TR>
+        <TD class="ID">{{device.id}}</TD>
+        <TD class="Vendor ID">{{device.vendor_id}}</TD>
+        <TD class="Product ID">{{device.product_id}}</TD>
+        <TD class="Serial Number">{{device.serial_number}}</TD>
+    </TR>
+    {% endfor %}
+</table>
+</body>
+</html>
