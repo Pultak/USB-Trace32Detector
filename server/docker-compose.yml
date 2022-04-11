@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+    networks:
+      zf-usb-detec:
+        ipv4_address: 10.5.0.5
+    environment:
+      - POSTGRES_DB=usb_api_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - "TZ=Europe/Prague"
+    ports:
+      - "5433:5432"
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - "TZ=Europe/Prague"
+    networks:
+      zf-usb-detec:
+        ipv4_address: 10.5.0.6
+    depends_on:
+      - db
+
+networks:
+  zf-usb-detec:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
