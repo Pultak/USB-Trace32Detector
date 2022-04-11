@@ -6,18 +6,22 @@
     <table>
     <TR>
         <TH>ID</TH>
-        <TH>PC ID</TH>
+        <TH>PC Username</TH>
+        <TH>PC Hostname</TH>
         <TH>Timestamp</TH>
         <TH>Status</TH>
-        <TH>Device ID</TH>
+        <TH>Device Product ID</TH>
+        <TH>Device Serial Number</TH>
     </TR>
     {% for log in logs %}
     <TR>
         <TD class="ID">{{log.id}}</TD>
-        <TD class="Username">{{log.pc_id}}</TD>
+        <TD class="Username">{{log.pc.username}}</TD>
+        <TD class="Hostname">{{log.pc.hostname}}</TD>
         <TD class="Timestamp">{{log.timestamp}}</TD>
         <TD class="Status">{{log.status}}</TD>
-        <TD class="Device ID">{{log.device_id}}</TD>
+        <TD class="DeviceProductID">{{log.device.product_id}}</TD>
+        <TD class="DeviceSerialNumber">{{log.device.serial_number}}</TD>
     </TR>
     {% endfor %}
 </table>

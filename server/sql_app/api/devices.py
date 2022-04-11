@@ -23,7 +23,7 @@ def get_db():
         db.close()
 
 
-@device.get("/devices_web/", response_class=HTMLResponse)
+@device.get("/devices-web/", response_class=HTMLResponse)
 async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     devices = crud.get_devices(db, skip=skip, limit=limit)
     return templates.TemplateResponse("devices.html", {"request": request, "devs": devices})

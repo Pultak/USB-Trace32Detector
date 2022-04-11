@@ -23,7 +23,7 @@ def get_db():
         db.close()
 
 
-@pcs.get("/pcs_web/", response_class=HTMLResponse)
+@pcs.get("/pcs-web/", response_class=HTMLResponse)
 async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     pcs = crud.get_pcs(db, skip=skip, limit=limit)
     return templates.TemplateResponse("pcs.html", {"request": request, "pcs": pcs})

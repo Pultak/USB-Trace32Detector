@@ -1,7 +1,6 @@
 from typing import List, Optional
-
+from datetime import datetime, date
 from pydantic import BaseModel
-
 
 
 class DeviceLicenseBase(BaseModel):
@@ -22,7 +21,7 @@ class DeviceLicense(DeviceLicenseCreate):
 
 
 class USBLogBase(BaseModel):
-    timestamp: str
+    timestamp: datetime
     status: str
 
 
@@ -40,8 +39,8 @@ class USBLog(USBLogBase):
 
 
 class DeviceBase(BaseModel):
-    vendor_id: int
-    product_id: int
+    vendor_id: str
+    product_id: str
     serial_number: str
 
 
@@ -49,8 +48,9 @@ class DeviceCreate(DeviceBase):
     pass
 
 
-class Device(DeviceBase):
+class Device(DeviceCreate):
     id: int
+    assigned: bool
     logs: List[USBLog] = []
     licenses: List[DeviceLicense] = []
 
@@ -69,7 +69,24 @@ class PCCreate(PCBase):
 
 class PC(PCCreate):
     id: int
+    assigned: bool
     logs_pc: List[USBLog] = []
+
+    class Config:
+        orm_mode = True
+
+
+class TeamBase(BaseModel):
+    name: str
+
+
+class TeamCreate(TeamBase):
+    pass
+
+
+class Team(TeamCreate):
+    id: int
+    pcs: List[PC] = []
 
     class Config:
         orm_mode = True
@@ -77,7 +94,7 @@ class PC(PCCreate):
 
 class LicenseBase(BaseModel):
     name: str
-    expiration_date: str
+    expiration_date: date
 
 
 class LicenseCreate(LicenseBase):
