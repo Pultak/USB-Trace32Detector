@@ -35,9 +35,11 @@ namespace LDClient.utils {
         #endregion
 
         #region Detection
-        public string DebuggerAddress { get; set; }
-        public int DebuggerPort { get; set; }
-        public string DebuggerProcessName { get; set; }
+        public string T32Address { get; set; }
+        public int T32Port { get; set; }
+        public string T32ProcessName { get; set; }
+        public uint DetectionPeriod { get; set; }
+        public string T32InfoLocation { get; set; }
         #endregion
 
         public ConfigLoader() {
@@ -58,7 +60,7 @@ namespace LDClient.utils {
                 LogCleanupPeriod = int.Parse(logging["LogCleanupPeriod"]);
                 LogFlowType = (LogFlow)int.Parse(logging["LogFlowType"]);
                 LogVerbosityType = (LogVerbosity)int.Parse(logging["LogVerbosityType"]);
-                
+
                 var network = configuration.GetSection(NetworkSection);
                 ApiBaseAddress = network["ApiBaseAddress"];
                 ApiUsbEndPoint = network["ApiLDEndPoint"];
@@ -73,9 +75,11 @@ namespace LDClient.utils {
 
 
                 var debugger = configuration.GetSection(DDSection);
-                DebuggerAddress = debugger["DebuggerAddress"];
-                DebuggerPort = int.Parse(debugger["DebuggerPort"]);
-                DebuggerProcessName = debugger["DebuggerProcessName"];
+                T32Address = debugger["T32Address"];
+                T32Port = int.Parse(debugger["T32Port"]);
+                T32ProcessName = debugger["T32ProcessName"];
+                T32InfoLocation = debugger["T32InfoLocation"];
+                DetectionPeriod = uint.Parse(debugger["DetectionPeriod"]);
 
                 Console.WriteLine("Configuration successfully loaded!");
             } catch (FormatException e) {
