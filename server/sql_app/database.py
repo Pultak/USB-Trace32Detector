@@ -7,7 +7,7 @@ engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 '''
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/usb_api_db"
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@10.5.0.5:5432/usb_api_db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL

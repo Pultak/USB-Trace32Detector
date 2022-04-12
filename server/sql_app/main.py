@@ -7,7 +7,7 @@ from sql_app.api.teams import teams
 from fastapi import FastAPI
 
 
-app = FastAPI(root_path="/api/v1")
+app = FastAPI()
 app.include_router(device)
 app.include_router(licenses)
 app.include_router(pcs)
