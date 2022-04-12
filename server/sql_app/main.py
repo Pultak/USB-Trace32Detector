@@ -1,33 +1,20 @@
+import uvicorn
+from sql_app.api.devices import device
+from sql_app.api.licenses import licenses
+from sql_app.api.pcs import pcs
+from sql_app.api.usb_logs import usblogs
+from sql_app.api.teams import teams
 from fastapi import FastAPI
-import fastapi
-from pydantic import BaseModel
-from typing import Optional, List
 
-app = FastAPI()
 
-class Device(BaseModel):
-	vendor_id: int
-	product_id: int
-	serial_number: str
+app = FastAPI(root_path="/api/v1")
+app.include_router(device)
+app.include_router(licenses)
+app.include_router(pcs)
+app.include_router(usblogs)
+app.include_router(teams)
 
-class USBLog(BaseModel):
-	username: str
-	hostname: str
-	timestamp: str
-	device: Device
-	status:str
-
-@app.post("/api/v1/usb-logs/")
-async def root_post(usb_log: USBLog):
-	print(usb_log)
-	return {"message": "Sucess"}
-
-@app.post("/api/v1/devices/")
-async def root_dev_post(device: Device):
-	print(device)
-	return {"message": "Sucess"}
-	
-@app.get("/")
-async def root_read():
-	print("Hello")
-	return {"message":"Hello World"}
+'''
+if __name__ == "__main__":
+    uvicorn.run(app, host="192.168.0.22", port=8000)
+'''

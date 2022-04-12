@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title>Pcs Details</title>
+</head>
+<body>
+<table>
+    <TR>
+        <TH>ID</TH>
+        <TH>Username</TH>
+        <TH>Hostname</TH>
+    </TR>
+    {% for pc in pcs %}
+    <TR>
+        <TD class="ID">{{pc.id}}</TD>
+        <TD class="Vendor ID">{{pc.username}}</TD>
+        <TD class="Product ID">{{pc.hostname}}</TD>
+    </TR>
+    {% endfor %}
+</table>
+</body>
+</html>
