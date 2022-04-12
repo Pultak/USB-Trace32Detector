@@ -11,7 +11,7 @@ from fastapi.templating import Jinja2Templates
 models.Base.metadata.create_all(bind=engine)
 templates = Jinja2Templates(directory="templates/pcs")
 
-pcs = APIRouter()
+pcs = APIRouter(prefix="/api/v1")
 
 
 # Dependency
@@ -23,18 +23,18 @@ def get_db():
         db.close()
 
 
-@pcs.get("/pcs-web/", response_class=HTMLResponse)
+@pcs.get("/pcs-web", response_class=HTMLResponse)
 async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     pcs = crud.get_pcs(db, skip=skip, limit=limit)
     return templates.TemplateResponse("pcs.html", {"request": request, "pcs": pcs})
 
 
-@pcs.post("/pc/", response_model=schemas.PC)
+@pcs.post("/pc", response_model=schemas.PC)
 def create_pc(pc: schemas.PCCreate, db: Session = Depends(get_db)):
     print(crud.create_pc(db=db, user=pc.username, host=pc.hostname))
 
 
-@pcs.get("/pcs/", response_model=List[schemas.PC])
+@pcs.get("/pcs", response_model=List[schemas.PC])
 def read_pcs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     pcs = crud.get_pcs(db, skip=skip, limit=limit)
     return pcs

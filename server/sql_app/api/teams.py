@@ -12,7 +12,7 @@ from fastapi.templating import Jinja2Templates
 models.Base.metadata.create_all(bind=engine)
 templates = Jinja2Templates(directory="templates/teams")
 
-teams = APIRouter()
+teams = APIRouter(prefix="/api/v1")
 
 # Dependency
 def get_db():
@@ -23,18 +23,18 @@ def get_db():
         db.close()
 
 
-@teams.get("/teams-web/", response_class=HTMLResponse)
+@teams.get("/teams-web", response_class=HTMLResponse)
 async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     teams = crud.get_teams(db, skip=skip, limit=limit)
     return templates.TemplateResponse("teams.html", {"request": request, "teams": teams})
 
 
-@teams.post("/team/", response_model=schemas.Team)
+@teams.post("/team", response_model=schemas.Team)
 def create_device(team: schemas.TeamCreate, db: Session = Depends(get_db)):
     print(crud.create_team(db=db, name=team.name))
 
 
-@teams.get("/teams/", response_model=List[schemas.Device])
+@teams.get("/teams", response_model=List[schemas.Device])
 def read_devices(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     teams = crud.get_teams(db, skip=skip, limit=limit)
     return teams
