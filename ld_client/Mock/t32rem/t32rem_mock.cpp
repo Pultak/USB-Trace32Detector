@@ -7,7 +7,7 @@
 #include <cstring>
 
 static constexpr int EXPECTED_NUMBER_OF_ARGUMENTS = 4;
-static constexpr const char *OUTPUT_FILE_NAME = "output.txt";
+static constexpr const char *OUTPUT_FILE_NAME = "ldResult.txt";
 static constexpr const char *DEBUGGER_INFO =
         "B::version.hardware\n"
         "PowerDebug USB 3.0 via USB 3.0\n"

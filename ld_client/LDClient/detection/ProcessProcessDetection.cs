@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
 using LDClient.network;
 using LDClient.network.data;
 
@@ -7,12 +8,12 @@ namespace LDClient.detection {
 	 public class ProcessProcessDetection : IProcessDetection {
         
         private const string DatetimeFormat = "yyyy-MM-dd hh:mm:ss";
-        
+
         private readonly string _processName;
         private readonly uint _detectionPeriodMs;
         private bool _processIsActive;
         private bool _failedToRetrieveData;
-        private Payload? _lastlyConnected;
+        private Payload? _lastConnectedPayload;
 
         private readonly InfoFetcher _infoFetcher;
         private readonly IApiClient _apiClient;
@@ -28,17 +29,17 @@ namespace LDClient.detection {
         private async Task<bool> RetrieveDataFromDebugger() {
             var success = await _infoFetcher.FetchDataAsync();
             if (success) {
-                _lastlyConnected = await SendDataToServerAsync(_infoFetcher.HeadSerialNumber, _infoFetcher.BodySerialNumber, DatetimeFormat);
+                _lastConnectedPayload = await SendDataToServerAsync(_infoFetcher.HeadSerialNumber, _infoFetcher.BodySerialNumber, DatetimeFormat);
             }
             return success;
         }
-
+        
         private async Task DebuggerDisconnected() {
-            if (_lastlyConnected is not null) {
-                _lastlyConnected.Status = ConnectionStatus.Disconnected;
-                _lastlyConnected.TimeStamp = DateTime.Now.ToString(DatetimeFormat);
-                await _apiClient.SendPayloadAsync(_lastlyConnected);
-                _lastlyConnected = null;
+            if (_lastConnectedPayload is not null) {
+                _lastConnectedPayload.Status = ConnectionStatus.Disconnected;
+                _lastConnectedPayload.TimeStamp = DateTime.Now.ToString(DatetimeFormat);
+                await _apiClient.SendPayloadAsync(_lastConnectedPayload);
+                _lastConnectedPayload = null;
             }
         }
 

@@ -10,19 +10,22 @@ namespace LDClient;
 
 internal static class Program {
 
+    private const int MainLoopDelayMs = 30000; 
+
     public static ConfigLoader Config { get; } = new();
     public static ALogger DefaultLogger { get; } = ALogger.Current;
     private static IApiClient? DefaultApiClient { get; set; }
     
     private static readonly InfoFetcher InfoFetcher = new(
-        5,
-        1000,
-        "output.txt"
+        Config.FetchInfoMaxAttempts,
+        Config.FetchInfoAttemptPeriod,
+        Config.T32InfoLocation,
+        Config.F32RemExecutable,
+        Config.F32RemArguments
     );
     
     public static int Main() {
-        var exists = GetProcessesByName(Path.GetFileNameWithoutExtension(GetEntryAssembly()?.Location)).Length > 1;
-        if (exists) {
+        if (GetProcessesByName(Path.GetFileNameWithoutExtension(GetEntryAssembly()?.Location)).Length > 1) {
             DefaultLogger.Error("Another instance of the application is already running");
             return 1;
         }
@@ -43,7 +46,6 @@ internal static class Program {
             DefaultApiClient
         );
         
-        DefaultLogger.Debug("Main -> starting the ApiClient");
         var apiClientThread = new Thread(DefaultApiClient.Run) {
             IsBackground = true
         };
@@ -55,8 +57,9 @@ internal static class Program {
         processThread.Start();
 
         while (true) {
-            Thread.Sleep(10 * 1000);
+            Thread.Sleep(MainLoopDelayMs);
         }
+        
         return 0;
     }
 }
