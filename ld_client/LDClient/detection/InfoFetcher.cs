@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using LDClient.utils;
 
 namespace LDClient.detection {
 
@@ -46,7 +45,7 @@ namespace LDClient.detection {
 
         private bool RetrieveDebuggerInfo(string filePath) {
             try {
-                var fileContent = IoUtils.ReadFile(filePath);
+                var fileContent = File.ReadAllLines(filePath).Aggregate("", (current, line) => $"{current}{line}\n");
                 var (headSerialNumber, bodySerialNumber) = DebuggerInfoParser.Parse(fileContent);
                 HeadSerialNumber = headSerialNumber;
                 BodySerialNumber = bodySerialNumber;

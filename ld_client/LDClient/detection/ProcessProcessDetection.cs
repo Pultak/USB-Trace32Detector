@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Text.Json;
 using LDClient.network;
 using LDClient.network.data;
 
@@ -33,7 +32,7 @@ namespace LDClient.detection {
             }
             return success;
         }
-        
+
         private async Task DebuggerDisconnected() {
             if (_lastConnectedPayload is not null) {
                 _lastConnectedPayload.Status = ConnectionStatus.Disconnected;
