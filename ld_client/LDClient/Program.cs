@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-using System.Security.Principal;
 using LDClient.detection;
 using LDClient.network;
 using LDClient.utils;
@@ -12,16 +10,22 @@ namespace LDClient;
 
 internal static class Program {
 
+    private const int MainLoopDelayMs = 30000; 
+
     public static ConfigLoader Config { get; } = new();
     public static ALogger DefaultLogger { get; } = ALogger.Current;
     private static IApiClient? DefaultApiClient { get; set; }
-    private static readonly NetworkDetection NetDetect = new(Config.ApiPort, Config.DetectionPeriod);
-    private static readonly ProcessDetection ProcDetect = new(Config.T32ProcessName, Config.DetectionPeriod);
     
-    // Main Method
+    private static readonly InfoFetcher InfoFetcher = new(
+        Config.FetchInfoMaxAttempts,
+        Config.FetchInfoAttemptPeriod,
+        Config.T32InfoLocation,
+        Config.F32RemExecutable,
+        Config.F32RemArguments
+    );
+    
     public static int Main() {
-        var exists = GetProcessesByName(Path.GetFileNameWithoutExtension(GetEntryAssembly()?.Location)).Length > 1;
-        if (exists) {
+        if (GetProcessesByName(Path.GetFileNameWithoutExtension(GetEntryAssembly()?.Location)).Length > 1) {
             DefaultLogger.Error("Another instance of the application is already running");
             return 1;
         }
@@ -35,42 +39,27 @@ internal static class Program {
             Config.CacheFileName
         );
         
-        DefaultLogger.Debug("Main -> starting the ApiClient");
+        IProcessDetection processProcessDetection = new ProcessProcessDetection(
+            Config.T32ProcessName,
+            Config.DetectionPeriod,
+            InfoFetcher,
+            DefaultApiClient
+        );
+        
         var apiClientThread = new Thread(DefaultApiClient.Run) {
             IsBackground = true
         };
         apiClientThread.Start();
 
-        var admin = IsAdministrator();
-        DefaultLogger.Debug($"Is program executed with admin rights? {admin}");
+        var processThread = new Thread(processProcessDetection.RunPeriodicDetection) {
+            IsBackground = true
+        };
+        processThread.Start();
 
-        var networkTread = new Thread(NetDetect.RunPeriodicDetection);
-        networkTread.Start();
-        
-        if (admin) {
-            ProcDetect.RegisterProcessListeners();
-        } else {
-            var processThread = new Thread(ProcDetect.RunPeriodicDetection);
-            processThread.Start();
-            processThread.Join();
+        while (true) {
+            Thread.Sleep(MainLoopDelayMs);
         }
-
-        networkTread.Join();
-
-        DefaultLogger.Debug("Main -> stopping the ApiClient");
-        DefaultApiClient.Stop();
-        apiClientThread.Join();
-        DefaultLogger.Debug("Main -> finished");
         
         return 0;
-    }
-
-    private static bool IsAdministrator() {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-            return false;
-        }
-        var identity = WindowsIdentity.GetCurrent();
-        var principal = new WindowsPrincipal(identity);
-        return principal.IsInRole(WindowsBuiltInRole.Administrator);
     }
 }
