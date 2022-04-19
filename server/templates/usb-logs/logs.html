@@ -3,6 +3,16 @@
     <title>Logs Details</title>
 </head>
 <body>
+<form action="/api/v1/logs-web/" method="post">
+  <label for="pc">PC:</label>
+  <select id="pc" name="pc">
+      <option value="all">all</option>
+      {% for pc in pcs %}
+    <option value={{pc.id}}>{{pc.username}}</option>
+      {% endfor %}
+  </select>
+  <input type="submit" value="Filter">
+</form>
     <table>
     <TR>
         <TH>ID</TH>

@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import Depends, FastAPI, HTTPException, APIRouter
+from fastapi import Depends, FastAPI, HTTPException, APIRouter, Form
 from sqlalchemy.orm import Session
 from datetime import date
 from sql_app import crud, models, schemas
@@ -25,15 +25,25 @@ def get_db():
         db.close()
 
 
+@licenses.get("/license-create", response_class=HTMLResponse)
+async def licenses_create_web(request: Request):
+    return templates.TemplateResponse("license_create.html", {"request": request})
+
+
 @licenses.get("/licenses-web", response_class=HTMLResponse)
-async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def licenses_web(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
     return templates.TemplateResponse("licenses.html", {"request": request, "licenses": licenses})
 
 
-@licenses.post("/license", response_model=schemas.License)
-def create_license(license: schemas.LicenseCreate, db: Session = Depends(get_db)):
-    print(crud.create_license(db=db, name=license.name, expdate=license.expiration_date))
+@licenses.post("/licenses-web", response_class=HTMLResponse)
+def create_license(request: Request, name: str = Form(...), expdate: date = Form(...), skip: int = 0, limit: int = 100,
+                   db: Session = Depends(get_db)):
+    db_license = crud.create_license(db, name, expdate)
+    if db_license is None:
+        print("something went wrong")
+    licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    return templates.TemplateResponse("licenses.html", {"request": request, "licenses": licenses})
 
 
 @licenses.get("/licenses", response_model=List[schemas.License])

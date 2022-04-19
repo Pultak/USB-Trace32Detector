@@ -27,7 +27,30 @@ def get_db():
 @usblogs.get("/logs-web", response_class=HTMLResponse)
 async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     logs = crud.get_logs(db, skip=skip, limit=limit)
-    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs})
+    pcs = []
+    for log in logs:
+        if log.pc_id not in pcs:
+            pcs.append(log.pc_id)
+    pc_obj = crud.find_pcs(db, pcs)
+    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "pcs": pc_obj})
+
+
+@usblogs.post("/logs-web", response_class=HTMLResponse)
+async def filter_logs(request: Request, pc: str = Form(...), skip: int = 0, limit: int = 100,
+                      db: Session = Depends(get_db)):
+    logs_temp = crud.get_logs(db, skip=skip, limit=limit)
+    pcs = []
+    logs = []
+    for log in logs_temp:
+        if log.pc_id not in pcs:
+            pcs.append(log.pc_id)
+        if pc != "all":
+            if log.pc_id == int(pc):
+                logs.append(log)
+    if pc == "all":
+        logs = logs_temp
+    pc_obj = crud.find_pcs(db, pcs)
+    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "pcs": pc_obj})
 
 
 @usblogs.post("/usb-logs", response_model=schemas.USBLog)
