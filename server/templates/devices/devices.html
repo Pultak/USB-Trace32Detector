@@ -3,12 +3,34 @@
     <title>Devices Details</title>
 </head>
 <body>
+<form action="" method="get">
+  <label for="view">Choose view:</label>
+  <select id="view" name="view" onchange="this.form.action=this.value;">
+      <option value=""></option>
+      <option value="/api/v1/logs-web">Logs</option>
+      <option value="/api/v1/devices-web">Devices</option>
+      <option value="/api/v1/teams-web">Teams</option>
+      <option value="/api/v1/pcs-web">PCs</option>
+  </select>
+  <input type="submit" value="OK">
+</form>
+<form action="/api/v1/devices-web" method="post">
+    <label for="lic">License:</label>
+    <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
+    <datalist id="licenses">
+        {% for license in licenses %}
+        <option value="{{license.name}}"></option>
+        {% endfor %}
+    </datalist>
+  <input type="submit" value="Filter">
+</form>
 <table>
     <TR>
         <TH>ID</TH>
         <TH>Vendor ID</TH>
         <TH>Product ID</TH>
         <TH>Serial Number</TH>
+        <TH>Licenses</TH>
     </TR>
     {% for device in devs %}
     <TR>
@@ -16,6 +38,11 @@
         <TD class="Vendor ID">{{device.vendor_id}}</TD>
         <TD class="Product ID">{{device.product_id}}</TD>
         <TD class="Serial Number">{{device.serial_number}}</TD>
+        <TD class="License">
+            {% for lic in device.licenses %}
+                {{lic.licenses.name}}<BR>
+            {% endfor %}
+        </TD>
     </TR>
     {% endfor %}
 </table>
