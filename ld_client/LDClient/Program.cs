@@ -21,7 +21,9 @@ internal static class Program {
         Config.FetchInfoAttemptPeriod,
         Config.T32InfoLocation,
         Config.F32RemExecutable,
-        Config.F32RemArguments
+        Config.F32RemArguments,
+        Config.T32RemSuccessExitCode,
+        Config.T32RemWaitTimeoutMs
     );
     
     public static int Main() {

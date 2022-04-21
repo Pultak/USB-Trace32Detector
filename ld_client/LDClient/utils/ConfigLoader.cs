@@ -44,10 +44,12 @@ namespace LDClient.utils {
         public uint DetectionPeriod { get; private set; }
         public string T32InfoLocation { get; private set; }
         public string F32RemExecutable { get; private set; }
-        public string F32RemArguments { get; private set; }
         public uint FetchInfoMaxAttempts { get; private set;  }
         public uint FetchInfoAttemptPeriod { get; private set; }
-        
+        public string[] F32RemArguments { get; private set; }
+        public int T32RemSuccessExitCode { get; private set; }
+        public int T32RemWaitTimeoutMs { get; private set; }
+
         #endregion
 
         public ConfigLoader() {
@@ -85,9 +87,11 @@ namespace LDClient.utils {
                 T32InfoLocation = debugger["T32InfoLocation"];
                 DetectionPeriod = uint.Parse(debugger["DetectionPeriod"]);
                 F32RemExecutable = debugger["F32RemExecutable"];
-                F32RemArguments = debugger["F32RemArguments"];
                 FetchInfoMaxAttempts = uint.Parse(debugger["FetchInfoMaxAttempts"]);
                 FetchInfoAttemptPeriod = uint.Parse(debugger["FetchInfoAttemptPeriod"]);
+                T32RemSuccessExitCode = int.Parse(debugger["T32RemSuccessExitCode"]);
+                T32RemWaitTimeoutMs = int.Parse(debugger["T32RemWaitTimeoutMs"]);
+                F32RemArguments = configuration.GetSection($"{DdSection}:F32RemCommands").GetChildren().Select(key => key.Value).ToArray();
 
                 Console.WriteLine("Configuration successfully loaded!");
             } catch (FormatException e) {
