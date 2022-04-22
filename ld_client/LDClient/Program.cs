@@ -61,7 +61,5 @@ internal static class Program {
         while (true) {
             Thread.Sleep(MainLoopDelayMs);
         }
-        
-        return 0;
     }
 }
