@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using LDClient.utils.loggers;
 
 namespace LDClient.detection {
 
@@ -71,8 +72,12 @@ namespace LDClient.detection {
                 t32RemProcess.StartInfo.Arguments = argument;
                 try {
                     t32RemProcess.Start();
-                    t32RemProcess.WaitForExit(waitTimeoutMs);
+                    if (!t32RemProcess.WaitForExit(waitTimeoutMs)) {
+                        Program.DefaultLogger.Error($"Execution has not terminated within a predefined timeout of {waitTimeoutMs} ms");
+                        return false;
+                    }
                     if (t32RemProcess.ExitCode != successExitCode) {
+                        Program.DefaultLogger.Error($"Execution terminated with an error code of {t32RemProcess.ExitCode}");
                         return false;
                     }
                 } catch (Exception exception) {

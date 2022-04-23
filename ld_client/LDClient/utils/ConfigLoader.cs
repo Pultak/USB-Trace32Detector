@@ -117,7 +117,7 @@ namespace LDClient.utils {
                 FetchInfoAttemptPeriod = uint.Parse(debugger["FetchInfoAttemptPeriod"]);
                 T32RemSuccessExitCode = int.Parse(debugger["T32RemSuccessExitCode"]);
                 T32RemWaitTimeoutMs = int.Parse(debugger["T32RemWaitTimeoutMs"]);
-                F32RemArguments = configuration.GetSection($"{DdSection}:F32RemCommands").GetChildren().Select(key => key.Value).ToArray();
+                F32RemArguments = configuration.GetSection($"{DdSection}:F32RemArguments").GetChildren().Select(key => key.Value).ToArray();
             } catch (Exception e) {
                 Console.WriteLine(e);
                 Environment.Exit(ErrorExitCode);
