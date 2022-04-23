@@ -8,7 +8,7 @@ using LDClient.network.data;
 
 namespace LDClient.network {
     
-    public class ApiClient : IApiClient {
+    public sealed class ApiClient : IApiClient {
         
         private readonly string _uri;
         private readonly HttpClient _client;
@@ -17,8 +17,7 @@ namespace LDClient.network {
         private readonly uint _maxEntries;
         private readonly uint _maxRetries;
         
-        public ApiClient(string url, uint port, string path, uint retryPeriod, uint maxEntries, uint maxRetries,
-            string cacheFilename) {
+        public ApiClient(string url, uint port, string path, uint retryPeriod, uint maxEntries, uint maxRetries, string cacheFilename) {
             _uri = $"{url}:{port}{path}";
             _retryPeriod = retryPeriod;
             _maxEntries = maxEntries;

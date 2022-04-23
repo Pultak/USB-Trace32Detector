@@ -10,7 +10,6 @@ namespace LDClient.detection {
         private readonly string[] _f32RemArguments;
         private readonly int _f32SuccessExitCode;
         private readonly int _f32WaitTimeoutMs;
-        
         private readonly uint _maxAttempts;
         private readonly uint _waitPeriodMs;
         private readonly string _infoFilePath;

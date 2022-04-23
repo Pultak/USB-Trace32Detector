@@ -4,18 +4,18 @@ using LDClient.network.data;
 
 namespace LDClient.detection {
    
-	 public class ProcessProcessDetection : IProcessDetection {
+	 public sealed class ProcessProcessDetection : IProcessDetection {
         
         private const string DatetimeFormat = "yyyy-MM-dd hh:mm:ss";
 
         private readonly string _processName;
         private readonly uint _detectionPeriodMs;
+        private readonly InfoFetcher _infoFetcher;
+        private readonly IApiClient _apiClient;
+        
         private bool _processIsActive;
         private bool _failedToRetrieveData;
         private Payload? _lastConnectedPayload;
-
-        private readonly InfoFetcher _infoFetcher;
-        private readonly IApiClient _apiClient;
 
         public ProcessProcessDetection(string processName, uint detectionPeriodMs, InfoFetcher infoFetcher, IApiClient apiClient) {
             _processName = processName;

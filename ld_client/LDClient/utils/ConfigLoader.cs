@@ -7,7 +7,6 @@ namespace LDClient.utils {
 
         private const int ErrorExitCode = 1;
         private const string ConfigFile = "appsettings.json";
-        
         private const string LoggingSection = "Logging";
         private const string NetworkSection = "Network";
         private const string CacheSection = "Cache";
