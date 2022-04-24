@@ -11,7 +11,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 models.Base.metadata.create_all(bind=engine)
-templates = Jinja2Templates(directory="../templates/licenses")
+templates = Jinja2Templates(directory="templates/licenses")
+device_templates = Jinja2Templates(directory="templates/devices")
 
 licenses_web = APIRouter(prefix="/api/v1")
 
@@ -42,5 +43,10 @@ def create_license(request: Request, name: str = Form(...), expdate: date = Form
     db_license = crud.create_license(db, name, expdate)
     if db_license is None:
         print("something went wrong")
+    devices = crud.get_devices(db, skip=skip, limit=limit)
+    statuses = []
+    for i in range(0, len(devices)):
+        statuses.append(devices[i].logs[len(devices[i].logs) - 1].status)
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse("licenses.html", {"request": request, "licenses": licenses})
+    return device_templates.TemplateResponse("devices.html", {"request": request, "devs": len(devices), "devices": devices,
+                                                       "statuses": statuses, "licenses": licenses})

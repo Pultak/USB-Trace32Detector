@@ -32,6 +32,22 @@ def create_device_logs(log: schemas.USBTempBase, db: Session = Depends(get_db)):
     print(crud.create_device_logs(db=db, item=log, dev_id=dev.id, pc_id=pc.id, date=dat))
 
 
+@usblogs.post("/ld-logs", response_model=schemas.LDLog)
+def create_ld_logs(log: schemas.LDTempBase, db: Session = Depends(get_db)):
+    head_dev = crud.find_head_device(db, log.head_device)
+    body_dev = crud.find_body_device(db, log.body_device)
+    if head_dev is None:
+        crud.create_head_device(db, log.head_device)
+    if body_dev is None:
+        crud.create_body_device(db, log.body_device)
+
+    pc = crud.find_pc(db, log.username, log.hostname)
+    if pc is None:
+        pc = crud.create_pc(db=db, user=log.username, host=log.hostname)
+    dat = datetime.strptime(log.timestamp, '%Y-%m-%d %H:%M:%S')
+    print(crud.create_ld_logs(db=db, item=log, head_id=head_dev.id, body_id=body_dev.id, pc_id=pc.id, date=dat))
+
+
 @usblogs.get("/logs", response_model=List[schemas.USBLog])
 def read_logs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_logs(db, skip=skip, limit=limit)

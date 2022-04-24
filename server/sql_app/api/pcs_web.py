@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 models.Base.metadata.create_all(bind=engine)
-templates = Jinja2Templates(directory="../templates/pcs")
+templates = Jinja2Templates(directory="templates/pcs")
 
 pcs_web = APIRouter(prefix="/api/v1")
 
@@ -25,5 +25,21 @@ def get_db():
 
 @pcs_web.get("/pcs-web", response_class=HTMLResponse)
 async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    pcs = crud.get_pcs(db, skip=skip, limit=limit)
+    return templates.TemplateResponse("pcs.html", {"request": request, "pcs": pcs})
+
+
+@pcs_web.get("/pc-team/{pc_id}", response_class=HTMLResponse)
+async def connect_pc_team(request: Request, pc_id: int, db: Session = Depends(get_db)):
+    pc = crud.get_pc(db, pc_id)
+    teams = crud.get_teams(db, 0, 100)
+    return templates.TemplateResponse("pcteam.html",
+                                      {"request": request, "pc": pc, "teams": teams})
+
+
+@pcs_web.post("/pcs-web/{pc_id}", response_class=HTMLResponse)
+async def connect_post(request: Request, pc_id: int, team: str = Form(...), skip: int = 0, limit: int = 100,
+                       db: Session = Depends(get_db)):
+    old_pc = crud.update_pc(db, pc_id, team)
     pcs = crud.get_pcs(db, skip=skip, limit=limit)
     return templates.TemplateResponse("pcs.html", {"request": request, "pcs": pcs})

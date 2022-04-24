@@ -134,6 +134,58 @@ def create_team(db: Session, name: str):
     return db_team
 
 
+def get_head_device(db: Session, head_id: int):
+    return db.query(models.HeadDevice).filter(models.HeadDevice.id == head_id).first()
+
+
+def get_head_devices(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.HeadDevice).offset(skip).limit(limit).all()
+
+
+def find_head_device(db: Session, serial: schemas.HeadDeviceBase):
+    return db.query(models.HeadDevice).filter(models.HeadDevice.serial_number == serial.serial_number).first()
+
+
+def create_head_device(db: Session, log: schemas.HeadDeviceBase):
+    db_head = models.HeadDevice(serial_number=log.serial_number)
+    db.add(db_head)
+    db.commit()
+    db.refresh(db_head)
+    return db_head
+
+
+def get_body_device(db: Session, body_id: int):
+    return db.query(models.BodyDevice).filter(models.BodyDevice.id == body_id).first()
+
+
+def get_body_devices(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.BodyDevice).offset(skip).limit(limit).all()
+
+
+def find_body_device(db: Session, serial: schemas.BodyDeviceBase):
+    return db.query(models.BodyDevice).filter(models.BodyDevice.serial_number == serial.serial_number).first()
+
+
+def create_body_device(db: Session, log: schemas.BodyDeviceBase):
+    db_body = models.BodyDevice(serial_number=log.serial_number)
+    db.add(db_body)
+    db.commit()
+    db.refresh(db_body)
+    return db_body
+
+
+def get_ld_logs(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.LDLog).offset(skip).limit(limit).all()
+
+
+def create_ld_logs(db: Session, item: schemas.LDTempBase, head_id: int, body_id: int, pc_id: int, date: datetime):
+    db_ld = models.LDLog(pc_id=pc_id, timestamp=date, status=item.status, head_id=head_id, body_id=body_id)
+    db.add(db_ld)
+    db.commit()
+    db.refresh(db_ld)
+    return db_ld
+
+
 def get_logs(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.USBLog).order_by(desc(models.USBLog.timestamp)).offset(skip).limit(limit).all()
 
@@ -184,4 +236,3 @@ def create_device_logs(db: Session, item: schemas.USBTempBase, dev_id: int, pc_i
     db.commit()
     db.refresh(db_log)
     return db_log
-

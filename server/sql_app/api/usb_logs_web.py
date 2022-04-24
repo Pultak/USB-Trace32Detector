@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 models.Base.metadata.create_all(bind=engine)
-templates = Jinja2Templates(directory="../templates/usb-logs")
+templates = Jinja2Templates(directory="templates/usb-logs")
 
 usblogs_web = APIRouter(prefix="/api/v1")
 
