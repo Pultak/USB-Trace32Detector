@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using LDClient.utils.loggers;
 
 namespace LDClient.detection {
 
@@ -7,8 +8,9 @@ namespace LDClient.detection {
         private const string UndefinedSerialNumber = "number";
 
         private readonly string _f32RemExecutable;
-        private readonly string _f32RemArguments;
-        
+        private readonly string[] _f32RemArguments;
+        private readonly int _f32SuccessExitCode;
+        private readonly int _f32WaitTimeoutMs;
         private readonly uint _maxAttempts;
         private readonly uint _waitPeriodMs;
         private readonly string _infoFilePath;
@@ -16,17 +18,19 @@ namespace LDClient.detection {
         public string HeadSerialNumber { get; private set; } = UndefinedSerialNumber;
         public string BodySerialNumber { get; private set; } = UndefinedSerialNumber;
 
-        public InfoFetcher(uint maxAttempts, uint waitPeriodMs, string infoFilePath, string f32RemExecutable, string f32RemArguments) {
+        public InfoFetcher(uint maxAttempts, uint waitPeriodMs, string infoFilePath, string f32RemExecutable, string[] f32RemArguments, int f32SuccessExitCode, int f32WaitTimeoutMs) {
             _maxAttempts = maxAttempts;
             _waitPeriodMs = waitPeriodMs;
             _infoFilePath = infoFilePath;
             _f32RemExecutable = f32RemExecutable;
             _f32RemArguments = f32RemArguments;
+            _f32SuccessExitCode = f32SuccessExitCode;
+            _f32WaitTimeoutMs = f32WaitTimeoutMs;
         }
 
         public async Task<bool> FetchDataAsync() {
             Program.DefaultLogger.Info("Fetching data from the debugger.");
-            var success = await SendRetrieveInfoCommandAsync(_f32RemExecutable, _f32RemArguments);
+            var success = SendRetrieveInfoCommands(_f32RemExecutable, _f32RemArguments, _f32SuccessExitCode, _f32WaitTimeoutMs);
             if (!success) {
                 Program.DefaultLogger.Error("Failed to fetch data from the debugger.");
                 return false;
@@ -57,16 +61,29 @@ namespace LDClient.detection {
             return true;
         }
 
-        private static async Task<bool> SendRetrieveInfoCommandAsync(string executableFile, string arguments) {
-            var t32RemProcess = new Process();
-            t32RemProcess.StartInfo.FileName = executableFile;
-            t32RemProcess.StartInfo.Arguments = arguments;
-            try {
-                t32RemProcess.Start();
-                await t32RemProcess.WaitForExitAsync();
-            } catch (Exception exception) {
-                Program.DefaultLogger.Error($"Failed to run {executableFile}. {exception.Message}");
+        private static bool SendRetrieveInfoCommands(string executableFile, IReadOnlyList<string>? arguments, int successExitCode, int waitTimeoutMs) {
+            if (arguments == null) {
+                Program.DefaultLogger.Error($"Failed to run {executableFile} - no parameters were given");
                 return false;
+            }
+            foreach (var argument in arguments) {
+                var t32RemProcess = new Process();
+                t32RemProcess.StartInfo.FileName = executableFile;
+                t32RemProcess.StartInfo.Arguments = argument;
+                try {
+                    t32RemProcess.Start();
+                    if (!t32RemProcess.WaitForExit(waitTimeoutMs)) {
+                        Program.DefaultLogger.Error($"Execution has not terminated within a predefined timeout of {waitTimeoutMs} ms");
+                        return false;
+                    }
+                    if (t32RemProcess.ExitCode != successExitCode) {
+                        Program.DefaultLogger.Error($"Execution terminated with an error code of {t32RemProcess.ExitCode}");
+                        return false;
+                    }
+                } catch (Exception exception) {
+                    Program.DefaultLogger.Error($"Failed to run {executableFile} {argument}. {exception.Message}");
+                    return false;
+                }
             }
             return true;
         }
