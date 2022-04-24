@@ -1,9 +1,14 @@
 import uvicorn
 from sql_app.api.devices import device
+from sql_app.api.devices_web import device_web
 from sql_app.api.licenses import licenses
+from sql_app.api.licenses_web import licenses_web
 from sql_app.api.pcs import pcs
+from sql_app.api.pcs_web import pcs_web
 from sql_app.api.usb_logs import usblogs
+from sql_app.api.usb_logs_web import usblogs_web
 from sql_app.api.teams import teams
+from sql_app.api.teams_web import teams_web
 from fastapi import FastAPI
 
 
@@ -13,6 +18,12 @@ app.include_router(licenses)
 app.include_router(pcs)
 app.include_router(usblogs)
 app.include_router(teams)
+
+app.include_router(device_web)
+app.include_router(licenses_web)
+app.include_router(pcs_web)
+app.include_router(teams_web)
+app.include_router(usblogs_web)
 
 '''
 if __name__ == "__main__":

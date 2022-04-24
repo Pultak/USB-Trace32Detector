@@ -3,17 +3,34 @@
     <title>Pcs Details</title>
 </head>
 <body>
+<form action="" method="get">
+  <label for="view">Choose view:</label>
+  <select id="view" name="view" onchange="this.form.action=this.value;">
+      <option value=""></option>
+      <option value="/api/v1/logs-web">Logs</option>
+      <option value="/api/v1/devices-web">Devices</option>
+      <option value="/api/v1/teams-web">Teams</option>
+      <option value="/api/v1/pcs-web">PCs</option>
+  </select>
+  <input type="submit" value="OK">
+</form>
 <table>
     <TR>
         <TH>ID</TH>
         <TH>Username</TH>
         <TH>Hostname</TH>
+        <TH>Team</TH>
     </TR>
     {% for pc in pcs %}
     <TR>
-        <TD class="ID">{{pc.id}}</TD>
+        <TD class="ID"><a href="/api/v1/pc-team/{{pc.id}}">{{pc.id}}</a></TD>
         <TD class="Vendor ID">{{pc.username}}</TD>
         <TD class="Product ID">{{pc.hostname}}</TD>
+        {% if pc.team == None %}
+            <TD class="Team">NONE</TD>
+        {% else %}
+            <TD class="Team">{{pc.team.name}}</TD>
+        {% endif %}
     </TR>
     {% endfor %}
 </table>

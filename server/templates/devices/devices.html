@@ -3,21 +3,61 @@
     <title>Devices Details</title>
 </head>
 <body>
+<form action="" method="get">
+  <label for="view">Choose view:</label>
+  <select id="view" name="view" onchange="this.form.action=this.value;">
+      <option value=""></option>
+      <option value="/api/v1/logs-web">Logs</option>
+      <option value="/api/v1/devices-web">Devices</option>
+      <option value="/api/v1/teams-web">Teams</option>
+      <option value="/api/v1/pcs-web">PCs</option>
+  </select>
+  <input type="submit" value="OK">
+</form>
+<form action="/api/v1/devices-web" method="post">
+    <label for="lic">License:</label>
+    <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
+    <datalist id="licenses">
+        {% for license in licenses %}
+        <option value="{{license.name}}"></option>
+        {% endfor %}
+    </datalist>
+  <input type="submit" value="Filter">
+</form>
 <table>
     <TR>
         <TH>ID</TH>
         <TH>Vendor ID</TH>
         <TH>Product ID</TH>
         <TH>Serial Number</TH>
+        <TH>Licenses</TH>
+        <TH>Status</TH>
     </TR>
-    {% for device in devs %}
+    {% for i in range(devs) %}
     <TR>
-        <TD class="ID">{{device.id}}</TD>
-        <TD class="Vendor ID">{{device.vendor_id}}</TD>
-        <TD class="Product ID">{{device.product_id}}</TD>
-        <TD class="Serial Number">{{device.serial_number}}</TD>
+        <TD class="ID"><a href="/api/v1/device-license/{{devices[i].id}}">{{devices[i].id}}</a></TD>
+        <TD class="Vendor ID">{{devices[i].vendor_id}}</TD>
+        <TD class="Product ID">{{devices[i].product_id}}</TD>
+        <TD class="Serial Number">{{devices[i].serial_number}}</TD>
+        <TD class="License">
+            {% for lic in devices[i].licenses %}
+                {{lic.licenses.name}}<BR>
+            {% endfor %}
+        </TD>
+        <TD class="Status">{{statuses[i]}}</TD>
     </TR>
     {% endfor %}
+    <TR>
+        <TD class="ID"></TD>
+        <TD class="Vendor ID"></TD>
+        <TD class="Product ID"></TD>
+        <TD class="Serial Number"></TD>
+        <TD class="License">
+            <form action="/api/v1/license-create" method="get">
+                <input type="submit" value="Add">
+            </form>
+        </TD>
+    </TR>
 </table>
 </body>
 </html>
