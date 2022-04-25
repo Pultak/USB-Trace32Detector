@@ -4,25 +4,29 @@ using LDClient.network.data;
 
 namespace LDClient.detection {
    
-	 public sealed class ProcessProcessDetection : IProcessDetection {
+	 public sealed class ProcessDetection : IProcessDetection {
         
         private const string DatetimeFormat = "yyyy-MM-dd hh:mm:ss";
 
         private readonly string _processName;
         private readonly uint _detectionPeriodMs;
-        private readonly InfoFetcher _infoFetcher;
+        private readonly IInfoFetcher _infoFetcher;
         private readonly IApiClient _apiClient;
-        
+        private readonly IProcessUtils _processUtils;
+
         private bool _processIsActive;
         private bool _failedToRetrieveData;
         private Payload? _lastConnectedPayload;
 
-        public ProcessProcessDetection(string processName, uint detectionPeriodMs, InfoFetcher infoFetcher, IApiClient apiClient) {
+        public bool DetectionRunning = false;
+
+        public ProcessDetection(string processName, uint detectionPeriodMs, IInfoFetcher infoFetcher, IApiClient apiClient, IProcessUtils processUtils) {
             _processName = processName;
             _detectionPeriodMs = detectionPeriodMs;
             _infoFetcher = infoFetcher;
             _apiClient = apiClient;
             _failedToRetrieveData = false;
+            _processUtils = processUtils;
         }
 
         private async Task<bool> RetrieveDataFromDebugger() {
@@ -43,7 +47,7 @@ namespace LDClient.detection {
         }
 
         private async Task DetectProcessAsync() {
-            var processExists = Process.GetProcessesByName(_processName).Length > 0;
+            var processExists = _processUtils.IsProcessRunning(_processName);
 
             if (processExists && !_processIsActive) {
                 Program.DefaultLogger.Info($"Process started: {_processName}");
@@ -77,11 +81,11 @@ namespace LDClient.detection {
         
         public async void RunPeriodicDetection() {
             Program.DefaultLogger.Info("Process periodic detector has started");
-            while (true) {
+            DetectionRunning = true;
+            while (DetectionRunning) {
                 await DetectProcessAsync();
                 Thread.Sleep((int)_detectionPeriodMs);
             }
-            // ReSharper disable once FunctionNeverReturns
         }
     }
 }
