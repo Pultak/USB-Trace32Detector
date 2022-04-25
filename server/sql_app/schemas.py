@@ -58,6 +58,56 @@ class Device(DeviceCreate):
         orm_mode = True
 
 
+class LDLogBase(BaseModel):
+    timestamp: datetime
+    status: str
+
+
+class LDLogCreate(LDLogBase):
+    pass
+
+
+class LDLog(LDLogCreate):
+    id: int
+    head_id: int
+    body_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class BodyDeviceBase(BaseModel):
+    serial_number: str
+
+
+class BodyDeviceCreate(BodyDeviceBase):
+    pass
+
+
+class BodyDevice(BodyDeviceCreate):
+    id: int
+    logs: List[LDLog] = []
+
+    class Config:
+        orm_mode = True
+
+
+class HeadDeviceBase(BaseModel):
+    serial_number: str
+
+
+class HeadDeviceCreate(HeadDeviceBase):
+    pass
+
+
+class HeadDevice(HeadDeviceCreate):
+    id: int
+    logs: List[LDLog] = []
+
+    class Config:
+        orm_mode = True
+
+
 class PCBase(BaseModel):
     username: str
     hostname: str
@@ -124,6 +174,28 @@ class USBTempCreate(USBTempBase):
 class USBTemp(USBTempBase):
     id: int
     device_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class LDTempBase(BaseModel):
+    username: str
+    hostname: str
+    timestamp: str
+    head_device: HeadDeviceBase
+    body_device: BodyDeviceBase
+    status: str
+
+
+class LDTempCreate(LDTempBase):
+    pass
+
+
+class LDTemp(LDTempCreate):
+    id: int
+    head_id: int
+    body_id: int
 
     class Config:
         orm_mode = True

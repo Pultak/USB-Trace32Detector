@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PC Team connect</title>
+</head>
+<body>
+<h6><p>Username: {{pc.username}}</p>
+    <p>Hostname: {{pc.hostname}}</p>
+</h6>
+<form action="/api/v1/pcs-web/{{pc.id}}" method="post">
+  <label for="team">Teams:</label>
+  <select id="team" name="team">
+      {% for team in teams %}
+    <option value={{team.id}}>{{team.name}}</option>
+      {% endfor %}
+  </select>
+  <input type="submit" value="Connect">
+</form>
+</body>
+</html>

@@ -3,11 +3,47 @@
     <title>Logs Details</title>
 </head>
 <body>
+<form action="" method="get">
+  <label for="view">Choose view:</label>
+  <select id="view" name="view" onchange="this.form.action=this.value;">
+      <option value=""></option>
+      <option value="/api/v1/logs-web">Logs</option>
+      <option value="/api/v1/devices-web">Devices</option>
+      <option value="/api/v1/teams-web">Teams</option>
+      <option value="/api/v1/pcs-web">PCs</option>
+  </select>
+  <input type="submit" value="OK">
+</form>
+<form action="/api/v1/logs-web" method="post">
+  <label for="pc">PC:</label>
+  <input id="pc" name="pc" type="text" list="pcs" value="" placeholder="all">
+    <datalist id="pcs">
+        {% for pc in pcs %}
+        <option value="{{pc.username}}"></option>
+        {% endfor %}
+    </datalist>
+    <label for="team">Team:</label>
+  <input id="team" name="team" type="text" list="teams" value="" placeholder="all">
+    <datalist id="teams">
+        {% for team in teams %}
+        <option value="{{team.name}}"></option>
+        {% endfor %}
+    </datalist>
+    <label for="lic">License:</label>
+    <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
+    <datalist id="licenses">
+        {% for license in licenses %}
+        <option value="{{license.name}}"></option>
+        {% endfor %}
+    </datalist>
+  <input type="submit" value="Filter">
+</form>
     <table>
     <TR>
         <TH>ID</TH>
         <TH>PC Username</TH>
         <TH>PC Hostname</TH>
+        <TH>Team</TH>
         <TH>Timestamp</TH>
         <TH>Status</TH>
         <TH>Device Product ID</TH>
@@ -18,6 +54,11 @@
         <TD class="ID">{{log.id}}</TD>
         <TD class="Username">{{log.pc.username}}</TD>
         <TD class="Hostname">{{log.pc.hostname}}</TD>
+        {% if log.pc.team == None %}
+            <TD class="Team">NONE</TD>
+        {% else %}
+            <TD class="Team">{{log.pc.team.name}}</TD>
+        {% endif %}
         <TD class="Timestamp">{{log.timestamp}}</TD>
         <TD class="Status">{{log.status}}</TD>
         <TD class="DeviceProductID">{{log.device.product_id}}</TD>
@@ -27,3 +68,4 @@
 </table>
 </body>
 </html>
+
