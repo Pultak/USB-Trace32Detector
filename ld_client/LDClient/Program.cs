@@ -1,3 +1,4 @@
+using DiskQueue;
 using LDClient.detection;
 using LDClient.network;
 using LDClient.utils;
@@ -38,7 +39,7 @@ internal static class Program {
             Config.ApiUsbEndPoint, 
             Config.RetryPeriod, Config.MaxEntries,
             Config.MaxRetries, 
-            Config.CacheFileName
+            new PersistentQueue(Config.CacheFileName)
         );
         
         IProcessDetection processProcessDetection = new ProcessDetection(
