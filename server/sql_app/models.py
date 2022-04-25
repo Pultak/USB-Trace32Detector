@@ -63,6 +63,7 @@ class PC(Base):
 
     team = relationship("Team", back_populates="pcs")
     logs_pc = relationship("USBLog", back_populates="pc")
+    ld_pc = relationship("LDLog", back_populates="ldpc")
 
 
 class Team(Base):
@@ -71,3 +72,36 @@ class Team(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
     pcs = relationship("PC", back_populates="team")
+
+
+class HeadDevice(Base):
+    __tablename__ = "head_devices"
+
+    id = Column(Integer, primary_key=True, index=True)
+    serial_number = Column(String, index=True, nullable=False)
+
+    h_logs = relationship("LDLog", back_populates="head_device")
+
+
+class BodyDevice(Base):
+    __tablename__ = "body_devices"
+
+    id = Column(Integer, primary_key=True, index=True)
+    serial_number = Column(String, index=True, nullable=False)
+
+    b_logs = relationship("LDLog", back_populates="body_device")
+
+
+class LDLog(Base):
+    __tablename__ = "ld_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    pc_id = Column(Integer, ForeignKey("pc.id"))
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    status = Column(String, index=True, nullable=False)
+    head_id = Column(Integer, ForeignKey("head_devices.id"))
+    body_id = Column(Integer, ForeignKey("body_devices.id"))
+
+    ldpc = relationship("PC", back_populates="ld_pc")
+    head_device = relationship("HeadDevice", back_populates="h_logs")
+    body_device = relationship("BodyDevice", back_populates="b_logs")

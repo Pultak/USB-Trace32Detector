@@ -3,6 +3,17 @@
     <title>Teams Details</title>
 </head>
 <body>
+<form action="" method="get">
+  <label for="view">Choose view:</label>
+  <select id="view" name="view" onchange="this.form.action=this.value;">
+      <option value=""></option>
+      <option value="/api/v1/logs-web">Logs</option>
+      <option value="/api/v1/devices-web">Devices</option>
+      <option value="/api/v1/teams-web">Teams</option>
+      <option value="/api/v1/pcs-web">PCs</option>
+  </select>
+  <input type="submit" value="OK">
+</form>
 <table>
     <TR>
         <TH>ID</TH>
@@ -15,5 +26,8 @@
     </TR>
     {% endfor %}
 </table>
+<form action="/api/v1/team-create" method="get">
+    <input type="submit" value="Add">
+</form>
 </body>
 </html>
