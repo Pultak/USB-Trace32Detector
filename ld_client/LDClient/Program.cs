@@ -41,11 +41,12 @@ internal static class Program {
             Config.CacheFileName
         );
         
-        IProcessDetection processProcessDetection = new ProcessProcessDetection(
+        IProcessDetection processProcessDetection = new ProcessDetection(
             Config.T32ProcessName,
             Config.DetectionPeriod,
             InfoFetcher,
-            DefaultApiClient
+            DefaultApiClient,
+            new ProcessUtils()
         );
         
         var apiClientThread = new Thread(DefaultApiClient.Run) {

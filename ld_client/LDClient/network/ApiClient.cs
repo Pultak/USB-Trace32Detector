@@ -10,20 +10,20 @@ namespace LDClient.network {
     
     public sealed class ApiClient : IApiClient {
         
-        private readonly string _uri;
-        private readonly HttpClient _client;
-        private readonly IPersistentQueue _cache;
+        public IHttpClient _client;
+        public IPersistentQueue _cache;
+        
         private readonly uint _retryPeriod;
         private readonly uint _maxEntries;
         private readonly uint _maxRetries;
         
         public ApiClient(string url, uint port, string path, uint retryPeriod, uint maxEntries, uint maxRetries, string cacheFilename) {
-            _uri = $"{url}:{port}{path}";
+            var uri = $"{url}:{port}{path}";
             _retryPeriod = retryPeriod;
             _maxEntries = maxEntries;
             _maxRetries = maxRetries;
 
-            _client = new HttpClient();
+            _client = new HttpClient(uri);
             _cache = new PersistentQueue(cacheFilename);
         }
 
@@ -32,11 +32,7 @@ namespace LDClient.network {
                 Stopwatch stopWatch = new();
                 stopWatch.Start();
                 
-                var response = await _client.PostAsJsonAsync(_uri, payload, new JsonSerializerOptions {
-                    Converters = {
-                        new JsonStringEnumConverter( JsonNamingPolicy.CamelCase)
-                    }
-                });
+                var response = await _client.PostAsJsonAsync(payload);
                 stopWatch.Stop();
                 CreateRequestLog(payload, response, stopWatch.ElapsedMilliseconds);
 
