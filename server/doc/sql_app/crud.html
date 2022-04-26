@@ -1,0 +1,1165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>sql_app.crud API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>sql_app.crud</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from datetime import datetime, date
+
+from sqlalchemy.orm import Session
+from sqlalchemy import and_, desc
+from . import models, schemas
+
+
+def get_device(db: Session, device_id: int):
+    &#34;&#34;&#34;
+    returns one specific devices by given id
+    &#34;&#34;&#34;
+    return db.query(models.Device).filter(models.Device.id == device_id).first()
+
+
+def get_devices(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    returns all devices in database
+    &#34;&#34;&#34;
+    return db.query(models.Device).offset(skip).limit(limit).all()
+
+
+def find_device(db: Session, device: schemas.DeviceBase):
+    &#34;&#34;&#34;
+    finds one device with product_id, vendor_id and serial_number same as in given DeviceBase object
+    &#34;&#34;&#34;
+    return db.query(models.Device).filter(and_(models.Device.product_id == device.product_id,
+                                               models.Device.vendor_id == device.vendor_id,
+                                               models.Device.serial_number == device.serial_number)).first()
+
+
+def create_device(db: Session, device: schemas.DeviceBase):
+    &#34;&#34;&#34;
+    creates new device with data from given DeviceBase object
+    &#34;&#34;&#34;
+    db_device = models.Device(vendor_id=device.vendor_id, product_id=device.product_id,
+                              serial_number=device.serial_number, assigned=False)
+    db.add(db_device)
+    db.commit()
+    db.refresh(db_device)
+    return db_device
+
+
+def get_license(db: Session, license_id: int):
+    &#34;&#34;&#34;
+    returns one specific license by given id
+    &#34;&#34;&#34;
+    return db.query(models.License).filter(models.License.id == license_id).first()
+
+
+def get_licenses(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    returns all licenses in database
+    &#34;&#34;&#34;
+    return db.query(models.License).offset(skip).limit(limit).all()
+
+
+def find_license(db: Session, name: str):
+    &#34;&#34;&#34;
+    finds one license by given string name
+    &#34;&#34;&#34;
+    return db.query(models.License).filter(models.License.name == name).first()
+
+
+def create_license(db: Session, name: str, expdate: date):
+    &#34;&#34;&#34;
+    creates new license with given name and expiration date
+    &#34;&#34;&#34;
+    db_license = models.License(name=name, expiration_date=expdate)
+    db.add(db_license)
+    db.commit()
+    db.refresh(db_license)
+    return db_license
+
+
+def get_license_devices(db: Session, license_id: int):
+    &#34;&#34;&#34;
+    returns all entries in devices_licenses table
+    &#34;&#34;&#34;
+    return db.query(models.DeviceLicense).filter(models.DeviceLicense.license_id == license_id).all()
+
+
+def create_device_license(db: Session, device: int, license: int, time: datetime):
+    &#34;&#34;&#34;
+    creates new entry in devices_licenses table with device id, license id and time.
+    &#34;&#34;&#34;
+    db_device_license = models.DeviceLicense(device_id=device, license_id=license,
+                                             assigned_datetime=time)
+    db.add(db_device_license)
+    db.commit()
+    db.refresh(db_device_license)
+    return db_device_license
+
+
+def find_pc_by_username(db: Session, name: str):
+    &#34;&#34;&#34;
+    Finds one pc by given username
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.username == name).first()
+
+
+def get_pc(db: Session, pc_id: int):
+    &#34;&#34;&#34;
+    returns one specific pc by given id
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.id == pc_id).first()
+
+
+def update_pc(db: Session, pc_id: int, team: str):
+    &#34;&#34;&#34;
+    Function updates team of one specific pc
+    &#34;&#34;&#34;
+    old_pc = get_pc(db, pc_id)
+    team = get_team(db, int(team))
+    new = {&#39;id&#39;: old_pc.id, &#39;username&#39;: old_pc.username, &#39;hostname&#39;: old_pc.hostname, &#39;assigned&#39;: True,
+           &#39;team_id&#39;: team.id}
+    for key, value in new.items():
+        setattr(old_pc, key, value)
+    db.commit()
+    db.refresh(old_pc)
+    return old_pc
+
+
+def get_pcs(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    returns all pcs in database
+    &#34;&#34;&#34;
+    return db.query(models.PC).offset(skip).limit(limit).all()
+
+
+def find_pc(db: Session, username: str, hostname: str):
+    &#34;&#34;&#34;
+    Finds one pc with given username and hostname
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(and_(models.PC.username == username,
+                                           models.PC.hostname == hostname)).first()
+
+
+def find_pc_by_name(db: Session, username: str):
+    &#34;&#34;&#34;
+    Finds one pc by its username
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.username == username).first()
+
+
+def find_pc_by_name_all(db: Session, username: str):
+    &#34;&#34;&#34;
+    Finds all pcs with same username
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.username == username).offset(0).limit(100).all()
+
+
+def find_pcs(db: Session, pcs: []):
+    &#34;&#34;&#34;
+    Finds all pcs with ids in given id array
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.id.in_(pcs)).all()
+
+
+def get_pcs_by_team(db: Session, team_id: int):
+    &#34;&#34;&#34;
+    returns all pcs in given team by team id
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.team_id == team_id).all()
+
+
+def create_pc(db: Session, user: str, host: str):
+    &#34;&#34;&#34;
+    creates new pc with given username and hostname
+    &#34;&#34;&#34;
+    db_pc = models.PC(username=user, hostname=host, assigned=False)
+    db.add(db_pc)
+    db.commit()
+    db.refresh(db_pc)
+    return db_pc
+
+
+def get_team(db: Session, team_id: int):
+    &#34;&#34;&#34;
+    returns one specific team wit given id
+    &#34;&#34;&#34;
+    return db.query(models.Team).filter(models.Team.id == team_id).first()
+
+
+def get_teams(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    returns all teams currently saved in database
+    &#34;&#34;&#34;
+    return db.query(models.Team).offset(skip).limit(limit).all()
+
+
+def find_team(db: Session, name: str):
+    &#34;&#34;&#34;
+    Finds one specific team by its name
+    &#34;&#34;&#34;
+    return db.query(models.Team).filter(models.Team.name == name).first()
+
+
+def create_team(db: Session, name: str):
+    &#34;&#34;&#34;
+    Creates new team with given name
+    &#34;&#34;&#34;
+    db_team = models.Team(name=name)
+    db.add(db_team)
+    db.commit()
+    db.refresh(db_team)
+    return db_team
+
+
+def get_head_device(db: Session, head_id: int):
+    &#34;&#34;&#34;
+    Returns one specific head device by given id
+    &#34;&#34;&#34;
+    return db.query(models.HeadDevice).filter(models.HeadDevice.id == head_id).first()
+
+
+def get_head_devices(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    Returns all head devices saved in database
+    &#34;&#34;&#34;
+    return db.query(models.HeadDevice).offset(skip).limit(limit).all()
+
+
+def find_head_device(db: Session, serial: schemas.HeadDeviceBase):
+    &#34;&#34;&#34;
+    Finds one head device by its serial number
+    &#34;&#34;&#34;
+    return db.query(models.HeadDevice).filter(models.HeadDevice.serial_number == serial.serial_number).first()
+
+
+def create_head_device(db: Session, log: schemas.HeadDeviceBase):
+    &#34;&#34;&#34;
+    Creates new head device
+    &#34;&#34;&#34;
+    db_head = models.HeadDevice(serial_number=log.serial_number)
+    db.add(db_head)
+    db.commit()
+    db.refresh(db_head)
+    return db_head
+
+
+def get_body_device(db: Session, body_id: int):
+    &#34;&#34;&#34;
+    Returns one specific body device by given id
+    &#34;&#34;&#34;
+    return db.query(models.BodyDevice).filter(models.BodyDevice.id == body_id).first()
+
+
+def get_body_devices(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    Returns all body devices saved in database
+    &#34;&#34;&#34;
+    return db.query(models.BodyDevice).offset(skip).limit(limit).all()
+
+
+def find_body_device(db: Session, serial: schemas.BodyDeviceBase):
+    &#34;&#34;&#34;
+    Finds one body device by its serial number
+    &#34;&#34;&#34;
+    return db.query(models.BodyDevice).filter(models.BodyDevice.serial_number == serial.serial_number).first()
+
+
+def create_body_device(db: Session, log: schemas.BodyDeviceBase):
+    &#34;&#34;&#34;
+    Creates new Body device
+    &#34;&#34;&#34;
+    db_body = models.BodyDevice(serial_number=log.serial_number)
+    db.add(db_body)
+    db.commit()
+    db.refresh(db_body)
+    return db_body
+
+
+def get_ld_logs(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    Returns all ld debugger logs in database
+    &#34;&#34;&#34;
+    return db.query(models.LDLog).offset(skip).limit(limit).all()
+
+
+def create_ld_logs(db: Session, item: schemas.LDTempBase, head_id: int, body_id: int, pc_id: int, date: datetime):
+    &#34;&#34;&#34;
+    Creates new ld log for ld_logs database table
+    &#34;&#34;&#34;
+    db_ld = models.LDLog(pc_id=pc_id, timestamp=date, status=item.status, head_id=head_id, body_id=body_id)
+    db.add(db_ld)
+    db.commit()
+    db.refresh(db_ld)
+    return db_ld
+
+
+def get_logs(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    Returns all usb logs in database ordered by timestamp
+    &#34;&#34;&#34;
+    return db.query(models.USBLog).order_by(desc(models.USBLog.timestamp)).offset(skip).limit(limit).all()
+
+
+def get_log(db: Session, device_id: int, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    Returns all usb logs in database sorted by id
+    &#34;&#34;&#34;
+    return db.query(models.USBLog).filter(models.USBLog.device_id == device_id).offset(skip).limit(limit).all()
+
+
+def find_filtered_logs(db: Session, logs: []):
+    &#34;&#34;&#34;
+    Returns all usb logs with ids in given id array.
+    &#34;&#34;&#34;
+    return db.query(models.USBLog).filter(models.USBLog.id.in_(logs)).order_by(desc(models.USBLog.timestamp)).all()
+
+
+def get_filtered_logs(db: Session, pc: str, tema: str, lic: str):
+    &#34;&#34;&#34;
+    Function creates query string used for filtering by pc username, team name and license name.
+    Depending on selected filters assembles query string for database
+    &#34;&#34;&#34;
+    execute_string = &#34;SELECT * FROM usb_logs AS logs&#34;
+    if pc != &#34;all&#34;:
+        pcs = find_pc_by_username(db, pc)
+        execute_string += &#34;  WHERE logs.pc_id = &#34; + str(pcs.id)
+    if tema != &#34;all&#34;:
+        team = find_team(db, tema)
+        pcs = get_pcs_by_team(db, team.id)
+        pc_ids = &#34;(&#34;
+        for p in pcs:
+            pc_ids += str(p.id) + &#34;, &#34;
+        def_pc_ids = pc_ids[:-2] + &#34;)&#34;
+        if pc != &#34;all&#34;:
+            execute_string += &#34; AND logs.pc_id IN &#34; + def_pc_ids
+        else:
+            execute_string += &#34; WHERE logs.pc_id IN &#34; + def_pc_ids
+    if lic != &#34;all&#34;:
+        license = find_license(db, lic)
+        device_licenses = get_license_devices(db, license.id)
+        dev_ids = &#34;(&#34;
+        for dev in device_licenses:
+            dev_ids += str(dev.device_id) + &#34;, &#34;
+        defin_ids = dev_ids[:-2] + &#34;)&#34;
+        if pc != &#34;all&#34; or tema != &#34;all&#34;:
+            execute_string += &#34; AND logs.device_id IN &#34; + defin_ids
+        else:
+            execute_string += &#34; WHERE logs.device_id IN &#34; + defin_ids
+
+    # executing assembled query string
+    result = db.execute(execute_string)
+    return result
+
+
+def create_device_logs(db: Session, item: schemas.USBTempBase, dev_id: int, pc_id: int, date: datetime):
+    &#34;&#34;&#34;
+    Creates new USB log for usb_logs database table
+    &#34;&#34;&#34;
+    db_log = models.USBLog(pc_id=pc_id, timestamp=date, status=item.status, device_id=dev_id)
+    db.add(db_log)
+    db.commit()
+    db.refresh(db_log)
+    return db_log</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="sql_app.crud.create_body_device"><code class="name flex">
+<span>def <span class="ident">create_body_device</span></span>(<span>db: sqlalchemy.orm.session.Session, log: <a title="sql_app.schemas.BodyDeviceBase" href="schemas.html#sql_app.schemas.BodyDeviceBase">BodyDeviceBase</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates new Body device</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_body_device(db: Session, log: schemas.BodyDeviceBase):
+    &#34;&#34;&#34;
+    Creates new Body device
+    &#34;&#34;&#34;
+    db_body = models.BodyDevice(serial_number=log.serial_number)
+    db.add(db_body)
+    db.commit()
+    db.refresh(db_body)
+    return db_body</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.create_device"><code class="name flex">
+<span>def <span class="ident">create_device</span></span>(<span>db: sqlalchemy.orm.session.Session, device: <a title="sql_app.schemas.DeviceBase" href="schemas.html#sql_app.schemas.DeviceBase">DeviceBase</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>creates new device with data from given DeviceBase object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_device(db: Session, device: schemas.DeviceBase):
+    &#34;&#34;&#34;
+    creates new device with data from given DeviceBase object
+    &#34;&#34;&#34;
+    db_device = models.Device(vendor_id=device.vendor_id, product_id=device.product_id,
+                              serial_number=device.serial_number, assigned=False)
+    db.add(db_device)
+    db.commit()
+    db.refresh(db_device)
+    return db_device</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.create_device_license"><code class="name flex">
+<span>def <span class="ident">create_device_license</span></span>(<span>db: sqlalchemy.orm.session.Session, device: int, license: int, time: datetime.datetime)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>creates new entry in devices_licenses table with device id, license id and time.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_device_license(db: Session, device: int, license: int, time: datetime):
+    &#34;&#34;&#34;
+    creates new entry in devices_licenses table with device id, license id and time.
+    &#34;&#34;&#34;
+    db_device_license = models.DeviceLicense(device_id=device, license_id=license,
+                                             assigned_datetime=time)
+    db.add(db_device_license)
+    db.commit()
+    db.refresh(db_device_license)
+    return db_device_license</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.create_device_logs"><code class="name flex">
+<span>def <span class="ident">create_device_logs</span></span>(<span>db: sqlalchemy.orm.session.Session, item: <a title="sql_app.schemas.USBTempBase" href="schemas.html#sql_app.schemas.USBTempBase">USBTempBase</a>, dev_id: int, pc_id: int, date: datetime.datetime)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates new USB log for usb_logs database table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_device_logs(db: Session, item: schemas.USBTempBase, dev_id: int, pc_id: int, date: datetime):
+    &#34;&#34;&#34;
+    Creates new USB log for usb_logs database table
+    &#34;&#34;&#34;
+    db_log = models.USBLog(pc_id=pc_id, timestamp=date, status=item.status, device_id=dev_id)
+    db.add(db_log)
+    db.commit()
+    db.refresh(db_log)
+    return db_log</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.create_head_device"><code class="name flex">
+<span>def <span class="ident">create_head_device</span></span>(<span>db: sqlalchemy.orm.session.Session, log: <a title="sql_app.schemas.HeadDeviceBase" href="schemas.html#sql_app.schemas.HeadDeviceBase">HeadDeviceBase</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates new head device</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_head_device(db: Session, log: schemas.HeadDeviceBase):
+    &#34;&#34;&#34;
+    Creates new head device
+    &#34;&#34;&#34;
+    db_head = models.HeadDevice(serial_number=log.serial_number)
+    db.add(db_head)
+    db.commit()
+    db.refresh(db_head)
+    return db_head</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.create_ld_logs"><code class="name flex">
+<span>def <span class="ident">create_ld_logs</span></span>(<span>db: sqlalchemy.orm.session.Session, item: <a title="sql_app.schemas.LDTempBase" href="schemas.html#sql_app.schemas.LDTempBase">LDTempBase</a>, head_id: int, body_id: int, pc_id: int, date: datetime.datetime)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates new ld log for ld_logs database table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_ld_logs(db: Session, item: schemas.LDTempBase, head_id: int, body_id: int, pc_id: int, date: datetime):
+    &#34;&#34;&#34;
+    Creates new ld log for ld_logs database table
+    &#34;&#34;&#34;
+    db_ld = models.LDLog(pc_id=pc_id, timestamp=date, status=item.status, head_id=head_id, body_id=body_id)
+    db.add(db_ld)
+    db.commit()
+    db.refresh(db_ld)
+    return db_ld</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.create_license"><code class="name flex">
+<span>def <span class="ident">create_license</span></span>(<span>db: sqlalchemy.orm.session.Session, name: str, expdate: datetime.date)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>creates new license with given name and expiration date</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_license(db: Session, name: str, expdate: date):
+    &#34;&#34;&#34;
+    creates new license with given name and expiration date
+    &#34;&#34;&#34;
+    db_license = models.License(name=name, expiration_date=expdate)
+    db.add(db_license)
+    db.commit()
+    db.refresh(db_license)
+    return db_license</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.create_pc"><code class="name flex">
+<span>def <span class="ident">create_pc</span></span>(<span>db: sqlalchemy.orm.session.Session, user: str, host: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>creates new pc with given username and hostname</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_pc(db: Session, user: str, host: str):
+    &#34;&#34;&#34;
+    creates new pc with given username and hostname
+    &#34;&#34;&#34;
+    db_pc = models.PC(username=user, hostname=host, assigned=False)
+    db.add(db_pc)
+    db.commit()
+    db.refresh(db_pc)
+    return db_pc</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.create_team"><code class="name flex">
+<span>def <span class="ident">create_team</span></span>(<span>db: sqlalchemy.orm.session.Session, name: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates new team with given name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_team(db: Session, name: str):
+    &#34;&#34;&#34;
+    Creates new team with given name
+    &#34;&#34;&#34;
+    db_team = models.Team(name=name)
+    db.add(db_team)
+    db.commit()
+    db.refresh(db_team)
+    return db_team</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_body_device"><code class="name flex">
+<span>def <span class="ident">find_body_device</span></span>(<span>db: sqlalchemy.orm.session.Session, serial: <a title="sql_app.schemas.BodyDeviceBase" href="schemas.html#sql_app.schemas.BodyDeviceBase">BodyDeviceBase</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds one body device by its serial number</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_body_device(db: Session, serial: schemas.BodyDeviceBase):
+    &#34;&#34;&#34;
+    Finds one body device by its serial number
+    &#34;&#34;&#34;
+    return db.query(models.BodyDevice).filter(models.BodyDevice.serial_number == serial.serial_number).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_device"><code class="name flex">
+<span>def <span class="ident">find_device</span></span>(<span>db: sqlalchemy.orm.session.Session, device: <a title="sql_app.schemas.DeviceBase" href="schemas.html#sql_app.schemas.DeviceBase">DeviceBase</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>finds one device with product_id, vendor_id and serial_number same as in given DeviceBase object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_device(db: Session, device: schemas.DeviceBase):
+    &#34;&#34;&#34;
+    finds one device with product_id, vendor_id and serial_number same as in given DeviceBase object
+    &#34;&#34;&#34;
+    return db.query(models.Device).filter(and_(models.Device.product_id == device.product_id,
+                                               models.Device.vendor_id == device.vendor_id,
+                                               models.Device.serial_number == device.serial_number)).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_filtered_logs"><code class="name flex">
+<span>def <span class="ident">find_filtered_logs</span></span>(<span>db: sqlalchemy.orm.session.Session, logs: [])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns all usb logs with ids in given id array.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_filtered_logs(db: Session, logs: []):
+    &#34;&#34;&#34;
+    Returns all usb logs with ids in given id array.
+    &#34;&#34;&#34;
+    return db.query(models.USBLog).filter(models.USBLog.id.in_(logs)).order_by(desc(models.USBLog.timestamp)).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_head_device"><code class="name flex">
+<span>def <span class="ident">find_head_device</span></span>(<span>db: sqlalchemy.orm.session.Session, serial: <a title="sql_app.schemas.HeadDeviceBase" href="schemas.html#sql_app.schemas.HeadDeviceBase">HeadDeviceBase</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds one head device by its serial number</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_head_device(db: Session, serial: schemas.HeadDeviceBase):
+    &#34;&#34;&#34;
+    Finds one head device by its serial number
+    &#34;&#34;&#34;
+    return db.query(models.HeadDevice).filter(models.HeadDevice.serial_number == serial.serial_number).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_license"><code class="name flex">
+<span>def <span class="ident">find_license</span></span>(<span>db: sqlalchemy.orm.session.Session, name: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>finds one license by given string name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_license(db: Session, name: str):
+    &#34;&#34;&#34;
+    finds one license by given string name
+    &#34;&#34;&#34;
+    return db.query(models.License).filter(models.License.name == name).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_pc"><code class="name flex">
+<span>def <span class="ident">find_pc</span></span>(<span>db: sqlalchemy.orm.session.Session, username: str, hostname: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds one pc with given username and hostname</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_pc(db: Session, username: str, hostname: str):
+    &#34;&#34;&#34;
+    Finds one pc with given username and hostname
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(and_(models.PC.username == username,
+                                           models.PC.hostname == hostname)).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_pc_by_name"><code class="name flex">
+<span>def <span class="ident">find_pc_by_name</span></span>(<span>db: sqlalchemy.orm.session.Session, username: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds one pc by its username</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_pc_by_name(db: Session, username: str):
+    &#34;&#34;&#34;
+    Finds one pc by its username
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.username == username).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_pc_by_name_all"><code class="name flex">
+<span>def <span class="ident">find_pc_by_name_all</span></span>(<span>db: sqlalchemy.orm.session.Session, username: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds all pcs with same username</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_pc_by_name_all(db: Session, username: str):
+    &#34;&#34;&#34;
+    Finds all pcs with same username
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.username == username).offset(0).limit(100).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_pc_by_username"><code class="name flex">
+<span>def <span class="ident">find_pc_by_username</span></span>(<span>db: sqlalchemy.orm.session.Session, name: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds one pc by given username</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_pc_by_username(db: Session, name: str):
+    &#34;&#34;&#34;
+    Finds one pc by given username
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.username == name).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_pcs"><code class="name flex">
+<span>def <span class="ident">find_pcs</span></span>(<span>db: sqlalchemy.orm.session.Session, pcs: [])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds all pcs with ids in given id array</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_pcs(db: Session, pcs: []):
+    &#34;&#34;&#34;
+    Finds all pcs with ids in given id array
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.id.in_(pcs)).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.find_team"><code class="name flex">
+<span>def <span class="ident">find_team</span></span>(<span>db: sqlalchemy.orm.session.Session, name: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds one specific team by its name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_team(db: Session, name: str):
+    &#34;&#34;&#34;
+    Finds one specific team by its name
+    &#34;&#34;&#34;
+    return db.query(models.Team).filter(models.Team.name == name).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_body_device"><code class="name flex">
+<span>def <span class="ident">get_body_device</span></span>(<span>db: sqlalchemy.orm.session.Session, body_id: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns one specific body device by given id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_body_device(db: Session, body_id: int):
+    &#34;&#34;&#34;
+    Returns one specific body device by given id
+    &#34;&#34;&#34;
+    return db.query(models.BodyDevice).filter(models.BodyDevice.id == body_id).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_body_devices"><code class="name flex">
+<span>def <span class="ident">get_body_devices</span></span>(<span>db: sqlalchemy.orm.session.Session, skip: int = 0, limit: int = 100)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns all body devices saved in database</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_body_devices(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    Returns all body devices saved in database
+    &#34;&#34;&#34;
+    return db.query(models.BodyDevice).offset(skip).limit(limit).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_device"><code class="name flex">
+<span>def <span class="ident">get_device</span></span>(<span>db: sqlalchemy.orm.session.Session, device_id: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns one specific devices by given id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_device(db: Session, device_id: int):
+    &#34;&#34;&#34;
+    returns one specific devices by given id
+    &#34;&#34;&#34;
+    return db.query(models.Device).filter(models.Device.id == device_id).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_devices"><code class="name flex">
+<span>def <span class="ident">get_devices</span></span>(<span>db: sqlalchemy.orm.session.Session, skip: int = 0, limit: int = 100)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns all devices in database</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_devices(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    returns all devices in database
+    &#34;&#34;&#34;
+    return db.query(models.Device).offset(skip).limit(limit).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_filtered_logs"><code class="name flex">
+<span>def <span class="ident">get_filtered_logs</span></span>(<span>db: sqlalchemy.orm.session.Session, pc: str, tema: str, lic: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Function creates query string used for filtering by pc username, team name and license name.
+Depending on selected filters assembles query string for database</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_filtered_logs(db: Session, pc: str, tema: str, lic: str):
+    &#34;&#34;&#34;
+    Function creates query string used for filtering by pc username, team name and license name.
+    Depending on selected filters assembles query string for database
+    &#34;&#34;&#34;
+    execute_string = &#34;SELECT * FROM usb_logs AS logs&#34;
+    if pc != &#34;all&#34;:
+        pcs = find_pc_by_username(db, pc)
+        execute_string += &#34;  WHERE logs.pc_id = &#34; + str(pcs.id)
+    if tema != &#34;all&#34;:
+        team = find_team(db, tema)
+        pcs = get_pcs_by_team(db, team.id)
+        pc_ids = &#34;(&#34;
+        for p in pcs:
+            pc_ids += str(p.id) + &#34;, &#34;
+        def_pc_ids = pc_ids[:-2] + &#34;)&#34;
+        if pc != &#34;all&#34;:
+            execute_string += &#34; AND logs.pc_id IN &#34; + def_pc_ids
+        else:
+            execute_string += &#34; WHERE logs.pc_id IN &#34; + def_pc_ids
+    if lic != &#34;all&#34;:
+        license = find_license(db, lic)
+        device_licenses = get_license_devices(db, license.id)
+        dev_ids = &#34;(&#34;
+        for dev in device_licenses:
+            dev_ids += str(dev.device_id) + &#34;, &#34;
+        defin_ids = dev_ids[:-2] + &#34;)&#34;
+        if pc != &#34;all&#34; or tema != &#34;all&#34;:
+            execute_string += &#34; AND logs.device_id IN &#34; + defin_ids
+        else:
+            execute_string += &#34; WHERE logs.device_id IN &#34; + defin_ids
+
+    # executing assembled query string
+    result = db.execute(execute_string)
+    return result</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_head_device"><code class="name flex">
+<span>def <span class="ident">get_head_device</span></span>(<span>db: sqlalchemy.orm.session.Session, head_id: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns one specific head device by given id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_head_device(db: Session, head_id: int):
+    &#34;&#34;&#34;
+    Returns one specific head device by given id
+    &#34;&#34;&#34;
+    return db.query(models.HeadDevice).filter(models.HeadDevice.id == head_id).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_head_devices"><code class="name flex">
+<span>def <span class="ident">get_head_devices</span></span>(<span>db: sqlalchemy.orm.session.Session, skip: int = 0, limit: int = 100)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns all head devices saved in database</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_head_devices(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    Returns all head devices saved in database
+    &#34;&#34;&#34;
+    return db.query(models.HeadDevice).offset(skip).limit(limit).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_ld_logs"><code class="name flex">
+<span>def <span class="ident">get_ld_logs</span></span>(<span>db: sqlalchemy.orm.session.Session, skip: int = 0, limit: int = 100)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns all ld debugger logs in database</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_ld_logs(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    Returns all ld debugger logs in database
+    &#34;&#34;&#34;
+    return db.query(models.LDLog).offset(skip).limit(limit).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_license"><code class="name flex">
+<span>def <span class="ident">get_license</span></span>(<span>db: sqlalchemy.orm.session.Session, license_id: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns one specific license by given id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_license(db: Session, license_id: int):
+    &#34;&#34;&#34;
+    returns one specific license by given id
+    &#34;&#34;&#34;
+    return db.query(models.License).filter(models.License.id == license_id).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_license_devices"><code class="name flex">
+<span>def <span class="ident">get_license_devices</span></span>(<span>db: sqlalchemy.orm.session.Session, license_id: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns all entries in devices_licenses table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_license_devices(db: Session, license_id: int):
+    &#34;&#34;&#34;
+    returns all entries in devices_licenses table
+    &#34;&#34;&#34;
+    return db.query(models.DeviceLicense).filter(models.DeviceLicense.license_id == license_id).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_licenses"><code class="name flex">
+<span>def <span class="ident">get_licenses</span></span>(<span>db: sqlalchemy.orm.session.Session, skip: int = 0, limit: int = 100)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns all licenses in database</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_licenses(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    returns all licenses in database
+    &#34;&#34;&#34;
+    return db.query(models.License).offset(skip).limit(limit).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_log"><code class="name flex">
+<span>def <span class="ident">get_log</span></span>(<span>db: sqlalchemy.orm.session.Session, device_id: int, skip: int = 0, limit: int = 100)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns all usb logs in database sorted by id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_log(db: Session, device_id: int, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    Returns all usb logs in database sorted by id
+    &#34;&#34;&#34;
+    return db.query(models.USBLog).filter(models.USBLog.device_id == device_id).offset(skip).limit(limit).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_logs"><code class="name flex">
+<span>def <span class="ident">get_logs</span></span>(<span>db: sqlalchemy.orm.session.Session, skip: int = 0, limit: int = 100)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns all usb logs in database ordered by timestamp</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_logs(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    Returns all usb logs in database ordered by timestamp
+    &#34;&#34;&#34;
+    return db.query(models.USBLog).order_by(desc(models.USBLog.timestamp)).offset(skip).limit(limit).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_pc"><code class="name flex">
+<span>def <span class="ident">get_pc</span></span>(<span>db: sqlalchemy.orm.session.Session, pc_id: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns one specific pc by given id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_pc(db: Session, pc_id: int):
+    &#34;&#34;&#34;
+    returns one specific pc by given id
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.id == pc_id).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_pcs"><code class="name flex">
+<span>def <span class="ident">get_pcs</span></span>(<span>db: sqlalchemy.orm.session.Session, skip: int = 0, limit: int = 100)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns all pcs in database</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_pcs(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    returns all pcs in database
+    &#34;&#34;&#34;
+    return db.query(models.PC).offset(skip).limit(limit).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_pcs_by_team"><code class="name flex">
+<span>def <span class="ident">get_pcs_by_team</span></span>(<span>db: sqlalchemy.orm.session.Session, team_id: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns all pcs in given team by team id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_pcs_by_team(db: Session, team_id: int):
+    &#34;&#34;&#34;
+    returns all pcs in given team by team id
+    &#34;&#34;&#34;
+    return db.query(models.PC).filter(models.PC.team_id == team_id).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_team"><code class="name flex">
+<span>def <span class="ident">get_team</span></span>(<span>db: sqlalchemy.orm.session.Session, team_id: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns one specific team wit given id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_team(db: Session, team_id: int):
+    &#34;&#34;&#34;
+    returns one specific team wit given id
+    &#34;&#34;&#34;
+    return db.query(models.Team).filter(models.Team.id == team_id).first()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.get_teams"><code class="name flex">
+<span>def <span class="ident">get_teams</span></span>(<span>db: sqlalchemy.orm.session.Session, skip: int = 0, limit: int = 100)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns all teams currently saved in database</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_teams(db: Session, skip: int = 0, limit: int = 100):
+    &#34;&#34;&#34;
+    returns all teams currently saved in database
+    &#34;&#34;&#34;
+    return db.query(models.Team).offset(skip).limit(limit).all()</code></pre>
+</details>
+</dd>
+<dt id="sql_app.crud.update_pc"><code class="name flex">
+<span>def <span class="ident">update_pc</span></span>(<span>db: sqlalchemy.orm.session.Session, pc_id: int, team: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Function updates team of one specific pc</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_pc(db: Session, pc_id: int, team: str):
+    &#34;&#34;&#34;
+    Function updates team of one specific pc
+    &#34;&#34;&#34;
+    old_pc = get_pc(db, pc_id)
+    team = get_team(db, int(team))
+    new = {&#39;id&#39;: old_pc.id, &#39;username&#39;: old_pc.username, &#39;hostname&#39;: old_pc.hostname, &#39;assigned&#39;: True,
+           &#39;team_id&#39;: team.id}
+    for key, value in new.items():
+        setattr(old_pc, key, value)
+    db.commit()
+    db.refresh(old_pc)
+    return old_pc</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="sql_app" href="index.html">sql_app</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="sql_app.crud.create_body_device" href="#sql_app.crud.create_body_device">create_body_device</a></code></li>
+<li><code><a title="sql_app.crud.create_device" href="#sql_app.crud.create_device">create_device</a></code></li>
+<li><code><a title="sql_app.crud.create_device_license" href="#sql_app.crud.create_device_license">create_device_license</a></code></li>
+<li><code><a title="sql_app.crud.create_device_logs" href="#sql_app.crud.create_device_logs">create_device_logs</a></code></li>
+<li><code><a title="sql_app.crud.create_head_device" href="#sql_app.crud.create_head_device">create_head_device</a></code></li>
+<li><code><a title="sql_app.crud.create_ld_logs" href="#sql_app.crud.create_ld_logs">create_ld_logs</a></code></li>
+<li><code><a title="sql_app.crud.create_license" href="#sql_app.crud.create_license">create_license</a></code></li>
+<li><code><a title="sql_app.crud.create_pc" href="#sql_app.crud.create_pc">create_pc</a></code></li>
+<li><code><a title="sql_app.crud.create_team" href="#sql_app.crud.create_team">create_team</a></code></li>
+<li><code><a title="sql_app.crud.find_body_device" href="#sql_app.crud.find_body_device">find_body_device</a></code></li>
+<li><code><a title="sql_app.crud.find_device" href="#sql_app.crud.find_device">find_device</a></code></li>
+<li><code><a title="sql_app.crud.find_filtered_logs" href="#sql_app.crud.find_filtered_logs">find_filtered_logs</a></code></li>
+<li><code><a title="sql_app.crud.find_head_device" href="#sql_app.crud.find_head_device">find_head_device</a></code></li>
+<li><code><a title="sql_app.crud.find_license" href="#sql_app.crud.find_license">find_license</a></code></li>
+<li><code><a title="sql_app.crud.find_pc" href="#sql_app.crud.find_pc">find_pc</a></code></li>
+<li><code><a title="sql_app.crud.find_pc_by_name" href="#sql_app.crud.find_pc_by_name">find_pc_by_name</a></code></li>
+<li><code><a title="sql_app.crud.find_pc_by_name_all" href="#sql_app.crud.find_pc_by_name_all">find_pc_by_name_all</a></code></li>
+<li><code><a title="sql_app.crud.find_pc_by_username" href="#sql_app.crud.find_pc_by_username">find_pc_by_username</a></code></li>
+<li><code><a title="sql_app.crud.find_pcs" href="#sql_app.crud.find_pcs">find_pcs</a></code></li>
+<li><code><a title="sql_app.crud.find_team" href="#sql_app.crud.find_team">find_team</a></code></li>
+<li><code><a title="sql_app.crud.get_body_device" href="#sql_app.crud.get_body_device">get_body_device</a></code></li>
+<li><code><a title="sql_app.crud.get_body_devices" href="#sql_app.crud.get_body_devices">get_body_devices</a></code></li>
+<li><code><a title="sql_app.crud.get_device" href="#sql_app.crud.get_device">get_device</a></code></li>
+<li><code><a title="sql_app.crud.get_devices" href="#sql_app.crud.get_devices">get_devices</a></code></li>
+<li><code><a title="sql_app.crud.get_filtered_logs" href="#sql_app.crud.get_filtered_logs">get_filtered_logs</a></code></li>
+<li><code><a title="sql_app.crud.get_head_device" href="#sql_app.crud.get_head_device">get_head_device</a></code></li>
+<li><code><a title="sql_app.crud.get_head_devices" href="#sql_app.crud.get_head_devices">get_head_devices</a></code></li>
+<li><code><a title="sql_app.crud.get_ld_logs" href="#sql_app.crud.get_ld_logs">get_ld_logs</a></code></li>
+<li><code><a title="sql_app.crud.get_license" href="#sql_app.crud.get_license">get_license</a></code></li>
+<li><code><a title="sql_app.crud.get_license_devices" href="#sql_app.crud.get_license_devices">get_license_devices</a></code></li>
+<li><code><a title="sql_app.crud.get_licenses" href="#sql_app.crud.get_licenses">get_licenses</a></code></li>
+<li><code><a title="sql_app.crud.get_log" href="#sql_app.crud.get_log">get_log</a></code></li>
+<li><code><a title="sql_app.crud.get_logs" href="#sql_app.crud.get_logs">get_logs</a></code></li>
+<li><code><a title="sql_app.crud.get_pc" href="#sql_app.crud.get_pc">get_pc</a></code></li>
+<li><code><a title="sql_app.crud.get_pcs" href="#sql_app.crud.get_pcs">get_pcs</a></code></li>
+<li><code><a title="sql_app.crud.get_pcs_by_team" href="#sql_app.crud.get_pcs_by_team">get_pcs_by_team</a></code></li>
+<li><code><a title="sql_app.crud.get_team" href="#sql_app.crud.get_team">get_team</a></code></li>
+<li><code><a title="sql_app.crud.get_teams" href="#sql_app.crud.get_teams">get_teams</a></code></li>
+<li><code><a title="sql_app.crud.update_pc" href="#sql_app.crud.update_pc">update_pc</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

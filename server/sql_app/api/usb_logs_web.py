@@ -10,8 +10,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 models.Base.metadata.create_all(bind=engine)
-templates = Jinja2Templates(directory="templates/usb-logs")
 
+# Path to html templates used in this file
+templates = Jinja2Templates(directory="../templates/usb-logs")
+
+# prefix used for all endpoints in this file
 usblogs_web = APIRouter(prefix="/api/v1")
 
 
@@ -26,6 +29,9 @@ def get_db():
 
 @usblogs_web.get("/logs-web", response_class=HTMLResponse)
 async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Returns template with all usb logs currently saved in database with its pcs, teams and licenses.
+    """
     logs = crud.get_logs(db, skip=skip, limit=limit)
     pcs = []
     for log in logs:
@@ -42,6 +48,9 @@ async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Sessi
 async def filter_logs(request: Request, pc: str = Form("all"), team: str = Form("all"), lic: str = Form("all"),
                       skip: int = 0, limit: int = 100,
                       db: Session = Depends(get_db)):
+    """
+    Endpoint used for filtering usb logs by user given form inputs.
+    """
     log = crud.get_filtered_logs(db, pc, team, lic)
     logs_ids = []
     for l in log:

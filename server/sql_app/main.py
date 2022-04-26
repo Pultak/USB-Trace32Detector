@@ -13,19 +13,22 @@ from fastapi import FastAPI
 
 
 app = FastAPI()
+
+# including routers for endpoints used by clients
 app.include_router(device)
 app.include_router(licenses)
 app.include_router(pcs)
 app.include_router(usblogs)
 app.include_router(teams)
 
+# including routers for endpoints called from web
 app.include_router(device_web)
 app.include_router(licenses_web)
 app.include_router(pcs_web)
 app.include_router(teams_web)
 app.include_router(usblogs_web)
 
-'''
+
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.0.22", port=8000)
-'''
+
