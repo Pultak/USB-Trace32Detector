@@ -28,7 +28,7 @@ app.include_router(pcs_web)
 app.include_router(teams_web)
 app.include_router(usblogs_web)
 
-
+'''
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.0.22", port=8000)
-
+'''

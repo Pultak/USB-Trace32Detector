@@ -13,8 +13,8 @@ from fastapi.templating import Jinja2Templates
 models.Base.metadata.create_all(bind=engine)
 
 # Path to html templates used in this file
-templates = Jinja2Templates(directory="../templates/licenses")
-device_templates = Jinja2Templates(directory="../templates/devices")
+templates = Jinja2Templates(directory="templates/licenses")
+device_templates = Jinja2Templates(directory="templates/devices")
 
 # prefix used for all endpoints in this file
 licenses_web = APIRouter(prefix="/api/v1")

@@ -12,7 +12,7 @@ from fastapi.templating import Jinja2Templates
 models.Base.metadata.create_all(bind=engine)
 
 # Path to html templates used in this file
-templates = Jinja2Templates(directory="../templates/usb-logs")
+templates = Jinja2Templates(directory="templates/usb-logs")
 
 # prefix used for all endpoints in this file
 usblogs_web = APIRouter(prefix="/api/v1")

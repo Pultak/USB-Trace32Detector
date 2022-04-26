@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-
+'''
 # used mainly for testing purposes. Creates local sqllite data file
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 engine = create_engine(
@@ -18,7 +18,7 @@ SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@10.5.0.5:5432/usb_api_
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
 )
-'''
+
 # Session maker for data transmissions
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

@@ -12,7 +12,7 @@ from fastapi.templating import Jinja2Templates
 models.Base.metadata.create_all(bind=engine)
 
 # Path to html templates used in this file
-templates = Jinja2Templates(directory="../templates/teams")
+templates = Jinja2Templates(directory="templates/teams")
 
 # prefix used for all endpoints in this file
 teams_web = APIRouter(prefix="/api/v1")

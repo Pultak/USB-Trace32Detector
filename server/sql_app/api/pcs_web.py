@@ -11,7 +11,7 @@ from fastapi.templating import Jinja2Templates
 models.Base.metadata.create_all(bind=engine)
 
 # Path to html templates used in this file
-templates = Jinja2Templates(directory="../templates/pcs")
+templates = Jinja2Templates(directory="templates/pcs")
 
 # prefix used for all endpoints in this file
 pcs_web = APIRouter(prefix="/api/v1")
