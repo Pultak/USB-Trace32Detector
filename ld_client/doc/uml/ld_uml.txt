@@ -1,0 +1,154 @@
+@startuml
+interface IProcessDection {
+  + void RunPeriodicDetection()
+}
+
+class ProcessDetection {
+   ____
+  + ProcessProcessDetection(string processName,
+                            uint detectionPeriodMs,
+                            InfoFetcher infoFetcher,
+                            IApiClient apiClient)
+                            
+  + async void RunPeriodicDetection()
+}
+
+interface IApiClient {
+  + Task SendPayloadAsync(Payload payload)
+  + void Run()
+}
+
+class ApiClient {
+  ____
+  + ApiClient(string url, uint port,
+              string path, uint retryPeriod,
+              uint maxEntries, uint maxRetries,
+              string cacheFilename)
+  
+  + async Task SendPayloadAsync(Payload payload)
+  + async void Run()
+}
+
+class InfoFetcher {
+  ____
+  + string HeadSerialNumber
+  + string BodySerialNumber
+  
+  + InfoFetcher(uint maxAttempts, uint waitPeriodMs,
+                string infoFilePath, string f32RemExecutable,
+                string[] f32RemArguments, int f32SuccessExitCode,
+                int f32WaitTimeoutMs)
+  
+  + async Task<bool> FetchDataAsync()
+}
+
+class DebuggerInfoParser {
+  + {static} static (string headSerialNumber,
+    {static} string bodySerialNumber) Parse(string dataTxt)
+}
+
+abstract class ALogger{
+  + ALogger Current
+
+  - LogVerbosity _verbosity
+  - LogFlow _logFlow
+
+  + void Info(string message)
+  + void Debug(string message)
+  + void Error(string message)
+  + void Error(Exception e)
+  
+  # ALogger()
+  
+  {abstract} # CreateLog(string message)
+}
+
+
+class FileLogger{
+  # CreateLog(string message)
+  - void Rotate(string filePat)
+  
+}
+
+class ConsoleLogger{
+ # CreateLog(string message)
+ 
+}
+
+enum LogVerbosity{
+  None
+  Exceptions
+  Full
+}
+
+enum LogFlow{
+  Console
+  File
+}
+
+
+class Payload{
+  + string UserName
+  + string HostName
+  + string TimeStamp
+  + DebuggerInfo HeadDevice
+  + DebuggerInfo BodyDevice
+  + ConnectionStatus Status
+}
+
+class DebuggerInfo{
+  + string SerialNumber
+}
+
+enum ConnectionStatus{
+  Connected
+  Disconnected
+}
+
+LogVerbosity -[hidden] ALogger
+ALogger -left[hidden] LogFlow
+
+ALogger ---left[hidden] ProcessDetection
+
+Payload -right[hidden] ApiClient
+
+ALogger <|.. FileLogger
+ALogger <|.. ConsoleLogger
+ALogger .. LogVerbosity
+ALogger .. LogFlow
+
+Payload o- DebuggerInfo
+Payload o- ConnectionStatus
+
+IProcessDection <|.. ProcessDetection : implements
+IApiClient <|.. ApiClient : implements
+DebuggerInfoParser <.. InfoFetcher : calls (uses)
+ProcessDetection o-- IApiClient : is held in
+note on link: Uses ApiClient to send\ndatato the server
+ProcessDetection o-- InfoFetcher : is held in
+note on link: Calls FetchDataAsync,\nreads the status\ncode (true/false)
+
+class DebuggerInfoParser
+note left: Parses the content of a .txt file \n(throws an ArgumentException)
+
+class InfoFetcher
+note left: Sends commands to the\ndebugger, periodically attempts\nto parse the .txt file 
+
+class ApiClient
+note left: Sends data (payload) to the server,\nmanages a file-based cache.
+
+class ProcessDetection
+note top: Detects a running\nprocess (t32mtc)
+
+note top of ALogger
+  Wraps up common logging functions.
+  Singleton design pattern
+end note
+
+note bottom of FileLogger
+  Transfers logs into file. Upon reaching
+  specified size starts logging into new file. 
+  Full block of files are zipped.
+end note
+
+@enduml
