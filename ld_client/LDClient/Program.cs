@@ -1,3 +1,4 @@
+using DiskQueue;
 using LDClient.detection;
 using LDClient.network;
 using LDClient.utils;
@@ -38,14 +39,15 @@ internal static class Program {
             Config.ApiUsbEndPoint, 
             Config.RetryPeriod, Config.MaxEntries,
             Config.MaxRetries, 
-            Config.CacheFileName
+            new PersistentQueue(Config.CacheFileName)
         );
         
-        IProcessDetection processProcessDetection = new ProcessProcessDetection(
+        IProcessDetection processProcessDetection = new ProcessDetection(
             Config.T32ProcessName,
             Config.DetectionPeriod,
             InfoFetcher,
-            DefaultApiClient
+            DefaultApiClient,
+            new ProcessUtils()
         );
         
         var apiClientThread = new Thread(DefaultApiClient.Run) {

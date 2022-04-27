@@ -1,9 +1,10 @@
 using System.Diagnostics;
+using LDClient.utils;
 using LDClient.utils.loggers;
 
 namespace LDClient.detection {
 
-    public class InfoFetcher {
+    public class InfoFetcher : IInfoFetcher {
         
         private const string UndefinedSerialNumber = "number";
 
@@ -15,10 +16,15 @@ namespace LDClient.detection {
         private readonly uint _waitPeriodMs;
         private readonly string _infoFilePath;
 
-        public string HeadSerialNumber { get; private set; } = UndefinedSerialNumber;
-        public string BodySerialNumber { get; private set; } = UndefinedSerialNumber;
+        public IProcessUtils ProcessUtils;
+        public IFileUtils FileUtils;
 
-        public InfoFetcher(uint maxAttempts, uint waitPeriodMs, string infoFilePath, string f32RemExecutable, string[] f32RemArguments, int f32SuccessExitCode, int f32WaitTimeoutMs) {
+        public string HeadSerialNumber { get; set; } = UndefinedSerialNumber;
+        public string BodySerialNumber { get; set; } = UndefinedSerialNumber;
+
+
+        public InfoFetcher(uint maxAttempts, uint waitPeriodMs, string infoFilePath, string f32RemExecutable,
+            string[] f32RemArguments, int f32SuccessExitCode, int f32WaitTimeoutMs) {
             _maxAttempts = maxAttempts;
             _waitPeriodMs = waitPeriodMs;
             _infoFilePath = infoFilePath;
@@ -26,6 +32,9 @@ namespace LDClient.detection {
             _f32RemArguments = f32RemArguments;
             _f32SuccessExitCode = f32SuccessExitCode;
             _f32WaitTimeoutMs = f32WaitTimeoutMs;
+            ProcessUtils = new ProcessUtils();
+            FileUtils = new FileUtils();
+
         }
 
         public async Task<bool> FetchDataAsync() {
@@ -49,7 +58,7 @@ namespace LDClient.detection {
 
         private bool RetrieveDebuggerInfo(string filePath) {
             try {
-                var fileContent = File.ReadAllLines(filePath).Aggregate("", (current, line) => $"{current}{line}\n");
+                var fileContent = FileUtils.ReadFileAllLines(filePath).Aggregate("", (current, line) => $"{current}{line}\n");
                 var (headSerialNumber, bodySerialNumber) = DebuggerInfoParser.Parse(fileContent);
                 HeadSerialNumber = headSerialNumber;
                 BodySerialNumber = bodySerialNumber;
@@ -61,27 +70,13 @@ namespace LDClient.detection {
             return true;
         }
 
-        private static bool SendRetrieveInfoCommands(string executableFile, IReadOnlyList<string>? arguments, int successExitCode, int waitTimeoutMs) {
+        private bool SendRetrieveInfoCommands(string executableFile, IReadOnlyList<string>? arguments, int desiredExitCode, int waitTimeoutMs) {
             if (arguments == null) {
                 Program.DefaultLogger.Error($"Failed to run {executableFile} - no parameters were given");
                 return false;
             }
             foreach (var argument in arguments) {
-                var t32RemProcess = new Process();
-                t32RemProcess.StartInfo.FileName = executableFile;
-                t32RemProcess.StartInfo.Arguments = argument;
-                try {
-                    t32RemProcess.Start();
-                    if (!t32RemProcess.WaitForExit(waitTimeoutMs)) {
-                        Program.DefaultLogger.Error($"Execution has not terminated within a predefined timeout of {waitTimeoutMs} ms");
-                        return false;
-                    }
-                    if (t32RemProcess.ExitCode != successExitCode) {
-                        Program.DefaultLogger.Error($"Execution terminated with an error code of {t32RemProcess.ExitCode}");
-                        return false;
-                    }
-                } catch (Exception exception) {
-                    Program.DefaultLogger.Error($"Failed to run {executableFile} {argument}. {exception.Message}");
+                if (!ProcessUtils.ExecuteNewProcess(executableFile, argument, waitTimeoutMs, desiredExitCode)) {
                     return false;
                 }
             }

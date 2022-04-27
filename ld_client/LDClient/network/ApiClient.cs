@@ -10,21 +10,23 @@ namespace LDClient.network {
     
     public sealed class ApiClient : IApiClient {
         
-        private readonly string _uri;
-        private readonly HttpClient _client;
-        private readonly IPersistentQueue _cache;
+        public IHttpClient _client;
+
+        public bool ClientRunning;
+
         private readonly uint _retryPeriod;
         private readonly uint _maxEntries;
         private readonly uint _maxRetries;
-        
-        public ApiClient(string url, uint port, string path, uint retryPeriod, uint maxEntries, uint maxRetries, string cacheFilename) {
-            _uri = $"{url}:{port}{path}";
+        private readonly IPersistentQueue _cache;
+
+        public ApiClient(string url, uint port, string path, uint retryPeriod, uint maxEntries, uint maxRetries, IPersistentQueue cache) {
+            var uri = $"{url}:{port}{path}";
             _retryPeriod = retryPeriod;
             _maxEntries = maxEntries;
             _maxRetries = maxRetries;
 
-            _client = new HttpClient();
-            _cache = new PersistentQueue(cacheFilename);
+            _client = new HttpClient(uri);
+            _cache = cache;
         }
 
         public async Task SendPayloadAsync(Payload payload) {
@@ -32,11 +34,7 @@ namespace LDClient.network {
                 Stopwatch stopWatch = new();
                 stopWatch.Start();
                 
-                var response = await _client.PostAsJsonAsync(_uri, payload, new JsonSerializerOptions {
-                    Converters = {
-                        new JsonStringEnumConverter( JsonNamingPolicy.CamelCase)
-                    }
-                });
+                var response = await _client.PostAsJsonAsync(payload);
                 stopWatch.Stop();
                 CreateRequestLog(payload, response, stopWatch.ElapsedMilliseconds);
 
@@ -63,8 +61,8 @@ namespace LDClient.network {
         private async Task ResendPayloadsAsync() {
             var numberOfPayloadsToResend = Math.Min(_maxRetries, _cache.EstimatedCountOfItemsInQueue);
             var payloads = new List<Payload>();
-
-            using (var session = _cache.OpenSession()) {
+            if (numberOfPayloadsToResend > 0) {
+                using var session = _cache.OpenSession();
                 for (var i = 0; i < numberOfPayloadsToResend; i++) {
                     var rawBytes = session.Dequeue();
                     var payload = JsonSerializer.Deserialize<Payload>(rawBytes);
@@ -100,11 +98,11 @@ namespace LDClient.network {
 
         public async void Run() {
             Program.DefaultLogger.Info("Api Client thread has started");
-            while (true) {
+            ClientRunning = true;
+            while (ClientRunning) {
                 await ResendPayloadsAsync();
                 Thread.Sleep((int) _retryPeriod);
             }
-            // ReSharper disable once FunctionNeverReturns
         }
     }
 }

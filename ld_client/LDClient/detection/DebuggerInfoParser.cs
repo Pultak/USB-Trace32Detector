@@ -15,7 +15,7 @@ namespace LDClient.detection {
                 throw new ArgumentException($"Expected {ExpectedNumberOfMatches} matches to be found in the text (actually found: {matches.Count})");
             }
             
-            return (matches[0].ToString(), matches[1].ToString());
+            return (matches[1].ToString().Trim(), matches[0].ToString().Trim());
         }
     }
 }
