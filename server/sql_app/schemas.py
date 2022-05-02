@@ -14,6 +14,9 @@ class DeviceLicenseCreate(DeviceLicenseBase):
 
 
 class DeviceLicense(DeviceLicenseCreate):
+    """
+    Class used for creating and reading devices_licenses entries
+    """
     id: int
 
     class Config:
@@ -30,6 +33,9 @@ class USBLogCreate(USBLogBase):
 
 
 class USBLog(USBLogBase):
+    """
+    Class used for creating and reading usb_logs entries
+    """
     id: int
     device_id: int
     pc_id: int
@@ -49,6 +55,9 @@ class DeviceCreate(DeviceBase):
 
 
 class Device(DeviceCreate):
+    """
+    Class used for creating and reading devices entries
+    """
     id: int
     assigned: bool
     logs: List[USBLog] = []
@@ -68,6 +77,9 @@ class LDLogCreate(LDLogBase):
 
 
 class LDLog(LDLogCreate):
+    """
+    Class used for creating and reading ld_logs entries
+    """
     id: int
     head_id: int
     body_id: int
@@ -85,6 +97,9 @@ class BodyDeviceCreate(BodyDeviceBase):
 
 
 class BodyDevice(BodyDeviceCreate):
+    """
+    Class used for creating and reading body_devices entries
+    """
     id: int
     logs: List[LDLog] = []
 
@@ -101,6 +116,9 @@ class HeadDeviceCreate(HeadDeviceBase):
 
 
 class HeadDevice(HeadDeviceCreate):
+    """
+    Class used for creating and reading head_devices entries
+    """
     id: int
     logs: List[LDLog] = []
 
@@ -118,6 +136,9 @@ class PCCreate(PCBase):
 
 
 class PC(PCCreate):
+    """
+    Class used for creating and reading pc entries
+    """
     id: int
     assigned: bool
     logs_pc: List[USBLog] = []
@@ -135,6 +156,9 @@ class TeamCreate(TeamBase):
 
 
 class Team(TeamCreate):
+    """
+    Class used for creating and reading team entries
+    """
     id: int
     pcs: List[PC] = []
 
@@ -152,6 +176,9 @@ class LicenseCreate(LicenseBase):
 
 
 class License(LicenseCreate):
+    """
+    Class used for creating and reading licenses entries
+    """
     id: int
     devices: List[DeviceLicense] = []
 
@@ -160,6 +187,9 @@ class License(LicenseCreate):
 
 
 class USBTempBase(BaseModel):
+    """
+    Class used for reading data from keyman detecting client messages
+    """
     username: str
     hostname: str
     timestamp: str
@@ -180,6 +210,9 @@ class USBTemp(USBTempBase):
 
 
 class LDTempBase(BaseModel):
+    """
+    Class used for reading data from debugger detecting client messages
+    """
     username: str
     hostname: str
     timestamp: str
