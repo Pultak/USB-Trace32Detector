@@ -9,7 +9,7 @@
     <p>Product ID: {{device.product_id}}</p>
     <p>Serial Number: {{device.serial_number}}</p>
 </h6>
-<form action="/api/v1/devices-web/{{device.id}}" method="post">
+<form action="/devices-web/{{device.id}}" method="post">
   <label for="lic">Licenses:</label>
   <select id="lic" name="lic">
       {% for license in licenses %}

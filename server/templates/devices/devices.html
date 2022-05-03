@@ -7,14 +7,14 @@
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
       <option value=""></option>
-      <option value="/api/v1/logs-web">Logs</option>
-      <option value="/api/v1/devices-web">Devices</option>
-      <option value="/api/v1/teams-web">Teams</option>
-      <option value="/api/v1/pcs-web">PCs</option>
+      <option value="/logs-web">Logs</option>
+      <option value="/devices-web">Devices</option>
+      <option value="/teams-web">Teams</option>
+      <option value="/pcs-web">PCs</option>
   </select>
   <input type="submit" value="OK">
 </form>
-<form action="/api/v1/devices-web" method="post">
+<form action="/devices-web" method="post">
     <label for="lic">License:</label>
     <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
     <datalist id="licenses">
@@ -35,7 +35,7 @@
     </TR>
     {% for i in range(devs) %}
     <TR>
-        <TD class="ID"><a href="/api/v1/device-license/{{devices[i].id}}">{{devices[i].id}}</a></TD>
+        <TD class="ID"><a href="/device-license/{{devices[i].id}}">{{devices[i].id}}</a></TD>
         <TD class="Vendor ID">{{devices[i].vendor_id}}</TD>
         <TD class="Product ID">{{devices[i].product_id}}</TD>
         <TD class="Serial Number">{{devices[i].serial_number}}</TD>
@@ -53,7 +53,7 @@
         <TD class="Product ID"></TD>
         <TD class="Serial Number"></TD>
         <TD class="License">
-            <form action="/api/v1/license-create" method="get">
+            <form action="/license-create" method="get">
                 <input type="submit" value="Add">
             </form>
         </TD>
