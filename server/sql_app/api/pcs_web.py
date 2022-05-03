@@ -14,7 +14,7 @@ models.Base.metadata.create_all(bind=engine)
 templates = Jinja2Templates(directory="templates/pcs")
 
 # prefix used for all endpoints in this file
-pcs_web = APIRouter(prefix="/api/v1")
+pcs_web = APIRouter(prefix="")
 
 
 # Dependency

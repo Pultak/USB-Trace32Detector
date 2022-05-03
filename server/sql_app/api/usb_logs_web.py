@@ -15,7 +15,7 @@ models.Base.metadata.create_all(bind=engine)
 templates = Jinja2Templates(directory="templates/usb-logs")
 
 # prefix used for all endpoints in this file
-usblogs_web = APIRouter(prefix="/api/v1")
+usblogs_web = APIRouter(prefix="")
 
 
 # Dependency

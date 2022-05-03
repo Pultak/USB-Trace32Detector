@@ -17,7 +17,7 @@ templates = Jinja2Templates(directory="templates/licenses")
 device_templates = Jinja2Templates(directory="templates/devices")
 
 # prefix used for all endpoints in this file
-licenses_web = APIRouter(prefix="/api/v1")
+licenses_web = APIRouter(prefix="")
 
 
 # Dependency

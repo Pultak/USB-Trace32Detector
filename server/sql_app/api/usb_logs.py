@@ -48,9 +48,9 @@ def create_ld_logs(log: schemas.LDTempBase, db: Session = Depends(get_db)):
     head_dev = crud.find_head_device(db, log.head_device)
     body_dev = crud.find_body_device(db, log.body_device)
     if head_dev is None:
-        crud.create_head_device(db, log.head_device)
+        head_dev = crud.create_head_device(db, log.head_device)
     if body_dev is None:
-        crud.create_body_device(db, log.body_device)
+        body_dev = crud.create_body_device(db, log.body_device)
 
     pc = crud.find_pc(db, log.username, log.hostname)
     if pc is None:
