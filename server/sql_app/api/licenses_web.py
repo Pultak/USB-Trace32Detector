@@ -6,7 +6,7 @@ from datetime import date
 from sql_app import crud, models, schemas
 from ..database import SessionLocal, engine
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -47,18 +47,11 @@ async def read_licenses_web(request: Request, skip: int = 0, limit: int = 100, d
 
 
 @licenses_web.post("/licenses-web", response_class=HTMLResponse)
-def create_license(request: Request, name: str = Form(...), expdate: date = Form(...), skip: int = 0, limit: int = 100,
-                   db: Session = Depends(get_db)):
+def create_license(name: str = Form(...), expdate: date = Form(...), db: Session = Depends(get_db)):
     """
     Endpoint called from create license form. Creates new license and returns template with all licenses in database
     """
     db_license = crud.create_license(db, name, expdate)
     if db_license is None:
         print("something went wrong")
-    devices = crud.get_devices(db, skip=skip, limit=limit)
-    statuses = []
-    for i in range(0, len(devices)):
-        statuses.append(devices[i].logs[len(devices[i].logs) - 1].status)
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return device_templates.TemplateResponse("devices.html", {"request": request, "devs": len(devices), "devices": devices,
-                                                       "statuses": statuses, "licenses": licenses})
+    return RedirectResponse("/devices-web")

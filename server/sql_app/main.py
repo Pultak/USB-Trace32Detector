@@ -9,6 +9,7 @@ from sql_app.api.usb_logs import usblogs
 from sql_app.api.usb_logs_web import usblogs_web
 from sql_app.api.teams import teams
 from sql_app.api.teams_web import teams_web
+from sql_app.api.auth import auth
 from fastapi import FastAPI
 
 
@@ -27,6 +28,7 @@ app.include_router(licenses_web)
 app.include_router(pcs_web)
 app.include_router(teams_web)
 app.include_router(usblogs_web)
+app.include_router(auth)
 
 '''
 if __name__ == "__main__":

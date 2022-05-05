@@ -45,7 +45,7 @@
     </TR>
     {% for i in range(devs) %}
     <TR>
-        <TD class="ID"><a href="/device-license/{{devices[i].id}}">{{devices[i].id}}</a></TD>
+        <TD class="ID">{{devices[i].id}}</TD>
         <TD class="Vendor ID">{{devices[i].vendor_id}}</TD>
         <TD class="Product ID">{{devices[i].product_id}}</TD>
         <TD class="Serial Number">{{devices[i].serial_number}}</TD>
@@ -57,17 +57,6 @@
         <TD class="Status">{{statuses[i]}}</TD>
     </TR>
     {% endfor %}
-    <TR>
-        <TD class="ID"></TD>
-        <TD class="Vendor ID"></TD>
-        <TD class="Product ID"></TD>
-        <TD class="Serial Number"></TD>
-        <TD class="License">
-            <form action="/license-create" method="get">
-                <input type="submit" value="Add">
-            </form>
-        </TD>
-    </TR>
 </table>
 </body>
 </html>

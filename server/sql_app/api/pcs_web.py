@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from sql_app import crud, models, schemas
 from ..database import SessionLocal, engine
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi_jwt_auth import AuthJWT
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -27,12 +28,18 @@ def get_db():
 
 
 @pcs_web.get("/pcs-web", response_class=HTMLResponse)
-async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                   Authorize: AuthJWT = Depends()):
     """
     Returns template with all pcs currently saved in database
     """
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
     pcs = crud.get_pcs(db, skip=skip, limit=limit)
-    return templates.TemplateResponse("pcs.html", {"request": request, "pcs": pcs})
+    if current_user == "admin":
+        return templates.TemplateResponse("pcs.html", {"request": request, "pcs": pcs})
+    else:
+        return templates.TemplateResponse("pcs_normal.html", {"request": request, "pcs": pcs})
 
 
 @pcs_web.get("/pc-team/{pc_id}", response_class=HTMLResponse)
@@ -47,11 +54,9 @@ async def connect_pc_team(request: Request, pc_id: int, db: Session = Depends(ge
 
 
 @pcs_web.post("/pcs-web/{pc_id}", response_class=HTMLResponse)
-async def connect_post(request: Request, pc_id: int, team: str = Form(...), skip: int = 0, limit: int = 100,
-                       db: Session = Depends(get_db)):
+async def connect_post(pc_id: int, team: str = Form(...), db: Session = Depends(get_db)):
     """
     Endpoint called from within form for connecting pc with team. Updates certain pc with new team.
     """
     old_pc = crud.update_pc(db, pc_id, team)
-    pcs = crud.get_pcs(db, skip=skip, limit=limit)
-    return templates.TemplateResponse("pcs.html", {"request": request, "pcs": pcs})
+    RedirectResponse("/pcs-web")

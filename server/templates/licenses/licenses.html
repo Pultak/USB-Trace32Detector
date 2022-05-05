@@ -3,6 +3,7 @@
     <title>Licenses Details</title>
 </head>
 <body>
+<div style='float:left'>
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
@@ -13,6 +14,15 @@
       <option value="/pcs-web">PCs</option>
   </select>
   <input type="submit" value="OK">
+</form>
+</div>
+<div style='float:left'>
+<form action="/login" method="get">
+    <input type="submit" value="Login" />
+</form>
+</div>
+<form action="/logout" method="get">
+    <input type="submit" value="Logout" />
 </form>
 <table>
     <TR>

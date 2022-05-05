@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Pcs Details</title>
+    <title>Teams Details</title>
 </head>
 <body>
 <div style='float:left'>
@@ -27,20 +27,12 @@
 <table>
     <TR>
         <TH>ID</TH>
-        <TH>Username</TH>
-        <TH>Hostname</TH>
-        <TH>Team</TH>
+        <TH>Name</TH>
     </TR>
-    {% for pc in pcs %}
+    {% for team in teams %}
     <TR>
-        <TD class="ID"><a href="/pc-team/{{pc.id}}">{{pc.id}}</a></TD>
-        <TD class="Vendor ID">{{pc.username}}</TD>
-        <TD class="Product ID">{{pc.hostname}}</TD>
-        {% if pc.team == None %}
-            <TD class="Team">NONE</TD>
-        {% else %}
-            <TD class="Team">{{pc.team.name}}</TD>
-        {% endif %}
+        <TD class="ID">{{team.id}}</TD>
+        <TD class="Vendor ID">{{team.name}}</TD>
     </TR>
     {% endfor %}
 </table>

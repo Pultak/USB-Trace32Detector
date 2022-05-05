@@ -33,7 +33,7 @@
     </TR>
     {% for pc in pcs %}
     <TR>
-        <TD class="ID"><a href="/pc-team/{{pc.id}}">{{pc.id}}</a></TD>
+        <TD class="ID">{{pc.id}}</TD>
         <TD class="Vendor ID">{{pc.username}}</TD>
         <TD class="Product ID">{{pc.hostname}}</TD>
         {% if pc.team == None %}
