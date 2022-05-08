@@ -46,12 +46,12 @@ async def read_licenses_web(request: Request, skip: int = 0, limit: int = 100, d
     return templates.TemplateResponse("licenses.html", {"request": request, "licenses": licenses})
 
 
-@licenses_web.post("/licenses-web", response_class=HTMLResponse)
+@licenses_web.post("/licenses-web")
 def create_license(name: str = Form(...), expdate: date = Form(...), db: Session = Depends(get_db)):
     """
-    Endpoint called from create license form. Creates new license and returns template with all licenses in database
+    Endpoint called from create license form. Creates new license and redirects to devices-web endpoint
     """
     db_license = crud.create_license(db, name, expdate)
     if db_license is None:
         print("something went wrong")
-    return RedirectResponse("/devices-web")
+    return RedirectResponse(url=f"/devices-web", status_code=303)

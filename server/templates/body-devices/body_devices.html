@@ -29,7 +29,7 @@
 </form>
 </div>
 <h4>{{user}}</h4>
-<form action="/devices-web" method="post">
+<form action="/body-devices-web" method="post">
     <label for="lic">License:</label>
     <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
     <datalist id="licenses">
@@ -42,21 +42,17 @@
 <table>
     <TR>
         <TH>ID</TH>
-        <TH>Vendor ID</TH>
-        <TH>Product ID</TH>
         <TH>Serial Number</TH>
         <TH>Licenses</TH>
         <TH>Status</TH>
     </TR>
     {% for i in range(devs) %}
     <TR>
-        <TD class="ID"><a href="/device-license/{{devices[i].id}}">{{devices[i].id}}</a></TD>
-        <TD class="Vendor ID">{{devices[i].vendor_id}}</TD>
-        <TD class="Product ID">{{devices[i].product_id}}</TD>
+        <TD class="ID"><a href="/body-device-license/{{devices[i].id}}">{{devices[i].id}}</a></TD>
         <TD class="Serial Number">{{devices[i].serial_number}}</TD>
         <TD class="License">
-            {% for lic in devices[i].licenses %}
-                {{lic.licenses.name}}<BR>
+            {% for lic in devices[i].debug_licenses %}
+                {{lic.b_licenses.name}}<BR>
             {% endfor %}
         </TD>
         <TD class="Status">{{statuses[i]}}</TD>
@@ -64,8 +60,6 @@
     {% endfor %}
     <TR>
         <TD class="ID"></TD>
-        <TD class="Vendor ID"></TD>
-        <TD class="Product ID"></TD>
         <TD class="Serial Number"></TD>
         <TD class="License">
             <form action="/license-create" method="get">

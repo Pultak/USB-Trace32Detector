@@ -38,9 +38,10 @@ async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Se
     current_user = Authorize.get_jwt_subject()
     teams = crud.get_teams(db, skip=skip, limit=limit)
     if current_user == "admin":
-        return templates.TemplateResponse("teams.html", {"request": request, "teams": teams})
+        return templates.TemplateResponse("teams.html", {"request": request, "teams": teams, "user": current_user})
     else:
-        return templates.TemplateResponse("teams_normal.html", {"request": request, "teams": teams})
+        current_user = "guest"
+        return templates.TemplateResponse("teams_normal.html", {"request": request, "teams": teams, "user": current_user})
 
 
 @teams_web.get("/team-create", response_class=HTMLResponse)
@@ -51,7 +52,7 @@ async def team_create_web(request: Request):
     return templates.TemplateResponse("team_create.html", {"request": request})
 
 
-@teams_web.post("/teams-web", response_class=HTMLResponse)
+@teams_web.post("/teams-web-con")
 def create_team(name: str = Form(...), db: Session = Depends(get_db)):
     """
     Endpoint called from within form for creating new team. Creates new team and returns all teams in database
@@ -59,4 +60,4 @@ def create_team(name: str = Form(...), db: Session = Depends(get_db)):
     team = crud.create_team(db, name)
     if team is None:
         print("something went wrong")
-    RedirectResponse("/teams-web")
+    return RedirectResponse(url=f"/teams-web", status_code=303)

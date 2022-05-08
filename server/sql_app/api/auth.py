@@ -1,13 +1,9 @@
-
-
 from fastapi import Depends, APIRouter, Form
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
 from fastapi_jwt_auth import AuthJWT
 from pydantic import BaseModel
-
 
 # Path to html templates used in this file
 templates = Jinja2Templates(directory="templates/auth")
@@ -29,7 +25,7 @@ class Settings(BaseModel):
 def get_config():
     return Settings()
 
-
+# admin username and password
 fake_users_db = {
     "admin": {
         "username": "admin",
@@ -40,13 +36,19 @@ fake_users_db = {
 
 @auth.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
+    """
+    return html template for login
+    """
     return templates.TemplateResponse("login.html", {"request": request})
 
 
 @auth.post("/login", response_class=HTMLResponse)
 async def login(username: str = Form(...), password: str = Form(...), Authorize: AuthJWT = Depends()):
+    """
+    Endpoint called from login template. Checks if given username and password aligns with admin
+    username and password and returns token for browser according to given username and password
+    """
     user_dict = fake_users_db.get(username)
-
     if user_dict != None:
         if user_dict["username"] == username and user_dict["password"] == password:
             access_token = Authorize.create_access_token(subject="admin", expires_time=False)
@@ -78,8 +80,11 @@ async def login(username: str = Form(...), password: str = Form(...), Authorize:
 
 @auth.post('/refresh')
 def refresh(Authorize: AuthJWT = Depends()):
+    """
+    endpoint for refreshing browser token. Not used at the moment since lifetime of given tokens are
+    unlimited.
+    """
     Authorize.jwt_refresh_token_required()
-
     current_user = Authorize.get_jwt_subject()
     new_access_token = Authorize.create_access_token(subject=current_user)
     # Set the JWT cookies in the response
@@ -90,9 +95,7 @@ def refresh(Authorize: AuthJWT = Depends()):
 @auth.get('/logout', response_class=HTMLResponse)
 def logout(Authorize: AuthJWT = Depends()):
     """
-    Because the JWT are stored in an httponly cookie now, we cannot
-    log the user out by simply deleting the cookies in the frontend.
-    We need the backend to send us a response to delete the cookies.
+    Endpoint for deleting cookie token with acces role.
     """
     Authorize.jwt_optional()
 

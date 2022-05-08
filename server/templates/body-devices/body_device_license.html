@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Device License Connect</title>
+    <title>Body Device License Connect</title>
 </head>
 <body>
 <h6><p>Vendor ID: {{device.vendor_id}}</p>
-    <p>Product ID: {{device.product_id}}</p>
     <p>Serial Number: {{device.serial_number}}</p>
 </h6>
-<form action="/devices-web/{{device.id}}" method="post">
+<form action="/body-devices-web/{{device.id}}" method="post">
   <label for="lic">Licenses:</label>
   <select id="lic" name="lic">
       {% for license in licenses %}
@@ -18,9 +17,9 @@
   </select>
   <input type="submit" value="Connect">
 </form>
-<form action="/devices-web-del/{{device.id}}" method="post">
-  <label for="lic_del">Licenses:</label>
-  <select id="lic_del" name="lic_del">
+<form action="/body-devices-web-del/{{device.id}}" method="post">
+  <label for="b_lic">Licenses:</label>
+  <select id="b_lic" name="b_lic">
       {% for license in dev_lic %}
     <option value={{license.id}}>{{license.name}}</option>
       {% endfor %}

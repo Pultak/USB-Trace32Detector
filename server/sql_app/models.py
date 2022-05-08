@@ -52,7 +52,7 @@ class License(Base):
 
     # relationships for foreign keys, thus connecting table with devices table
     devices = relationship("DeviceLicense", back_populates="licenses")
-
+    body_devices = relationship("BodyDeviceLicense", back_populates="b_licenses")
 
 class DeviceLicense(Base):
     """
@@ -69,6 +69,23 @@ class DeviceLicense(Base):
     # tables
     device_lic = relationship("Device", back_populates="licenses")
     licenses = relationship("License", back_populates="devices")
+
+
+class BodyDeviceLicense(Base):
+    """
+    Class defining database table bodydevices_licenses
+    """
+    __tablename__ = "bodydevices_licenses"
+
+    id = Column(Integer, primary_key=True, index=True)
+    bodydevice_id = Column(Integer, ForeignKey("body_devices.id"))
+    license_id = Column(Integer, ForeignKey("licenses.id"))
+    assigned_datetime = Column(String, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with devices and licenses
+    # tables
+    bodydevice_lic = relationship("BodyDevice", back_populates="debug_licenses")
+    b_licenses = relationship("License", back_populates="body_devices")
 
 
 class PC(Base):
@@ -127,6 +144,7 @@ class BodyDevice(Base):
 
     # relationships for foreign keys, thus connecting table with ld_logs table
     b_logs = relationship("LDLog", back_populates="body_device")
+    debug_licenses = relationship("BodyDeviceLicense", back_populates="bodydevice_lic")
 
 
 class LDLog(Base):

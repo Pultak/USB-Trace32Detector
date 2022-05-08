@@ -10,6 +10,8 @@ from sql_app.api.usb_logs_web import usblogs_web
 from sql_app.api.teams import teams
 from sql_app.api.teams_web import teams_web
 from sql_app.api.auth import auth
+from sql_app.api.ld_logs_web import ldlogs_web
+from sql_app.api.bodydevices_web import body_device_web
 from fastapi import FastAPI
 
 
@@ -28,9 +30,11 @@ app.include_router(licenses_web)
 app.include_router(pcs_web)
 app.include_router(teams_web)
 app.include_router(usblogs_web)
+app.include_router(ldlogs_web)
+app.include_router(body_device_web)
 app.include_router(auth)
 
 '''
 if __name__ == "__main__":
-    uvicorn.run(app, host="192.168.0.22", port=8000)
+    uvicorn.run(app, host="192.168.176.1", port=8000)
 '''

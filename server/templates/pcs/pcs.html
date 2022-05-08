@@ -9,7 +9,9 @@
   <select id="view" name="view" onchange="this.form.action=this.value;">
       <option value=""></option>
       <option value="/logs-web">Logs</option>
+      <option value="/ldlogs-web">LD Logs</option>
       <option value="/devices-web">Devices</option>
+      <option value="/body-devices-web">Body Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
   </select>
@@ -21,9 +23,12 @@
     <input type="submit" value="Login" />
 </form>
 </div>
+<div style='float:left'>
 <form action="/logout" method="get">
     <input type="submit" value="Logout" />
 </form>
+</div>
+<h4>{{user}}</h4>
 <table>
     <TR>
         <TH>ID</TH>

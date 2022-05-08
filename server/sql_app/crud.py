@@ -74,9 +74,46 @@ def create_license(db: Session, name: str, expdate: date):
 
 def get_license_devices(db: Session, license_id: int):
     """
-    returns all entries in devices_licenses table
+    returns all entries in devices_licenses table with given license_id
     """
     return db.query(models.DeviceLicense).filter(models.DeviceLicense.license_id == license_id).all()
+
+
+def get_device_licenses(db: Session, device_id: int):
+    """
+    returns all entries in devices_licenses table with given license_id
+    """
+    return db.query(models.DeviceLicense).filter(models.DeviceLicense.device_id == device_id).all()
+
+
+def get_devicelicense_by_devicelicense(db: Session, device_id: int, license_id: int):
+    """
+    returns entry in devices_licenses table with given device id and license id
+    """
+    return db.query(models.DeviceLicense).filter(and_(models.DeviceLicense.device_id == device_id,
+                                                      models.DeviceLicense.license_id == license_id)).first()
+
+
+def get_bodydevicelicense_by_bodydevicelicense(db: Session, device_id: int, license_id: int):
+    """
+    returns entry in bodydevices_licenses table with given body device id and license id
+    """
+    return db.query(models.BodyDeviceLicense).filter(and_(models.BodyDeviceLicense.bodydevice_id == device_id,
+                                                      models.BodyDeviceLicense.license_id == license_id)).first()
+
+
+def get_license_bodydevice(db: Session, license_id: int):
+    """
+    returns all entries in bodydevices_licenses with given license_id
+    """
+    return db.query(models.BodyDeviceLicense).filter(models.BodyDeviceLicense.license_id == license_id).all()
+
+
+def get_bodydevice_license(db: Session, device_id: int):
+    """
+    returns all entries in bodydevices_licenses with given license_id
+    """
+    return db.query(models.BodyDeviceLicense).filter(models.BodyDeviceLicense.bodydevice_id == device_id).all()
 
 
 def create_device_license(db: Session, device: int, license: int, time: datetime):
@@ -85,6 +122,38 @@ def create_device_license(db: Session, device: int, license: int, time: datetime
     """
     db_device_license = models.DeviceLicense(device_id=device, license_id=license,
                                              assigned_datetime=time)
+    db.add(db_device_license)
+    db.commit()
+    db.refresh(db_device_license)
+    return db_device_license
+
+
+def delete_device_license(db: Session, device: int, license: int):
+    """
+    deletes entry in devices_licenses table with device id, license id and time.
+    """
+    db_device_license = get_devicelicense_by_devicelicense(db, device, license)
+    db_lic = db.delete(db_device_license)
+    db.commit()
+    return db_lic
+
+
+def delete_bodydevice_license(db: Session, device: int, license: int):
+    """
+    deletes entry in devices_licenses table with device id, license id and time.
+    """
+    db_device_license = get_bodydevicelicense_by_bodydevicelicense(db, device, license)
+    db_lic = db.delete(db_device_license)
+    db.commit()
+    return db_lic
+
+
+def create_body_device_license(db: Session, device: int, license: int, time: datetime):
+    """
+    creates new entry in devices_licenses table with device id, license id and time.
+    """
+    db_device_license = models.BodyDeviceLicense(bodydevice_id=device, license_id=license,
+                                                 assigned_datetime=time)
     db.add(db_device_license)
     db.commit()
     db.refresh(db_device_license)
@@ -107,7 +176,7 @@ def get_pc(db: Session, pc_id: int):
 
 def update_pc(db: Session, pc_id: int, team: str):
     """
-    Function updates team of one specific pc
+    Updates team of one specific pc
     """
     old_pc = get_pc(db, pc_id)
     team = get_team(db, int(team))
@@ -274,7 +343,7 @@ def get_ld_logs(db: Session, skip: int = 0, limit: int = 100):
     """
     Returns all ld debugger logs in database
     """
-    return db.query(models.LDLog).offset(skip).limit(limit).all()
+    return db.query(models.LDLog).order_by(desc(models.LDLog.timestamp)).offset(skip).limit(limit).all()
 
 
 def create_ld_logs(db: Session, item: schemas.LDTempBase, head_id: int, body_id: int, pc_id: int, date: datetime):
@@ -309,37 +378,95 @@ def find_filtered_logs(db: Session, logs: []):
     return db.query(models.USBLog).filter(models.USBLog.id.in_(logs)).order_by(desc(models.USBLog.timestamp)).all()
 
 
+def find_filtered_ldlogs(db: Session, logs: []):
+    """
+    Returns all ld logs with ids in given id array.
+    """
+    return db.query(models.LDLog).filter(models.LDLog.id.in_(logs)).order_by(desc(models.LDLog.timestamp)).all()
+
+
+def get_filtered_ldlogs(db: Session, pc: str, tema: str, lic: str):
+    """
+    Function creates query string used for filtering by pc username, team name and license name.
+    Depending on selected filters assembles query string for database
+    """
+    execute_string = "SELECT * FROM ld_logs AS logs"
+    pcs = find_pc_by_username(db, pc)
+    if pc != "all":
+        if pcs is not None:
+            execute_string += "  WHERE logs.pc_id = " + str(pcs.id)
+    if tema != "all":
+        team = find_team(db, tema)
+        if team is not None:
+            pcst = get_pcs_by_team(db, team.id)
+            pc_ids = "("
+            for p in pcst:
+                pc_ids += str(p.id) + ", "
+            def_pc_ids = pc_ids[:-2] + ")"
+            if pc != "all" and pcs is not None:
+                if len(def_pc_ids) > 1:
+                    execute_string += " AND logs.pc_id IN " + def_pc_ids
+            else:
+                if len(def_pc_ids) > 1:
+                    execute_string += " WHERE logs.pc_id IN " + def_pc_ids
+    if lic != "all":
+        license = find_license(db, lic)
+        if license is not None:
+            device_licenses = get_license_bodydevice(db, license.id)
+            dev_ids = "("
+            for dev in device_licenses:
+                dev_ids += str(dev.bodydevice_id) + ", "
+            defin_ids = dev_ids[:-2] + ")"
+            if pc != "all" or tema != "all":
+                if len(defin_ids) > 1:
+                    execute_string += " AND logs.body_id IN " + defin_ids
+            else:
+                if len(defin_ids) > 1:
+                    execute_string += " WHERE logs.body_id IN " + defin_ids
+
+    # executing assembled query string
+    result = db.execute(execute_string)
+    return result
+
+
 def get_filtered_logs(db: Session, pc: str, tema: str, lic: str):
     """
     Function creates query string used for filtering by pc username, team name and license name.
     Depending on selected filters assembles query string for database
     """
     execute_string = "SELECT * FROM usb_logs AS logs"
+    pcs = find_pc_by_username(db, pc)
     if pc != "all":
-        pcs = find_pc_by_username(db, pc)
-        execute_string += "  WHERE logs.pc_id = " + str(pcs.id)
+        if pcs is not None:
+            execute_string += "  WHERE logs.pc_id = " + str(pcs.id)
     if tema != "all":
         team = find_team(db, tema)
-        pcs = get_pcs_by_team(db, team.id)
-        pc_ids = "("
-        for p in pcs:
-            pc_ids += str(p.id) + ", "
-        def_pc_ids = pc_ids[:-2] + ")"
-        if pc != "all":
-            execute_string += " AND logs.pc_id IN " + def_pc_ids
-        else:
-            execute_string += " WHERE logs.pc_id IN " + def_pc_ids
+        if team is not None:
+            pcst = get_pcs_by_team(db, team.id)
+            pc_ids = "("
+            for p in pcst:
+                pc_ids += str(p.id) + ", "
+            def_pc_ids = pc_ids[:-2] + ")"
+            if pc != "all" and pcs is not None:
+                if len(def_pc_ids) > 1:
+                    execute_string += " AND logs.pc_id IN " + def_pc_ids
+            else:
+                if len(def_pc_ids) > 1:
+                    execute_string += " WHERE logs.pc_id IN " + def_pc_ids
     if lic != "all":
         license = find_license(db, lic)
-        device_licenses = get_license_devices(db, license.id)
-        dev_ids = "("
-        for dev in device_licenses:
-            dev_ids += str(dev.device_id) + ", "
-        defin_ids = dev_ids[:-2] + ")"
-        if pc != "all" or tema != "all":
-            execute_string += " AND logs.device_id IN " + defin_ids
-        else:
-            execute_string += " WHERE logs.device_id IN " + defin_ids
+        if license is not None:
+            device_licenses = get_license_devices(db, license.id)
+            dev_ids = "("
+            for dev in device_licenses:
+                dev_ids += str(dev.device_id) + ", "
+            defin_ids = dev_ids[:-2] + ")"
+            if pc != "all" or tema != "all":
+                if len(defin_ids) > 1:
+                    execute_string += " AND logs.device_id IN " + defin_ids
+            else:
+                if len(defin_ids) > 1:
+                    execute_string += " WHERE logs.device_id IN " + defin_ids
 
     # executing assembled query string
     result = db.execute(execute_string)

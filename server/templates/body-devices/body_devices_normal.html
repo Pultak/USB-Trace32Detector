@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Teams Details</title>
+    <title>Devices Details</title>
 </head>
 <body>
 <div style='float:left'>
@@ -29,15 +29,33 @@
 </form>
 </div>
 <h4>{{user}}</h4>
+<form action="/body-devices-web" method="post">
+    <label for="lic">License:</label>
+    <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
+    <datalist id="licenses">
+        {% for license in licenses %}
+        <option value="{{license.name}}"></option>
+        {% endfor %}
+    </datalist>
+  <input type="submit" value="Filter">
+</form>
 <table>
     <TR>
         <TH>ID</TH>
-        <TH>Name</TH>
+        <TH>Serial Number</TH>
+        <TH>Licenses</TH>
+        <TH>Status</TH>
     </TR>
-    {% for team in teams %}
+    {% for i in range(devs) %}
     <TR>
-        <TD class="ID">{{team.id}}</TD>
-        <TD class="Vendor ID">{{team.name}}</TD>
+        <TD class="ID">{{devices[i].id}}</TD>
+        <TD class="Serial Number">{{devices[i].serial_number}}</TD>
+        <TD class="License">
+            {% for lic in devices[i].debug_licenses %}
+                {{lic.b_licenses.name}}<BR>
+            {% endfor %}
+        </TD>
+        <TD class="Status">{{statuses[i]}}</TD>
     </TR>
     {% endfor %}
 </table>

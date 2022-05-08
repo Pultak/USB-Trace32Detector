@@ -37,9 +37,10 @@ async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Sessio
     current_user = Authorize.get_jwt_subject()
     pcs = crud.get_pcs(db, skip=skip, limit=limit)
     if current_user == "admin":
-        return templates.TemplateResponse("pcs.html", {"request": request, "pcs": pcs})
+        return templates.TemplateResponse("pcs.html", {"request": request, "pcs": pcs, "user": current_user})
     else:
-        return templates.TemplateResponse("pcs_normal.html", {"request": request, "pcs": pcs})
+        current_user = "guest"
+        return templates.TemplateResponse("pcs_normal.html", {"request": request, "pcs": pcs, "user": current_user})
 
 
 @pcs_web.get("/pc-team/{pc_id}", response_class=HTMLResponse)
@@ -53,10 +54,10 @@ async def connect_pc_team(request: Request, pc_id: int, db: Session = Depends(ge
                                       {"request": request, "pc": pc, "teams": teams})
 
 
-@pcs_web.post("/pcs-web/{pc_id}", response_class=HTMLResponse)
+@pcs_web.post("/pcs-web/{pc_id}")
 async def connect_post(pc_id: int, team: str = Form(...), db: Session = Depends(get_db)):
     """
     Endpoint called from within form for connecting pc with team. Updates certain pc with new team.
     """
     old_pc = crud.update_pc(db, pc_id, team)
-    RedirectResponse("/pcs-web")
+    return RedirectResponse(url=f"/pcs-web", status_code=303)
