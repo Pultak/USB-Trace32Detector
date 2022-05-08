@@ -39,11 +39,6 @@ namespace LDClient.utils {
         private const string DdSection = "DebuggerDetection";
 
 
-        public string[] T32ApiCommands { get; private set; } = null!;
-        public string T32ApiAddress { get; private set; } = null!;
-        public string T32ApiPort { get; private set; } = null!;
-        public string T32ApiPacketLen { get; private set; } = null!;
-
         #region Logger
 
         /// <summary>
@@ -168,6 +163,27 @@ namespace LDClient.utils {
         /// Timeout of the execution of t32rem.exe (when sending one command).
         /// </summary>
         public int T32RemWaitTimeoutMs { get; private set; }
+
+
+        /// <summary>
+        /// List of commands to be executed by though the t32 api
+        /// </summary>
+        public string[] T32ApiCommands { get; private set; } = null!;
+
+        /// <summary>
+        /// Address of the listening t32 application
+        /// </summary>
+        public string T32ApiAddress { get; private set; } = null!;
+
+        /// <summary>
+        /// Port of the listening t32 application
+        /// </summary>
+        public string T32ApiPort { get; private set; } = null!;
+
+        /// <summary>
+        /// Size of the packets send/received from t32 application
+        /// </summary>
+        public string T32ApiPacketLen { get; private set; } = null!;
 
         #endregion
 
