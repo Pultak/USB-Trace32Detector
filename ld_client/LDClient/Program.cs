@@ -33,20 +33,37 @@ internal static class Program {
     /// Instance of an API client.
     /// </summary>
     private static IApiClient? DefaultApiClient { get; set; }
-    
+
+    /*
+
+    It is possible to use previous info fetching method
+
     /// <summary>
     /// Instance of an info fetcher.
     /// </summary>
-    private static readonly InfoFetcher InfoFetcher = new(
+    private static readonly IInfoFetcher InfoFetcher = new(
         Config.FetchInfoMaxAttempts,
         Config.FetchInfoAttemptPeriod,
         Config.T32InfoLocation,
-        Config.F32RemExecutable,
-        Config.F32RemArguments,
+        Config.T32RemExecutable,
+        Config.T32RemArguments,
         Config.T32RemSuccessExitCode,
         Config.T32RemWaitTimeoutMs
     );
-    
+    */
+    /// <summary>
+    /// Instance of an info fetcher
+    /// </summary>
+    private static readonly IInfoFetcher InfoFetcher = new T32ApiFetcher(
+        Config.FetchInfoMaxAttempts,
+        Config.FetchInfoAttemptPeriod,
+        Config.T32InfoLocation,
+        Config.T32ApiAddress,
+        Config.T32ApiPort,
+        Config.T32ApiPacketLen,
+        Config.T32ApiCommands
+    );
+
     /// <summary>
     /// The main entry pint of the application.
     /// </summary>
