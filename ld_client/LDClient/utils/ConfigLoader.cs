@@ -38,8 +38,14 @@ namespace LDClient.utils {
         /// </summary>
         private const string DdSection = "DebuggerDetection";
 
+
+        public string[] T32ApiCommands { get; private set; } = null!;
+        public string T32ApiAddress { get; private set; } = null!;
+        public string T32ApiPort { get; private set; } = null!;
+        public string T32ApiPacketLen { get; private set; } = null!;
+
         #region Logger
-        
+
         /// <summary>
         /// Maximum size of the log file (it will start to rotate when this limit is reached).
         /// </summary>
@@ -135,7 +141,7 @@ namespace LDClient.utils {
         /// <summary>
         /// Path to the t32rem.exe which is used to send commands to a debugger.
         /// </summary>
-        public string F32RemExecutable { get; private set; } = null!;
+        public string T32RemExecutable { get; private set; } = null!;
         
         /// <summary>
         /// How many times the application attempts to check if there
@@ -151,7 +157,7 @@ namespace LDClient.utils {
         /// <summary>
         /// Arguments (commands) sent to the t32rem.exe file.
         /// </summary>
-        public string[] F32RemArguments { get; private set; } = null!;
+        public string[] T32RemArguments { get; private set; } = null!;
         
         /// <summary>
         /// Status code indication successful execution of the t32rem.exe file.
@@ -251,12 +257,17 @@ namespace LDClient.utils {
                 T32ProcessName = debugger["T32ProcessName"];
                 T32InfoLocation = debugger["T32InfoLocation"];
                 DetectionPeriod = uint.Parse(debugger["DetectionPeriod"]);
-                F32RemExecutable = debugger["F32RemExecutable"];
+                T32RemExecutable = debugger["T32RemExecutable"];
                 FetchInfoMaxAttempts = uint.Parse(debugger["FetchInfoMaxAttempts"]);
                 FetchInfoAttemptPeriod = uint.Parse(debugger["FetchInfoAttemptPeriod"]);
                 T32RemSuccessExitCode = int.Parse(debugger["T32RemSuccessExitCode"]);
                 T32RemWaitTimeoutMs = int.Parse(debugger["T32RemWaitTimeoutMs"]);
-                F32RemArguments = configuration.GetSection($"{DdSection}:F32RemArguments").GetChildren().Select(key => key.Value).ToArray();
+                T32RemArguments = configuration.GetSection($"{DdSection}:T32RemArguments").GetChildren().Select(key => key.Value).ToArray();
+                T32ApiCommands = configuration.GetSection($"{DdSection}:T32ApiCommands").GetChildren().Select(key => key.Value).ToArray();
+                T32ApiAddress = debugger["T32ApiAddress"];
+                T32ApiPort = debugger["T32ApiPort"];
+                T32ApiPacketLen = debugger["T32ApiPacketLen"];
+                
             } catch (Exception e) {
                 Console.WriteLine(e);
                 Environment.Exit(ErrorExitCode);

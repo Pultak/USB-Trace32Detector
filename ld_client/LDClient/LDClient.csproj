@@ -7,21 +7,24 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
+	<PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+		<DefineConstants>_WINDOWS</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="t32api64.dll" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="lib\t32api64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="t32apinet">
-      <HintPath>..\dotnet\t32apinet\bin\Release\t32apinet.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DiskQueue" Version="1.5.0" />
