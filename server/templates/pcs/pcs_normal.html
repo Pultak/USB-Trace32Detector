@@ -3,7 +3,22 @@
     <title>Pcs Details</title>
 </head>
 <body>
-<div style='float:left'>
+<div style='float:left;padding-right:20px'>
+<b>Your role: {{user}}</b>
+</div>
+<div style='float:left;padding-right:5px'>
+<form action="/login" method="get">
+    <input type="submit" value="Login" />
+</form>
+</div>
+<div style='float:left;padding-right:5px'>
+<form action="/signup" method="get">
+    <input type="submit" value="Sign Up" />
+</form>
+</div>
+<form action="/logout" method="get">
+    <input type="submit" value="Logout" />
+</form>
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
@@ -18,23 +33,6 @@
   </select>
   <input type="submit" value="OK">
 </form>
-</div>
-<div style='float:left'>
-<form action="/login" method="get">
-    <input type="submit" value="Login" />
-</form>
-</div>
-<div style='float:left'>
-<form action="/signup" method="get">
-    <input type="submit" value="Sign Up" />
-</form>
-</div>
-<div style='float:left'>
-<form action="/logout" method="get">
-    <input type="submit" value="Logout" />
-</form>
-</div>
-<h4>{{user}}</h4>
 <table>
     <TR>
         <TH>ID</TH>

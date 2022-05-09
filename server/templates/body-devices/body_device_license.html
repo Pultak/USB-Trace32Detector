@@ -19,7 +19,7 @@
 </form>
 <form action="/body-devices-web-del/{{device.id}}" method="post">
   <label for="b_lic">Licenses:</label>
-  <select id="b_lic" name="b_lic">
+  <select id="b_lic" name="b_lic" >
       {% for license in dev_lic %}
     <option value={{license.id}}>{{license.name}}</option>
       {% endfor %}

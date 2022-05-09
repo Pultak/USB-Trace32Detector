@@ -93,9 +93,9 @@ async def signup(username: str = Form(...), password: str = Form(...), db: Sessi
                     <title>Signup</title>
                 </head>
                 <body>
-                    <h1>Signed in</h1>
+                    <h1>New user created. You can go back to previous page.</h1>
                     <form action="/logs-web" method="get">
-                        <input type="submit" value="Back" />
+                        <input type="submit" value="Home Page" />
                     </form>
                 </body>
             </html>
@@ -107,9 +107,9 @@ async def signup(username: str = Form(...), password: str = Form(...), db: Sessi
                             <title>Signup</title>
                         </head>
                         <body>
-                            <h1>Username taken</h1>
+                            <h1>Username taken. Try to choose different username.</h1>
                             <form action="/logs-web" method="get">
-                                <input type="submit" value="Back" />
+                                <input type="submit" value="Home Page" />
                             </form>
                         </body>
                     </html>
@@ -153,7 +153,10 @@ async def login(username: str = Form(...), password: str = Form(...), db: Sessio
                     <body>
                         <h1>Wrong Username or Password</h1>
                         <form action="/login" method="get">
-                            <input type="submit" value="Back" />
+                            <input type="submit" value="Log again" />
+                        </form>
+                        <form action="/login" method="get">
+                            <input type="submit" value="Home Page" />
                         </form>
                     </body>
                 </html>
@@ -168,9 +171,9 @@ async def login(username: str = Form(...), password: str = Form(...), db: Sessio
             <title>Login</title>
         </head>
         <body>
-            <h1>Logged in</h1>
+            <h1>Now you are logged in, you can continue to previous page.</h1>
             <form action="/logs-web" method="get">
-                <input type="submit" value="Back" />
+                <input type="submit" value="Home Page" />
             </form>
         </body>
     </html>
