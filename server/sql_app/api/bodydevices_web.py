@@ -87,10 +87,15 @@ async def filter_devices(request: Request, skip: int = 0, limit: int = 100, lic:
 
 
 @body_device_web.get("/body-device-license/{device_id}", response_class=HTMLResponse)
-async def connect_dev_lic(request: Request, device_id: int, db: Session = Depends(get_db)):
+async def connect_dev_lic(request: Request, device_id: int, db: Session = Depends(get_db),
+                          Authorize: AuthJWT = Depends()):
     """
     Returns template with one body device and all available licenses that can be assigned to it.
     """
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
     device = crud.get_body_device(db, device_id)
     dev_licenses = crud.get_bodydevice_license(db, device_id)
     lic_names = []
@@ -109,20 +114,30 @@ async def connect_dev_lic(request: Request, device_id: int, db: Session = Depend
 
 
 @body_device_web.post("/body-devices-web/{device_id}")
-async def connect_post(device_id: int, lic: str = Form(...), db: Session = Depends(get_db)):
+async def connect_post(device_id: int, lic: str = Form(...), db: Session = Depends(get_db),
+                       Authorize: AuthJWT = Depends()):
     """
     Endpoint called from template for connecting body device with license. Adds entry to bodydevices_licenses
     table and redirects to body-devices-web endpoint
     """
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
     crud.create_body_device_license(db, device_id, int(lic), datetime.now())
     return RedirectResponse(url=f"/body-devices-web", status_code=303)
 
 
 @body_device_web.post("/body-devices-web-del/{device_id}")
-async def delete_post(device_id: int, b_lic: str = Form(...), db: Session = Depends(get_db)):
+async def delete_post(device_id: int, b_lic: str = Form(...), db: Session = Depends(get_db),
+                      Authorize: AuthJWT = Depends()):
     """
     Endpoint called from template for connecting body device with license. Adds entry to devices_licenses
     table and redirects to body-devices-web endpoint
     """
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
     crud.delete_bodydevice_license(db, device_id, int(b_lic))
     return RedirectResponse(url=f"/body-devices-web", status_code=303)

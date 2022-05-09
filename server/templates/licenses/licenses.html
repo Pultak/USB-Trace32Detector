@@ -14,6 +14,7 @@
       <option value="/body-devices-web">Body Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
+      <option value="/licenses-web">Licenses</option>
   </select>
   <input type="submit" value="OK">
 </form>
@@ -23,9 +24,12 @@
     <input type="submit" value="Login" />
 </form>
 </div>
+<div style='float:left'>
 <form action="/logout" method="get">
     <input type="submit" value="Logout" />
 </form>
+</div>
+<h4>{{user}}</h4>
 <table>
     <TR>
         <TH>ID</TH>
@@ -40,5 +44,8 @@
     </TR>
     {% endfor %}
 </table>
+<form action="/license-create" method="get">
+    <input type="submit" value="Add">
+</form>
 </body>
 </html>

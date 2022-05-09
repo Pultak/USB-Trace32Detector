@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter, Form
 from fastapi import Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi_jwt_auth import AuthJWT
 from pydantic import BaseModel

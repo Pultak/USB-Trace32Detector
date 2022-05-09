@@ -45,19 +45,32 @@ async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Se
 
 
 @teams_web.get("/team-create", response_class=HTMLResponse)
-async def team_create_web(request: Request):
+async def team_create_web(request: Request, Authorize: AuthJWT = Depends()):
     """
     Returns template with form for creating new team
     """
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
     return templates.TemplateResponse("team_create.html", {"request": request})
 
 
 @teams_web.post("/teams-web-con")
-def create_team(name: str = Form(...), db: Session = Depends(get_db)):
+def create_team(name: str = Form(...), db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     """
     Endpoint called from within form for creating new team. Creates new team and returns all teams in database
     """
-    team = crud.create_team(db, name)
-    if team is None:
-        print("something went wrong")
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
+    teams = crud.get_teams(db, 0, 100)
+    teams_names = []
+    for t in teams:
+        teams_names.append(t.name)
+    if name not in teams_names:
+        team = crud.create_team(db, name)
+        if team is None:
+            print("something went wrong")
     return RedirectResponse(url=f"/teams-web", status_code=303)

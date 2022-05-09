@@ -7,6 +7,7 @@ from sql_app import crud, models, schemas
 from ..database import SessionLocal, engine
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi_jwt_auth import AuthJWT
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -30,28 +31,50 @@ def get_db():
 
 
 @licenses_web.get("/license-create", response_class=HTMLResponse)
-async def licenses_create_web(request: Request):
+async def licenses_create_web(request: Request, Authorize: AuthJWT = Depends()):
     """
     Returns template with Form for creating new license.
     """
-    return templates.TemplateResponse("license_create.html", {"request": request})
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
+    return templates.TemplateResponse("license_create.html", {"request": request, "minimum_date": date.today()})
 
 
 @licenses_web.get("/licenses-web", response_class=HTMLResponse)
-async def read_licenses_web(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def read_licenses_web(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                            Authorize: AuthJWT = Depends()):
     """
     Returns template with all licenses currently saved in database
     """
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse("licenses.html", {"request": request, "licenses": licenses})
-
+    if current_user == "admin":
+        return templates.TemplateResponse("licenses.html", {"request": request, "licenses": licenses,
+                                                            "user": current_user})
+    else:
+        current_user = "guest"
+        return templates.TemplateResponse("licenses_normal.html", {"request": request, "licenses": licenses,
+                                                            "user": current_user})
 
 @licenses_web.post("/licenses-web")
-def create_license(name: str = Form(...), expdate: date = Form(...), db: Session = Depends(get_db)):
+def create_license(name: str = Form(...), expdate: date = Form(...), db: Session = Depends(get_db),
+                   Authorize: AuthJWT = Depends()):
     """
     Endpoint called from create license form. Creates new license and redirects to devices-web endpoint
     """
-    db_license = crud.create_license(db, name, expdate)
-    if db_license is None:
-        print("something went wrong")
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
+    licenses = crud.get_licenses(db, 0, 100)
+    licenses_names = []
+    for l in licenses:
+        licenses_names.append(l.name)
+    if name not in licenses_names:
+        db_license = crud.create_license(db, name, expdate)
+        if db_license is None:
+            print("something went wrong")
     return RedirectResponse(url=f"/devices-web", status_code=303)

@@ -44,10 +44,15 @@ async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Sessio
 
 
 @pcs_web.get("/pc-team/{pc_id}", response_class=HTMLResponse)
-async def connect_pc_team(request: Request, pc_id: int, db: Session = Depends(get_db)):
+async def connect_pc_team(request: Request, pc_id: int, db: Session = Depends(get_db),
+                          Authorize: AuthJWT = Depends()):
     """
     Returns template with Form for connecting pc with team
     """
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
     pc = crud.get_pc(db, pc_id)
     teams = crud.get_teams(db, 0, 100)
     return templates.TemplateResponse("pcteam.html",
@@ -55,9 +60,14 @@ async def connect_pc_team(request: Request, pc_id: int, db: Session = Depends(ge
 
 
 @pcs_web.post("/pcs-web/{pc_id}")
-async def connect_post(pc_id: int, team: str = Form(...), db: Session = Depends(get_db)):
+async def connect_post(pc_id: int, team: str = Form(...), db: Session = Depends(get_db),
+                       Authorize: AuthJWT = Depends()):
     """
     Endpoint called from within form for connecting pc with team. Updates certain pc with new team.
     """
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
     old_pc = crud.update_pc(db, pc_id, team)
     return RedirectResponse(url=f"/pcs-web", status_code=303)
