@@ -8,7 +8,7 @@
 <h6><p>Username: {{pc.username}}</p>
     <p>Hostname: {{pc.hostname}}</p>
 </h6>
-<form action="/api/v1/pcs-web/{{pc.id}}" method="post">
+<form action="/pcs-web/{{pc.id}}" method="post">
   <label for="team">Teams:</label>
   <select id="team" name="team">
       {% for team in teams %}

@@ -13,10 +13,10 @@ from fastapi.templating import Jinja2Templates
 models.Base.metadata.create_all(bind=engine)
 
 # Path to html templates used in this file
-templates = Jinja2Templates(directory="templates/usb-logs")
+templates = Jinja2Templates(directory="templates/ld-logs")
 
 # prefix used for all endpoints in this file
-usblogs_web = APIRouter(prefix="")
+ldlogs_web = APIRouter(prefix="")
 
 
 # Dependency
@@ -28,7 +28,7 @@ def get_db():
         db.close()
 
 
-@usblogs_web.get("/logs-web", response_class=HTMLResponse)
+@ldlogs_web.get("/ldlogs-web", response_class=HTMLResponse)
 async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
                     Authorize: AuthJWT = Depends()):
     """
@@ -36,7 +36,7 @@ async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Sessi
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
-    logs = crud.get_logs(db, skip=skip, limit=limit)
+    logs = crud.get_ld_logs(db, skip=skip, limit=limit)
     pcs = []
     for log in logs:
         if log.pc_id not in pcs:
@@ -45,40 +45,37 @@ async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Sessi
     teams = crud.get_teams(db, skip=skip, limit=limit)
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
     if current_user == "admin":
-        return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
-                                                        "licenses": licenses, "user": current_user})
+        return templates.TemplateResponse("ldlogs.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
+                                                          "licenses": licenses, "user": current_user})
     else:
         current_user = "guest"
-        return templates.TemplateResponse("logs_normal.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
-                                                        "licenses": licenses, "user": current_user})
+        return templates.TemplateResponse("ldlogs_normal.html",
+                                          {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
+                                           "licenses": licenses, "user": current_user})
 
 
-@usblogs_web.post("/logs-web", response_class=HTMLResponse)
+@ldlogs_web.post("/ldlogs-web", response_class=HTMLResponse)
 async def filter_logs(request: Request, pc: str = Form("all"), team: str = Form("all"), lic: str = Form("all"),
                       skip: int = 0, limit: int = 100,
                       db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     """
-    Endpoint used for filtering usb logs by user given form inputs.
+    Endpoint used for filtering ld logs by user given form inputs.
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
-    log = crud.get_filtered_logs(db, pc, team, lic)
+    log = crud.get_filtered_ldlogs(db, pc, team, lic)
     logs_ids = []
     for l in log:
         logs_ids.append(l[0])
-    logs = crud.find_filtered_logs(db, logs_ids)
+    logs = crud.find_filtered_ldlogs(db, logs_ids)
     pc_obj = crud.get_pcs(db, skip=skip, limit=limit)
     teams = crud.get_teams(db, skip=skip, limit=limit)
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
     if current_user == "admin":
-        return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
-                                                        "licenses": licenses, "user": current_user})
+        return templates.TemplateResponse("ldlogs.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
+                                                          "licenses": licenses, "user": current_user})
     else:
         current_user = "guest"
-        return templates.TemplateResponse("logs_normal.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
-                                                        "licenses": licenses, "user": current_user})
-
-
-@usblogs_web.get("/", response_class=HTMLResponse)
-async def crossroad(request: Request):
-    return templates.TemplateResponse("crossroad.html", {"request": request})
+        return templates.TemplateResponse("ldlogs_normal.html",
+                                          {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
+                                           "licenses": licenses, "user": current_user})

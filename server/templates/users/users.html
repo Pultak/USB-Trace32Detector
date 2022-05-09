@@ -1,11 +1,8 @@
 <html>
 <head>
-    <title>Licenses Details</title>
+    <title>Users Details</title>
 </head>
 <body>
-<div style='float:left;padding-right:20px'>
-<b>Your role: {{user}}</b>
-</div>
 <div style='float:left;padding-right:5px'>
 <form action="/login" method="get">
     <input type="submit" value="Login" />
@@ -37,19 +34,16 @@
 <table>
     <TR>
         <TH>ID</TH>
-        <TH>Name</TH>
-        <TH>Expiration Date</TH>
+        <TH>Username</TH>
+        <TH>Role</TH>
     </TR>
-    {% for license in licenses %}
+    {% for user in users %}
     <TR>
-        <TD class="ID">{{license.id}}</TD>
-        <TD class="Vendor ID">{{license.name}}</TD>
-        <TD class="Product ID">{{license.expiration_date}}</TD>
+        <TD class="ID"><a href="/user-role/{{user.id}}">{{user.id}}</a></TD>
+        <TD class="Username">{{user.username}}</TD>
+        <TD class="Role">{{user.role}}</TD>
     </TR>
     {% endfor %}
 </table>
-<form action="/license-create" method="get">
-    <input type="submit" value="Add">
-</form>
 </body>
 </html>
