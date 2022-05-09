@@ -6,3 +6,5 @@ psycopg2-binary==2.8.6
 jinja2==3.1.1
 python-multipart==0.0.5
 fastapi-jwt-auth==0.5.0
+passlib==1.7.4
+bcrypt==3.2.2

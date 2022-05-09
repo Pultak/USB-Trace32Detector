@@ -165,3 +165,14 @@ class LDLog(Base):
     ldpc = relationship("PC", back_populates="ld_pc")
     head_device = relationship("HeadDevice", back_populates="h_logs")
     body_device = relationship("BodyDevice", back_populates="b_logs")
+
+class User(Base):
+    """
+    Class defining user in database with its own role
+    """
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, index=True, nullable=False)
+    password = Column(String, index=True, nullable=False)
+    role = Column(String, index=True, nullable=False)

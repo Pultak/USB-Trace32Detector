@@ -99,7 +99,7 @@ def get_bodydevicelicense_by_bodydevicelicense(db: Session, device_id: int, lice
     returns entry in bodydevices_licenses table with given body device id and license id
     """
     return db.query(models.BodyDeviceLicense).filter(and_(models.BodyDeviceLicense.bodydevice_id == device_id,
-                                                      models.BodyDeviceLicense.license_id == license_id)).first()
+                                                          models.BodyDeviceLicense.license_id == license_id)).first()
 
 
 def get_license_bodydevice(db: Session, license_id: int):
@@ -187,6 +187,18 @@ def update_pc(db: Session, pc_id: int, team: str):
     db.commit()
     db.refresh(old_pc)
     return old_pc
+
+def change_role(db: Session, usr_id: int, role: str):
+    """
+    Updates team of one specific pc
+    """
+    old_usr = find_user_byid(db, usr_id)
+    new = {'id': old_usr.id, 'username': old_usr.username, 'password': old_usr.password, 'role': role}
+    for key, value in new.items():
+        setattr(old_usr, key, value)
+    db.commit()
+    db.refresh(old_usr)
+    return old_usr
 
 
 def get_pcs(db: Session, skip: int = 0, limit: int = 100):
@@ -482,3 +494,35 @@ def create_device_logs(db: Session, item: schemas.USBTempBase, dev_id: int, pc_i
     db.commit()
     db.refresh(db_log)
     return db_log
+
+
+def get_users(db: Session, skip: int = 0, limit: int = 100):
+    """
+    Returns all users saved in database
+    """
+    return db.query(models.User).offset(skip).limit(limit).all()
+
+
+def find_user(db: Session, name: str):
+    """
+    Finds one user by given username
+    """
+    return db.query(models.User).filter(models.User.username == name).first()
+
+
+def find_user_byid(db: Session, id: int):
+    """
+    Finds one user by given id
+    """
+    return db.query(models.User).filter(models.User.id == id).first()
+
+
+def create_user(db: Session, name: str, passw: str, rol: str):
+    """
+    Creates new user
+    """
+    db_user = models.User(username=name, password=passw, role=rol)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user

@@ -44,10 +44,13 @@ async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Sessi
     pc_obj = crud.find_pcs(db, pcs)
     teams = crud.get_teams(db, skip=skip, limit=limit)
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    if current_user != "admin":
+    if current_user == "admin":
+        return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
+                                                        "licenses": licenses, "user": current_user})
+    else:
         current_user = "guest"
-    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
-                                                    "licenses": licenses, "user": current_user})
+        return templates.TemplateResponse("logs_normal.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
+                                                        "licenses": licenses, "user": current_user})
 
 
 @usblogs_web.post("/logs-web", response_class=HTMLResponse)
@@ -67,10 +70,13 @@ async def filter_logs(request: Request, pc: str = Form("all"), team: str = Form(
     pc_obj = crud.get_pcs(db, skip=skip, limit=limit)
     teams = crud.get_teams(db, skip=skip, limit=limit)
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    if current_user != "admin":
+    if current_user == "admin":
+        return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
+                                                        "licenses": licenses, "user": current_user})
+    else:
         current_user = "guest"
-    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
-                                                    "licenses": licenses, "user": current_user})
+        return templates.TemplateResponse("logs_normal.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
+                                                        "licenses": licenses, "user": current_user})
 
 
 @usblogs_web.get("/", response_class=HTMLResponse)

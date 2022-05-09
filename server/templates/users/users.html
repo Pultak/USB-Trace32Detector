@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Pcs Details</title>
+    <title>Users Details</title>
 </head>
 <body>
 <div style='float:left'>
@@ -29,29 +29,20 @@
     <input type="submit" value="Sign Up" />
 </form>
 </div>
-<div style='float:left'>
 <form action="/logout" method="get">
     <input type="submit" value="Logout" />
 </form>
-</div>
-<h4>{{user}}</h4>
 <table>
     <TR>
         <TH>ID</TH>
         <TH>Username</TH>
-        <TH>Hostname</TH>
-        <TH>Team</TH>
+        <TH>Role</TH>
     </TR>
-    {% for pc in pcs %}
+    {% for user in users %}
     <TR>
-        <TD class="ID">{{pc.id}}</TD>
-        <TD class="Vendor ID">{{pc.username}}</TD>
-        <TD class="Product ID">{{pc.hostname}}</TD>
-        {% if pc.team == None %}
-            <TD class="Team">NONE</TD>
-        {% else %}
-            <TD class="Team">{{pc.team.name}}</TD>
-        {% endif %}
+        <TD class="ID"><a href="/user-role/{{user.id}}">{{user.id}}</a></TD>
+        <TD class="Username">{{user.username}}</TD>
+        <TD class="Role">{{user.role}}</TD>
     </TR>
     {% endfor %}
 </table>

@@ -232,3 +232,22 @@ class LDTemp(LDTempCreate):
 
     class Config:
         orm_mode = True
+
+
+class UserBase(BaseModel):
+    """
+    Classes used for creating new User entry
+    """
+    username: str
+    password: str
+    role: str
+
+class UserCreate(UserBase):
+    pass
+
+
+class User(UserCreate):
+    id: int
+
+    class Config:
+        orm_mode = True
