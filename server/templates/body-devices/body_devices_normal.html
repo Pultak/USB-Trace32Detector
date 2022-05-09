@@ -1,0 +1,67 @@
+<html>
+<head>
+    <title>Devices Details</title>
+</head>
+<body>
+<div style='float:left;padding-right:20px'>
+<b>Your role: {{user}}</b>
+</div>
+<div style='float:left;padding-right:5px'>
+<form action="/login" method="get">
+    <input type="submit" value="Login" />
+</form>
+</div>
+<div style='float:left;padding-right:5px'>
+<form action="/signup" method="get">
+    <input type="submit" value="Sign Up" />
+</form>
+</div>
+<form action="/logout" method="get">
+    <input type="submit" value="Logout" />
+</form>
+<form action="" method="get">
+  <label for="view">Choose view:</label>
+  <select id="view" name="view" onchange="this.form.action=this.value;">
+      <option value=""></option>
+      <option value="/logs-web">Logs</option>
+      <option value="/ldlogs-web">LD Logs</option>
+      <option value="/devices-web">Devices</option>
+      <option value="/body-devices-web">Body Devices</option>
+      <option value="/teams-web">Teams</option>
+      <option value="/pcs-web">PCs</option>
+      <option value="/licenses-web">Licenses</option>
+  </select>
+  <input type="submit" value="OK">
+</form>
+<form action="/body-devices-web" method="post">
+    <label for="lic">License:</label>
+    <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
+    <datalist id="licenses">
+        {% for license in licenses %}
+        <option value="{{license.name}}"></option>
+        {% endfor %}
+    </datalist>
+  <input type="submit" value="Filter">
+</form>
+<table>
+    <TR>
+        <TH>ID</TH>
+        <TH>Serial Number</TH>
+        <TH>Licenses</TH>
+        <TH>Status</TH>
+    </TR>
+    {% for i in range(devs) %}
+    <TR>
+        <TD class="ID">{{devices[i].id}}</TD>
+        <TD class="Serial Number">{{devices[i].serial_number}}</TD>
+        <TD class="License">
+            {% for lic in devices[i].debug_licenses %}
+                {{lic.b_licenses.name}}<BR>
+            {% endfor %}
+        </TD>
+        <TD class="Status">{{statuses[i]}}</TD>
+    </TR>
+    {% endfor %}
+</table>
+</body>
+</html>
