@@ -1,0 +1,1911 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>sql_app.models API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>sql_app.models</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+from .database import Base
+
+
+class Device(Base):
+    &#34;&#34;&#34;
+    Class defining database table devices
+    &#34;&#34;&#34;
+    __tablename__ = &#34;devices&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendor_id = Column(String, index=True, nullable=False)
+    product_id = Column(String, index=True, nullable=False)
+    serial_number = Column(String, index=True, nullable=False)
+    assigned = Column(Boolean, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with usb_logs and licenses
+    # tables
+    logs = relationship(&#34;USBLog&#34;, back_populates=&#34;device&#34;)
+    licenses = relationship(&#34;DeviceLicense&#34;, back_populates=&#34;device_lic&#34;)
+
+
+class USBLog(Base):
+    &#34;&#34;&#34;
+    Class defining database table usb_logs
+    &#34;&#34;&#34;
+    __tablename__ = &#34;usb_logs&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    pc_id = Column(Integer, ForeignKey(&#34;pc.id&#34;))
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    status = Column(String, index=True, nullable=False)
+    device_id = Column(Integer, ForeignKey(&#34;devices.id&#34;))
+
+    # relationships for foreign keys, thus connecting table with devices and pc
+    # tables
+    device = relationship(&#34;Device&#34;, back_populates=&#34;logs&#34;)
+    pc = relationship(&#34;PC&#34;, back_populates=&#34;logs_pc&#34;)
+
+
+class License(Base):
+    &#34;&#34;&#34;
+    Class defining database table licenses
+    &#34;&#34;&#34;
+    __tablename__ = &#34;licenses&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
+    expiration_date = Column(DateTime(timezone=True), server_default=func.now())
+
+    # relationships for foreign keys, thus connecting table with devices table
+    devices = relationship(&#34;DeviceLicense&#34;, back_populates=&#34;licenses&#34;)
+
+
+class DeviceLicense(Base):
+    &#34;&#34;&#34;
+    Class defining database table devices_licenses
+    &#34;&#34;&#34;
+    __tablename__ = &#34;devices_licenses&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    device_id = Column(Integer, ForeignKey(&#34;devices.id&#34;))
+    license_id = Column(Integer, ForeignKey(&#34;licenses.id&#34;))
+    assigned_datetime = Column(String, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with devices and licenses
+    # tables
+    device_lic = relationship(&#34;Device&#34;, back_populates=&#34;licenses&#34;)
+    licenses = relationship(&#34;License&#34;, back_populates=&#34;devices&#34;)
+
+
+class PC(Base):
+    &#34;&#34;&#34;
+    Class defining database table pc
+    &#34;&#34;&#34;
+    __tablename__ = &#34;pc&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, index=True, nullable=False)
+    hostname = Column(String, index=True, nullable=False)
+    assigned = Column(Boolean, index=True, nullable=False)
+    team_id = Column(Integer, ForeignKey(&#34;teams.id&#34;))
+
+    # relationships for foreign keys, thus connecting table with teams, usb_logs and ld_logs
+    # tables
+    team = relationship(&#34;Team&#34;, back_populates=&#34;pcs&#34;)
+    logs_pc = relationship(&#34;USBLog&#34;, back_populates=&#34;pc&#34;)
+    ld_pc = relationship(&#34;LDLog&#34;, back_populates=&#34;ldpc&#34;)
+
+
+class Team(Base):
+    &#34;&#34;&#34;
+    Class defining database table teams
+    &#34;&#34;&#34;
+    __tablename__ = &#34;teams&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with pc table
+    pcs = relationship(&#34;PC&#34;, back_populates=&#34;team&#34;)
+
+
+class HeadDevice(Base):
+    &#34;&#34;&#34;
+    Class defining database table head_devices
+    &#34;&#34;&#34;
+    __tablename__ = &#34;head_devices&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    serial_number = Column(String, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with ld_logs table
+    h_logs = relationship(&#34;LDLog&#34;, back_populates=&#34;head_device&#34;)
+
+
+class BodyDevice(Base):
+    &#34;&#34;&#34;
+    Class defining database table body_devices
+    &#34;&#34;&#34;
+    __tablename__ = &#34;body_devices&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    serial_number = Column(String, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with ld_logs table
+    b_logs = relationship(&#34;LDLog&#34;, back_populates=&#34;body_device&#34;)
+
+
+class LDLog(Base):
+    &#34;&#34;&#34;
+    Class defining database table ld_logs
+    &#34;&#34;&#34;
+    __tablename__ = &#34;ld_logs&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    pc_id = Column(Integer, ForeignKey(&#34;pc.id&#34;))
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    status = Column(String, index=True, nullable=False)
+    head_id = Column(Integer, ForeignKey(&#34;head_devices.id&#34;))
+    body_id = Column(Integer, ForeignKey(&#34;body_devices.id&#34;))
+
+    # relationships for foreign keys, thus connecting table with pc, head_devices and body_devices
+    # tables
+    ldpc = relationship(&#34;PC&#34;, back_populates=&#34;ld_pc&#34;)
+    head_device = relationship(&#34;HeadDevice&#34;, back_populates=&#34;h_logs&#34;)
+    body_device = relationship(&#34;BodyDevice&#34;, back_populates=&#34;b_logs&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="sql_app.models.BodyDevice"><code class="flex name class">
+<span>class <span class="ident">BodyDevice</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining database table body_devices</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code>kwargs</code>.</p>
+<p>Only keys that are present as
+attributes of the instance's class are allowed. These could be,
+for example, any mapped columns or relationships.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BodyDevice(Base):
+    &#34;&#34;&#34;
+    Class defining database table body_devices
+    &#34;&#34;&#34;
+    __tablename__ = &#34;body_devices&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    serial_number = Column(String, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with ld_logs table
+    b_logs = relationship(&#34;LDLog&#34;, back_populates=&#34;body_device&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>sqlalchemy.orm.decl_api.Base</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="sql_app.models.BodyDevice.b_logs"><code class="name">var <span class="ident">b_logs</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.BodyDevice.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.BodyDevice.serial_number"><code class="name">var <span class="ident">serial_number</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="sql_app.models.Device"><code class="flex name class">
+<span>class <span class="ident">Device</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining database table devices</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code>kwargs</code>.</p>
+<p>Only keys that are present as
+attributes of the instance's class are allowed. These could be,
+for example, any mapped columns or relationships.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Device(Base):
+    &#34;&#34;&#34;
+    Class defining database table devices
+    &#34;&#34;&#34;
+    __tablename__ = &#34;devices&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendor_id = Column(String, index=True, nullable=False)
+    product_id = Column(String, index=True, nullable=False)
+    serial_number = Column(String, index=True, nullable=False)
+    assigned = Column(Boolean, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with usb_logs and licenses
+    # tables
+    logs = relationship(&#34;USBLog&#34;, back_populates=&#34;device&#34;)
+    licenses = relationship(&#34;DeviceLicense&#34;, back_populates=&#34;device_lic&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>sqlalchemy.orm.decl_api.Base</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="sql_app.models.Device.assigned"><code class="name">var <span class="ident">assigned</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Device.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Device.licenses"><code class="name">var <span class="ident">licenses</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Device.logs"><code class="name">var <span class="ident">logs</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Device.product_id"><code class="name">var <span class="ident">product_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Device.serial_number"><code class="name">var <span class="ident">serial_number</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Device.vendor_id"><code class="name">var <span class="ident">vendor_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="sql_app.models.DeviceLicense"><code class="flex name class">
+<span>class <span class="ident">DeviceLicense</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining database table devices_licenses</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code>kwargs</code>.</p>
+<p>Only keys that are present as
+attributes of the instance's class are allowed. These could be,
+for example, any mapped columns or relationships.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DeviceLicense(Base):
+    &#34;&#34;&#34;
+    Class defining database table devices_licenses
+    &#34;&#34;&#34;
+    __tablename__ = &#34;devices_licenses&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    device_id = Column(Integer, ForeignKey(&#34;devices.id&#34;))
+    license_id = Column(Integer, ForeignKey(&#34;licenses.id&#34;))
+    assigned_datetime = Column(String, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with devices and licenses
+    # tables
+    device_lic = relationship(&#34;Device&#34;, back_populates=&#34;licenses&#34;)
+    licenses = relationship(&#34;License&#34;, back_populates=&#34;devices&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>sqlalchemy.orm.decl_api.Base</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="sql_app.models.DeviceLicense.assigned_datetime"><code class="name">var <span class="ident">assigned_datetime</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.DeviceLicense.device_id"><code class="name">var <span class="ident">device_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.DeviceLicense.device_lic"><code class="name">var <span class="ident">device_lic</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.DeviceLicense.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.DeviceLicense.license_id"><code class="name">var <span class="ident">license_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.DeviceLicense.licenses"><code class="name">var <span class="ident">licenses</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="sql_app.models.HeadDevice"><code class="flex name class">
+<span>class <span class="ident">HeadDevice</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining database table head_devices</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code>kwargs</code>.</p>
+<p>Only keys that are present as
+attributes of the instance's class are allowed. These could be,
+for example, any mapped columns or relationships.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class HeadDevice(Base):
+    &#34;&#34;&#34;
+    Class defining database table head_devices
+    &#34;&#34;&#34;
+    __tablename__ = &#34;head_devices&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    serial_number = Column(String, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with ld_logs table
+    h_logs = relationship(&#34;LDLog&#34;, back_populates=&#34;head_device&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>sqlalchemy.orm.decl_api.Base</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="sql_app.models.HeadDevice.h_logs"><code class="name">var <span class="ident">h_logs</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.HeadDevice.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.HeadDevice.serial_number"><code class="name">var <span class="ident">serial_number</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="sql_app.models.LDLog"><code class="flex name class">
+<span>class <span class="ident">LDLog</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining database table ld_logs</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code>kwargs</code>.</p>
+<p>Only keys that are present as
+attributes of the instance's class are allowed. These could be,
+for example, any mapped columns or relationships.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LDLog(Base):
+    &#34;&#34;&#34;
+    Class defining database table ld_logs
+    &#34;&#34;&#34;
+    __tablename__ = &#34;ld_logs&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    pc_id = Column(Integer, ForeignKey(&#34;pc.id&#34;))
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    status = Column(String, index=True, nullable=False)
+    head_id = Column(Integer, ForeignKey(&#34;head_devices.id&#34;))
+    body_id = Column(Integer, ForeignKey(&#34;body_devices.id&#34;))
+
+    # relationships for foreign keys, thus connecting table with pc, head_devices and body_devices
+    # tables
+    ldpc = relationship(&#34;PC&#34;, back_populates=&#34;ld_pc&#34;)
+    head_device = relationship(&#34;HeadDevice&#34;, back_populates=&#34;h_logs&#34;)
+    body_device = relationship(&#34;BodyDevice&#34;, back_populates=&#34;b_logs&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>sqlalchemy.orm.decl_api.Base</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="sql_app.models.LDLog.body_device"><code class="name">var <span class="ident">body_device</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.LDLog.body_id"><code class="name">var <span class="ident">body_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.LDLog.head_device"><code class="name">var <span class="ident">head_device</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.LDLog.head_id"><code class="name">var <span class="ident">head_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.LDLog.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.LDLog.ldpc"><code class="name">var <span class="ident">ldpc</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.LDLog.pc_id"><code class="name">var <span class="ident">pc_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.LDLog.status"><code class="name">var <span class="ident">status</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.LDLog.timestamp"><code class="name">var <span class="ident">timestamp</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="sql_app.models.License"><code class="flex name class">
+<span>class <span class="ident">License</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining database table licenses</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code>kwargs</code>.</p>
+<p>Only keys that are present as
+attributes of the instance's class are allowed. These could be,
+for example, any mapped columns or relationships.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class License(Base):
+    &#34;&#34;&#34;
+    Class defining database table licenses
+    &#34;&#34;&#34;
+    __tablename__ = &#34;licenses&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
+    expiration_date = Column(DateTime(timezone=True), server_default=func.now())
+
+    # relationships for foreign keys, thus connecting table with devices table
+    devices = relationship(&#34;DeviceLicense&#34;, back_populates=&#34;licenses&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>sqlalchemy.orm.decl_api.Base</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="sql_app.models.License.devices"><code class="name">var <span class="ident">devices</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.License.expiration_date"><code class="name">var <span class="ident">expiration_date</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.License.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.License.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="sql_app.models.PC"><code class="flex name class">
+<span>class <span class="ident">PC</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining database table pc</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code>kwargs</code>.</p>
+<p>Only keys that are present as
+attributes of the instance's class are allowed. These could be,
+for example, any mapped columns or relationships.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PC(Base):
+    &#34;&#34;&#34;
+    Class defining database table pc
+    &#34;&#34;&#34;
+    __tablename__ = &#34;pc&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, index=True, nullable=False)
+    hostname = Column(String, index=True, nullable=False)
+    assigned = Column(Boolean, index=True, nullable=False)
+    team_id = Column(Integer, ForeignKey(&#34;teams.id&#34;))
+
+    # relationships for foreign keys, thus connecting table with teams, usb_logs and ld_logs
+    # tables
+    team = relationship(&#34;Team&#34;, back_populates=&#34;pcs&#34;)
+    logs_pc = relationship(&#34;USBLog&#34;, back_populates=&#34;pc&#34;)
+    ld_pc = relationship(&#34;LDLog&#34;, back_populates=&#34;ldpc&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>sqlalchemy.orm.decl_api.Base</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="sql_app.models.PC.assigned"><code class="name">var <span class="ident">assigned</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.PC.hostname"><code class="name">var <span class="ident">hostname</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.PC.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.PC.ld_pc"><code class="name">var <span class="ident">ld_pc</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.PC.logs_pc"><code class="name">var <span class="ident">logs_pc</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.PC.team"><code class="name">var <span class="ident">team</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.PC.team_id"><code class="name">var <span class="ident">team_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.PC.username"><code class="name">var <span class="ident">username</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="sql_app.models.Team"><code class="flex name class">
+<span>class <span class="ident">Team</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining database table teams</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code>kwargs</code>.</p>
+<p>Only keys that are present as
+attributes of the instance's class are allowed. These could be,
+for example, any mapped columns or relationships.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Team(Base):
+    &#34;&#34;&#34;
+    Class defining database table teams
+    &#34;&#34;&#34;
+    __tablename__ = &#34;teams&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
+
+    # relationships for foreign keys, thus connecting table with pc table
+    pcs = relationship(&#34;PC&#34;, back_populates=&#34;team&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>sqlalchemy.orm.decl_api.Base</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="sql_app.models.Team.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Team.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Team.pcs"><code class="name">var <span class="ident">pcs</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="sql_app.models.USBLog"><code class="flex name class">
+<span>class <span class="ident">USBLog</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining database table usb_logs</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code>kwargs</code>.</p>
+<p>Only keys that are present as
+attributes of the instance's class are allowed. These could be,
+for example, any mapped columns or relationships.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class USBLog(Base):
+    &#34;&#34;&#34;
+    Class defining database table usb_logs
+    &#34;&#34;&#34;
+    __tablename__ = &#34;usb_logs&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    pc_id = Column(Integer, ForeignKey(&#34;pc.id&#34;))
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    status = Column(String, index=True, nullable=False)
+    device_id = Column(Integer, ForeignKey(&#34;devices.id&#34;))
+
+    # relationships for foreign keys, thus connecting table with devices and pc
+    # tables
+    device = relationship(&#34;Device&#34;, back_populates=&#34;logs&#34;)
+    pc = relationship(&#34;PC&#34;, back_populates=&#34;logs_pc&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>sqlalchemy.orm.decl_api.Base</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="sql_app.models.USBLog.device"><code class="name">var <span class="ident">device</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.USBLog.device_id"><code class="name">var <span class="ident">device_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.USBLog.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.USBLog.pc"><code class="name">var <span class="ident">pc</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.USBLog.pc_id"><code class="name">var <span class="ident">pc_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.USBLog.status"><code class="name">var <span class="ident">status</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.USBLog.timestamp"><code class="name">var <span class="ident">timestamp</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="sql_app" href="index.html">sql_app</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="sql_app.models.BodyDevice" href="#sql_app.models.BodyDevice">BodyDevice</a></code></h4>
+<ul class="">
+<li><code><a title="sql_app.models.BodyDevice.b_logs" href="#sql_app.models.BodyDevice.b_logs">b_logs</a></code></li>
+<li><code><a title="sql_app.models.BodyDevice.id" href="#sql_app.models.BodyDevice.id">id</a></code></li>
+<li><code><a title="sql_app.models.BodyDevice.serial_number" href="#sql_app.models.BodyDevice.serial_number">serial_number</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.models.Device" href="#sql_app.models.Device">Device</a></code></h4>
+<ul class="two-column">
+<li><code><a title="sql_app.models.Device.assigned" href="#sql_app.models.Device.assigned">assigned</a></code></li>
+<li><code><a title="sql_app.models.Device.id" href="#sql_app.models.Device.id">id</a></code></li>
+<li><code><a title="sql_app.models.Device.licenses" href="#sql_app.models.Device.licenses">licenses</a></code></li>
+<li><code><a title="sql_app.models.Device.logs" href="#sql_app.models.Device.logs">logs</a></code></li>
+<li><code><a title="sql_app.models.Device.product_id" href="#sql_app.models.Device.product_id">product_id</a></code></li>
+<li><code><a title="sql_app.models.Device.serial_number" href="#sql_app.models.Device.serial_number">serial_number</a></code></li>
+<li><code><a title="sql_app.models.Device.vendor_id" href="#sql_app.models.Device.vendor_id">vendor_id</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.models.DeviceLicense" href="#sql_app.models.DeviceLicense">DeviceLicense</a></code></h4>
+<ul class="two-column">
+<li><code><a title="sql_app.models.DeviceLicense.assigned_datetime" href="#sql_app.models.DeviceLicense.assigned_datetime">assigned_datetime</a></code></li>
+<li><code><a title="sql_app.models.DeviceLicense.device_id" href="#sql_app.models.DeviceLicense.device_id">device_id</a></code></li>
+<li><code><a title="sql_app.models.DeviceLicense.device_lic" href="#sql_app.models.DeviceLicense.device_lic">device_lic</a></code></li>
+<li><code><a title="sql_app.models.DeviceLicense.id" href="#sql_app.models.DeviceLicense.id">id</a></code></li>
+<li><code><a title="sql_app.models.DeviceLicense.license_id" href="#sql_app.models.DeviceLicense.license_id">license_id</a></code></li>
+<li><code><a title="sql_app.models.DeviceLicense.licenses" href="#sql_app.models.DeviceLicense.licenses">licenses</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.models.HeadDevice" href="#sql_app.models.HeadDevice">HeadDevice</a></code></h4>
+<ul class="">
+<li><code><a title="sql_app.models.HeadDevice.h_logs" href="#sql_app.models.HeadDevice.h_logs">h_logs</a></code></li>
+<li><code><a title="sql_app.models.HeadDevice.id" href="#sql_app.models.HeadDevice.id">id</a></code></li>
+<li><code><a title="sql_app.models.HeadDevice.serial_number" href="#sql_app.models.HeadDevice.serial_number">serial_number</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.models.LDLog" href="#sql_app.models.LDLog">LDLog</a></code></h4>
+<ul class="two-column">
+<li><code><a title="sql_app.models.LDLog.body_device" href="#sql_app.models.LDLog.body_device">body_device</a></code></li>
+<li><code><a title="sql_app.models.LDLog.body_id" href="#sql_app.models.LDLog.body_id">body_id</a></code></li>
+<li><code><a title="sql_app.models.LDLog.head_device" href="#sql_app.models.LDLog.head_device">head_device</a></code></li>
+<li><code><a title="sql_app.models.LDLog.head_id" href="#sql_app.models.LDLog.head_id">head_id</a></code></li>
+<li><code><a title="sql_app.models.LDLog.id" href="#sql_app.models.LDLog.id">id</a></code></li>
+<li><code><a title="sql_app.models.LDLog.ldpc" href="#sql_app.models.LDLog.ldpc">ldpc</a></code></li>
+<li><code><a title="sql_app.models.LDLog.pc_id" href="#sql_app.models.LDLog.pc_id">pc_id</a></code></li>
+<li><code><a title="sql_app.models.LDLog.status" href="#sql_app.models.LDLog.status">status</a></code></li>
+<li><code><a title="sql_app.models.LDLog.timestamp" href="#sql_app.models.LDLog.timestamp">timestamp</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.models.License" href="#sql_app.models.License">License</a></code></h4>
+<ul class="">
+<li><code><a title="sql_app.models.License.devices" href="#sql_app.models.License.devices">devices</a></code></li>
+<li><code><a title="sql_app.models.License.expiration_date" href="#sql_app.models.License.expiration_date">expiration_date</a></code></li>
+<li><code><a title="sql_app.models.License.id" href="#sql_app.models.License.id">id</a></code></li>
+<li><code><a title="sql_app.models.License.name" href="#sql_app.models.License.name">name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.models.PC" href="#sql_app.models.PC">PC</a></code></h4>
+<ul class="two-column">
+<li><code><a title="sql_app.models.PC.assigned" href="#sql_app.models.PC.assigned">assigned</a></code></li>
+<li><code><a title="sql_app.models.PC.hostname" href="#sql_app.models.PC.hostname">hostname</a></code></li>
+<li><code><a title="sql_app.models.PC.id" href="#sql_app.models.PC.id">id</a></code></li>
+<li><code><a title="sql_app.models.PC.ld_pc" href="#sql_app.models.PC.ld_pc">ld_pc</a></code></li>
+<li><code><a title="sql_app.models.PC.logs_pc" href="#sql_app.models.PC.logs_pc">logs_pc</a></code></li>
+<li><code><a title="sql_app.models.PC.team" href="#sql_app.models.PC.team">team</a></code></li>
+<li><code><a title="sql_app.models.PC.team_id" href="#sql_app.models.PC.team_id">team_id</a></code></li>
+<li><code><a title="sql_app.models.PC.username" href="#sql_app.models.PC.username">username</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.models.Team" href="#sql_app.models.Team">Team</a></code></h4>
+<ul class="">
+<li><code><a title="sql_app.models.Team.id" href="#sql_app.models.Team.id">id</a></code></li>
+<li><code><a title="sql_app.models.Team.name" href="#sql_app.models.Team.name">name</a></code></li>
+<li><code><a title="sql_app.models.Team.pcs" href="#sql_app.models.Team.pcs">pcs</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.models.USBLog" href="#sql_app.models.USBLog">USBLog</a></code></h4>
+<ul class="two-column">
+<li><code><a title="sql_app.models.USBLog.device" href="#sql_app.models.USBLog.device">device</a></code></li>
+<li><code><a title="sql_app.models.USBLog.device_id" href="#sql_app.models.USBLog.device_id">device_id</a></code></li>
+<li><code><a title="sql_app.models.USBLog.id" href="#sql_app.models.USBLog.id">id</a></code></li>
+<li><code><a title="sql_app.models.USBLog.pc" href="#sql_app.models.USBLog.pc">pc</a></code></li>
+<li><code><a title="sql_app.models.USBLog.pc_id" href="#sql_app.models.USBLog.pc_id">pc_id</a></code></li>
+<li><code><a title="sql_app.models.USBLog.status" href="#sql_app.models.USBLog.status">status</a></code></li>
+<li><code><a title="sql_app.models.USBLog.timestamp" href="#sql_app.models.USBLog.timestamp">timestamp</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

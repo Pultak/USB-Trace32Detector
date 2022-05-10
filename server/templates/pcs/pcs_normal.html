@@ -1,0 +1,57 @@
+<html>
+<head>
+    <title>Pcs Details</title>
+</head>
+<body>
+<div style='float:left;padding-right:20px'>
+<b>Your role: {{user}}</b>
+</div>
+<div style='float:left;padding-right:5px'>
+<form action="/login" method="get">
+    <input type="submit" value="Login" />
+</form>
+</div>
+<div style='float:left;padding-right:5px'>
+<form action="/signup" method="get">
+    <input type="submit" value="Sign Up" />
+</form>
+</div>
+<form action="/logout" method="get">
+    <input type="submit" value="Logout" />
+</form>
+<form action="" method="get">
+  <label for="view">Choose view:</label>
+  <select id="view" name="view" onchange="this.form.action=this.value;">
+      <option value=""></option>
+      <option value="/logs-web">Logs</option>
+      <option value="/ldlogs-web">LD Logs</option>
+      <option value="/devices-web">Devices</option>
+      <option value="/body-devices-web">Body Devices</option>
+      <option value="/teams-web">Teams</option>
+      <option value="/pcs-web">PCs</option>
+      <option value="/licenses-web">Licenses</option>
+  </select>
+  <input type="submit" value="OK">
+</form>
+<table>
+    <TR>
+        <TH>ID</TH>
+        <TH>Username</TH>
+        <TH>Hostname</TH>
+        <TH>Team</TH>
+    </TR>
+    {% for pc in pcs %}
+    <TR>
+        <TD class="ID">{{pc.id}}</TD>
+        <TD class="Vendor ID">{{pc.username}}</TD>
+        <TD class="Product ID">{{pc.hostname}}</TD>
+        {% if pc.team == None %}
+            <TD class="Team">NONE</TD>
+        {% else %}
+            <TD class="Team">{{pc.team.name}}</TD>
+        {% endif %}
+    </TR>
+    {% endfor %}
+</table>
+</body>
+</html>

@@ -3,14 +3,34 @@
     <title>Pcs Details</title>
 </head>
 <body>
+<div style='float:left;padding-right:20px'>
+<b>Your role: {{user}}</b>
+</div>
+<div style='float:left;padding-right:5px'>
+<form action="/login" method="get">
+    <input type="submit" value="Login" />
+</form>
+</div>
+<div style='float:left;padding-right:5px'>
+<form action="/signup" method="get">
+    <input type="submit" value="Sign Up" />
+</form>
+</div>
+<form action="/logout" method="get">
+    <input type="submit" value="Logout" />
+</form>
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
       <option value=""></option>
-      <option value="/api/v1/logs-web">Logs</option>
-      <option value="/api/v1/devices-web">Devices</option>
-      <option value="/api/v1/teams-web">Teams</option>
-      <option value="/api/v1/pcs-web">PCs</option>
+      <option value="/logs-web">Logs</option>
+      <option value="/ldlogs-web">LD Logs</option>
+      <option value="/devices-web">Devices</option>
+      <option value="/body-devices-web">Body Devices</option>
+      <option value="/teams-web">Teams</option>
+      <option value="/pcs-web">PCs</option>
+      <option value="/licenses-web">Licenses</option>
+      <option value="/users-web">Users</option>
   </select>
   <input type="submit" value="OK">
 </form>
@@ -23,7 +43,7 @@
     </TR>
     {% for pc in pcs %}
     <TR>
-        <TD class="ID"><a href="/api/v1/pc-team/{{pc.id}}">{{pc.id}}</a></TD>
+        <TD class="ID"><a href="/pc-team/{{pc.id}}">{{pc.id}}</a></TD>
         <TD class="Vendor ID">{{pc.username}}</TD>
         <TD class="Product ID">{{pc.hostname}}</TD>
         {% if pc.team == None %}

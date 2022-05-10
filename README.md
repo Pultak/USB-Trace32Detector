@@ -1,2 +1,2 @@
-# Automatická detekce a dokumentace připojených USB zařízení - Bug Thugs
+# Automatic detection and documentation of connected USB devices - Bug Thugs
 

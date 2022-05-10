@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Body Device License Connect</title>
+</head>
+<body>
+<h6><p>Vendor ID: {{device.vendor_id}}</p>
+    <p>Serial Number: {{device.serial_number}}</p>
+</h6>
+<form action="/body-devices-web/{{device.id}}" method="post">
+  <label for="lic">Licenses:</label>
+  <select id="lic" name="lic">
+      {% for license in licenses %}
+    <option value={{license.id}}>{{license.name}}</option>
+      {% endfor %}
+  </select>
+  <input type="submit" value="Connect">
+</form>
+<form action="/body-devices-web-del/{{device.id}}" method="post">
+  <label for="b_lic">Licenses:</label>
+  <select id="b_lic" name="b_lic" >
+      {% for license in dev_lic %}
+    <option value={{license.id}}>{{license.name}}</option>
+      {% endfor %}
+  </select>
+  <input type="submit" value="Delete">
+</form>
+</body>
+</html>
