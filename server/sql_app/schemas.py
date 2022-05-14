@@ -48,6 +48,8 @@ class DeviceBase(BaseModel):
     vendor_id: str
     product_id: str
     serial_number: str
+    inventory_number: str
+    comment: str
 
 
 class DeviceCreate(DeviceBase):
@@ -59,12 +61,17 @@ class Device(DeviceCreate):
     Class used for creating and reading devices entries
     """
     id: int
-    assigned: bool
     logs: List[USBLog] = []
     licenses: List[DeviceLicense] = []
 
     class Config:
         orm_mode = True
+
+
+class DeviceTemp(BaseModel):
+    vendor_id: str
+    product_id: str
+    serial_number: str
 
 
 class LDLogBase(BaseModel):
@@ -140,8 +147,8 @@ class PC(PCCreate):
     Class used for creating and reading pc entries
     """
     id: int
-    assigned: bool
     logs_pc: List[USBLog] = []
+    logs_ld: List[LDLog] = []
 
     class Config:
         orm_mode = True
@@ -160,7 +167,7 @@ class Team(TeamCreate):
     Class used for creating and reading team entries
     """
     id: int
-    pcs: List[PC] = []
+    devices: List[Device] = []
 
     class Config:
         orm_mode = True
@@ -168,6 +175,7 @@ class Team(TeamCreate):
 
 class LicenseBase(BaseModel):
     name: str
+    license_id: str
     expiration_date: date
 
 
@@ -193,7 +201,7 @@ class USBTempBase(BaseModel):
     username: str
     hostname: str
     timestamp: str
-    device: DeviceBase
+    device: DeviceTemp
     status: str
 
 
@@ -242,6 +250,7 @@ class UserBase(BaseModel):
     password: str
     role: str
 
+
 class UserCreate(UserBase):
     pass
 
@@ -251,3 +260,4 @@ class User(UserCreate):
 
     class Config:
         orm_mode = True
+

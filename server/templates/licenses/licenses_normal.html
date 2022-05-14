@@ -22,14 +22,13 @@
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
-      <option value=""></option>
-      <option value="/logs-web">Logs</option>
-      <option value="/ldlogs-web">LD Logs</option>
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web">Lauterbach Logs</option>
       <option value="/devices-web">Devices</option>
       <option value="/body-devices-web">Body Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
-      <option value="/licenses-web">Licenses</option>
+      <option value="/licenses-web" selected>Licenses</option>
   </select>
   <input type="submit" value="OK">
 </form>
@@ -37,12 +36,14 @@
     <TR>
         <TH>ID</TH>
         <TH>Name</TH>
+        <TH>License ID</TH>
         <TH>Expiration Date</TH>
     </TR>
     {% for license in licenses %}
     <TR>
         <TD class="ID">{{license.id}}</TD>
         <TD class="Vendor ID">{{license.name}}</TD>
+        <TD class="License ID">{{license.license_id}}</TD>
         <TD class="Product ID">{{license.expiration_date}}</TD>
     </TR>
     {% endfor %}

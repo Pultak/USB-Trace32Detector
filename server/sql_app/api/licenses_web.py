@@ -1,5 +1,5 @@
 from typing import List
-
+from typing import Optional
 from fastapi import Depends, FastAPI, HTTPException, APIRouter, Form
 from sqlalchemy.orm import Session
 from datetime import date
@@ -60,8 +60,8 @@ async def read_licenses_web(request: Request, skip: int = 0, limit: int = 100, d
                                                             "user": current_user})
 
 @licenses_web.post("/licenses-web")
-def create_license(name: str = Form(...), expdate: date = Form(...), db: Session = Depends(get_db),
-                   Authorize: AuthJWT = Depends()):
+def create_license(name: str = Form(...), lic_id: str = Form(...), expdate: Optional[date] = Form(None),
+                   db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     """
     Endpoint called from create license form. Creates new license and redirects to devices-web endpoint
     """
@@ -70,11 +70,11 @@ def create_license(name: str = Form(...), expdate: date = Form(...), db: Session
     if current_user != "admin":
         return RedirectResponse(url=f"/logs-web", status_code=303)
     licenses = crud.get_licenses(db, 0, 100)
-    licenses_names = []
+    licenses_ids = []
     for l in licenses:
-        licenses_names.append(l.name)
-    if name not in licenses_names:
-        db_license = crud.create_license(db, name, expdate)
+        licenses_ids.append(l.license_id)
+    if lic_id not in licenses_ids:
+        db_license = crud.create_license(db, name, lic_id, expdate)
         if db_license is None:
             print("something went wrong")
-    return RedirectResponse(url=f"/devices-web", status_code=303)
+    return RedirectResponse(url=f"/licenses-web", status_code=303)

@@ -19,15 +19,14 @@
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
-      <option value=""></option>
-      <option value="/logs-web">Logs</option>
-      <option value="/ldlogs-web">LD Logs</option>
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web">Lauterbach Logs</option>
       <option value="/devices-web">Devices</option>
       <option value="/body-devices-web">Body Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
-      <option value="/users-web">Users</option>
+      <option value="/users-web" selected>Users</option>
   </select>
   <input type="submit" value="OK">
 </form>

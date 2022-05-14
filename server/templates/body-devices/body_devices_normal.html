@@ -22,11 +22,10 @@
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
-      <option value=""></option>
-      <option value="/logs-web">Logs</option>
-      <option value="/ldlogs-web">LD Logs</option>
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web">Lauterbach Logs</option>
       <option value="/devices-web">Devices</option>
-      <option value="/body-devices-web">Body Devices</option>
+      <option value="/body-devices-web" selected>Body Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
@@ -46,7 +45,7 @@
 <table>
     <TR>
         <TH>ID</TH>
-        <TH>Serial Number</TH>
+        <TH>Lauterbach Body ID</TH>
         <TH>Licenses</TH>
         <TH>Status</TH>
     </TR>

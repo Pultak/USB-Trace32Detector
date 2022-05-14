@@ -22,9 +22,8 @@
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
-      <option value=""></option>
-      <option value="/logs-web">Logs</option>
-      <option value="/ldlogs-web">LD Logs</option>
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web" selected>Lauterbach Logs</option>
       <option value="/devices-web">Devices</option>
       <option value="/body-devices-web">Body Devices</option>
       <option value="/teams-web">Teams</option>
@@ -66,8 +65,8 @@
         <TH>Team</TH>
         <TH>Timestamp</TH>
         <TH>Status</TH>
-        <TH>Head Device Serial Number</TH>
-        <TH>Body Device Serial Number</TH>
+        <TH>Lauterbach Head ID</TH>
+        <TH>Lauterbach Body ID</TH>
     </TR>
     {% for log in logs %}
     <TR>

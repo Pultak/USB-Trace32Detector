@@ -22,12 +22,11 @@
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
-      <option value=""></option>
-      <option value="/logs-web">Logs</option>
-      <option value="/ldlogs-web">LD Logs</option>
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web">Lauterbach Logs</option>
       <option value="/devices-web">Devices</option>
       <option value="/body-devices-web">Body Devices</option>
-      <option value="/teams-web">Teams</option>
+      <option value="/teams-web" selected>Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
       <option value="/users-web">Users</option>
@@ -38,17 +37,11 @@
     <TR>
         <TH>ID</TH>
         <TH>Name</TH>
-        <TH>Members</TH>
     </TR>
     {% for team in teams %}
     <TR>
-        <TD class="ID">{{team.id}}</TD>
+        <TD class="ID"><a href="/team-change/{{team.id}}">{{team.id}}</a></TD>
         <TD class="Name">{{team.name}}</TD>
-        <TD class="Members">
-        {% for ppl in team.pcs %}
-            {{ppl.username}}<BR>
-        {% endfor %}
-        </TD>
     </TR>
     {% endfor %}
 </table>
