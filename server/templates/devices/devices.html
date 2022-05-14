@@ -48,8 +48,8 @@
   <select id="view" name="view" onchange="this.form.action=this.value;">
       <option value="/logs-web">Vector Logs</option>
       <option value="/ldlogs-web">Lauterbach Logs</option>
-      <option value="/devices-web" selected>Devices</option>
-      <option value="/body-devices-web">Body Devices</option>
+      <option value="/devices-web" selected>Keyman Devices</option>
+      <option value="/body-devices-web">Lauterbach Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
@@ -65,7 +65,7 @@
         <option value="{{dev.serial_number}}"></option>
         {% endfor %}
     </datalist>
-    <label for="lic_name">License Name:</label>
+    <label for="lic_name">License Type:</label>
     <input id="lic_name" name="lic_name" type="text" list="licenses_names" value="" placeholder="all">
     <datalist id="licenses_names">
         {% for license in licenses %}

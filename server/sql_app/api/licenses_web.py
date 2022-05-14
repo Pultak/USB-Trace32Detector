@@ -60,7 +60,7 @@ async def read_licenses_web(request: Request, skip: int = 0, limit: int = 100, d
                                                             "user": current_user})
 
 @licenses_web.post("/licenses-web")
-def create_license(name: str = Form(...), lic_id: str = Form(...), expdate: Optional[date] = Form(None),
+def create_license(name: Optional[str] = Form(""), lic_id: str = Form(...), expdate: Optional[date] = Form(None),
                    db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     """
     Endpoint called from create license form. Creates new license and redirects to devices-web endpoint

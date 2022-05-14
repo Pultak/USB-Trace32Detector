@@ -97,6 +97,8 @@ class LDLog(LDLogCreate):
 
 class BodyDeviceBase(BaseModel):
     serial_number: str
+    inventory_number: str
+    comment: str
 
 
 class BodyDeviceCreate(BodyDeviceBase):
@@ -114,8 +116,14 @@ class BodyDevice(BodyDeviceCreate):
         orm_mode = True
 
 
+class BodyDeviceTemp(BaseModel):
+    serial_number: str
+
+
 class HeadDeviceBase(BaseModel):
     serial_number: str
+    inventory_number: str
+    comment: str
 
 
 class HeadDeviceCreate(HeadDeviceBase):
@@ -131,6 +139,10 @@ class HeadDevice(HeadDeviceCreate):
 
     class Config:
         orm_mode = True
+
+
+class HeadDeviceTemp(BaseModel):
+    serial_number: str
 
 
 class PCBase(BaseModel):
@@ -189,6 +201,8 @@ class License(LicenseCreate):
     """
     id: int
     devices: List[DeviceLicense] = []
+    head_devices: List[HeadDevice] = []
+    body_devices: List[BodyDevice] = []
 
     class Config:
         orm_mode = True
@@ -224,8 +238,8 @@ class LDTempBase(BaseModel):
     username: str
     hostname: str
     timestamp: str
-    head_device: HeadDeviceBase
-    body_device: BodyDeviceBase
+    head_device: HeadDeviceTemp
+    body_device: BodyDeviceTemp
     status: str
 
 
@@ -260,4 +274,3 @@ class User(UserCreate):
 
     class Config:
         orm_mode = True
-

@@ -376,14 +376,14 @@ def get_head_devices(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.HeadDevice).offset(skip).limit(limit).all()
 
 
-def find_head_device(db: Session, serial: schemas.HeadDeviceBase):
+def find_head_device(db: Session, serial: schemas.HeadDeviceTemp):
     """
     Finds one head device by its serial number
     """
     return db.query(models.HeadDevice).filter(models.HeadDevice.serial_number == serial.serial_number).first()
 
 
-def create_head_device(db: Session, log: schemas.HeadDeviceBase):
+def create_head_device(db: Session, log: schemas.HeadDeviceTemp):
     """
     Creates new head device
     """
@@ -408,14 +408,14 @@ def get_body_devices(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.BodyDevice).offset(skip).limit(limit).all()
 
 
-def find_body_device(db: Session, serial: schemas.BodyDeviceBase):
+def find_body_device(db: Session, serial: schemas.BodyDeviceTemp):
     """
     Finds one body device by its serial number
     """
     return db.query(models.BodyDevice).filter(models.BodyDevice.serial_number == serial.serial_number).first()
 
 
-def create_body_device(db: Session, log: schemas.BodyDeviceBase):
+def create_body_device(db: Session, log: schemas.BodyDeviceTemp):
     """
     Creates new Body device
     """
