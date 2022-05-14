@@ -185,6 +185,16 @@ namespace LDClient.utils {
         /// </summary>
         public string T32ApiPacketLen { get; private set; } = null!;
 
+        /// <summary>
+        /// Superior number of attempts to fetch the information (outer loop).
+        /// </summary>
+        public uint FetchInfoSuperiorMaxAttempts { get; private set; }
+        
+        /// <summary>
+        /// Period of the superior (outer) loop to fetch the data.
+        /// </summary>
+        public uint FetchInfoSuperiorAttemptPeriod { get; private set;  }
+
         #endregion
 
         /// <summary>
@@ -283,7 +293,9 @@ namespace LDClient.utils {
                 T32ApiAddress = debugger["T32ApiAddress"];
                 T32ApiPort = debugger["T32ApiPort"];
                 T32ApiPacketLen = debugger["T32ApiPacketLen"];
-                
+                FetchInfoSuperiorMaxAttempts = uint.Parse(debugger["FetchInfoSuperiorMaxAttempts"]);
+                FetchInfoSuperiorAttemptPeriod = uint.Parse(debugger["FetchInfoSuperiorAttemptPeriod"]);
+
             } catch (Exception e) {
                 Console.WriteLine(e);
                 Environment.Exit(ErrorExitCode);

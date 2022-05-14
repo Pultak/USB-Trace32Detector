@@ -92,7 +92,9 @@ internal static class Program {
             Config.DetectionPeriod,
             InfoFetcher,
             DefaultApiClient,
-            new ProcessUtils()
+            new ProcessUtils(),
+            Config.FetchInfoSuperiorMaxAttempts,
+            Config.FetchInfoSuperiorAttemptPeriod
         );
         
         // Create and start a new thread that periodically
