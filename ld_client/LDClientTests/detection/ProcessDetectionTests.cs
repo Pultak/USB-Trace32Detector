@@ -33,7 +33,7 @@ public class ProcessDetectionTests {
         _mockProcessUtils = new Mock<IProcessUtils>(MockBehavior.Strict);
             
 
-        _processDetection = new ProcessDetection("process", 50, _mockInfoFetcher.Object, _mockApiClient.Object, _mockProcessUtils.Object);
+        _processDetection = new ProcessDetection("process", 50, _mockInfoFetcher.Object, _mockApiClient.Object, _mockProcessUtils.Object, 1, 0);
     }
 
 
