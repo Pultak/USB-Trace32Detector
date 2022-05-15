@@ -32,17 +32,62 @@ def find_device_by_serial(db: Session, ser: str):
     """
     return db.query(models.Device).filter(and_(models.Device.serial_number == ser)).first()
 
+
 def get_devices_with_ids(db: Session, ids: []):
     """
     returns all devices with given ids
     """
     return db.query(models.Device).filter(models.Device.id.in_(ids)).all()
 
+
+def get_bodydevices_with_ids(db: Session, ids: []):
+    """
+    returns all bodydevices with given ids
+    """
+    return db.query(models.BodyDevice).filter(models.BodyDevice.id.in_(ids)).all()
+
+
+def get_headdevices_with_ids(db: Session, ids: []):
+    """
+    returns all headdevices with given ids
+    """
+    return db.query(models.HeadDevice).filter(models.HeadDevice.id.in_(ids)).all()
+
+
+def find_headdevices_by_team(db: Session, team_id: int):
+    """
+    Returns all head devices in specific team
+    """
+    return db.query(models.HeadDevice).filter(models.HeadDevice.team_id == team_id).all()
+
+
+def find_bodydevices_by_team(db: Session, team_id: int):
+    """
+    Returns all body devices in specific team
+    """
+    return db.query(models.BodyDevice).filter(models.BodyDevice.team_id == team_id).all()
+
+
+def find_headdevices_by_license(db: Session, lic_id: int):
+    """
+    Returns all head devices with specific license
+    """
+    return db.query(models.HeadDevice).filter(models.HeadDevice.license_id == lic_id).all()
+
+
+def find_bodydevices_by_license(db: Session, lic_id: int):
+    """
+    Returns all body devices with specific license
+    """
+    return db.query(models.BodyDevice).filter(models.BodyDevice.license_id == lic_id).all()
+
+
 def get_devices_by_team(db: Session, team: int):
     """
     returns all devices with same team
     """
     return db.query(models.Device).filter(models.Device.team_id == team).all()
+
 
 def create_device(db: Session, device: schemas.DeviceTemp):
     """
@@ -121,28 +166,6 @@ def get_devicelicense_by_devicelicense(db: Session, device_id: int, license_id: 
                                                       models.DeviceLicense.license_id == license_id)).first()
 
 
-def get_bodydevicelicense_by_bodydevicelicense(db: Session, device_id: int, license_id: int):
-    """
-    returns entry in bodydevices_licenses table with given body device id and license id
-    """
-    return db.query(models.BodyDeviceLicense).filter(and_(models.BodyDeviceLicense.bodydevice_id == device_id,
-                                                          models.BodyDeviceLicense.license_id == license_id)).first()
-
-
-def get_license_bodydevice(db: Session, license_id: int):
-    """
-    returns all entries in bodydevices_licenses with given license_id
-    """
-    return db.query(models.BodyDeviceLicense).filter(models.BodyDeviceLicense.license_id == license_id).all()
-
-
-def get_bodydevice_license(db: Session, device_id: int):
-    """
-    returns all entries in bodydevices_licenses with given license_id
-    """
-    return db.query(models.BodyDeviceLicense).filter(models.BodyDeviceLicense.bodydevice_id == device_id).all()
-
-
 def create_device_license(db: Session, device: int, license: int, time: datetime):
     """
     creates new entry in devices_licenses table with device id, license id and time.
@@ -163,28 +186,6 @@ def delete_device_license(db: Session, device: int, license: int):
     db_lic = db.delete(db_device_license)
     db.commit()
     return db_lic
-
-
-def delete_bodydevice_license(db: Session, device: int, license: int):
-    """
-    deletes entry in devices_licenses table with device id, license id and time.
-    """
-    db_device_license = get_bodydevicelicense_by_bodydevicelicense(db, device, license)
-    db_lic = db.delete(db_device_license)
-    db.commit()
-    return db_lic
-
-
-def create_body_device_license(db: Session, device: int, license: int, time: datetime):
-    """
-    creates new entry in devices_licenses table with device id, license id and time.
-    """
-    db_device_license = models.BodyDeviceLicense(bodydevice_id=device, license_id=license,
-                                                 assigned_datetime=time)
-    db.add(db_device_license)
-    db.commit()
-    db.refresh(db_device_license)
-    return db_device_license
 
 
 def find_pc_by_username(db: Session, name: str):
@@ -415,15 +416,145 @@ def find_body_device(db: Session, serial: schemas.BodyDeviceTemp):
     return db.query(models.BodyDevice).filter(models.BodyDevice.serial_number == serial.serial_number).first()
 
 
+def find_bodydevice_by_serial(db: Session, serial: str):
+    """
+    Finds one specific body device by given serial number
+    """
+    return db.query(models.BodyDevice).filter(models.BodyDevice.serial_number == serial).first()
+
+
+def find_headdevice_by_serial(db: Session, serial: str):
+    """
+    Finds one specific head device by given serial number
+    """
+    return db.query(models.HeadDevice).filter(models.HeadDevice.serial_number == serial).first()
+
+
 def create_body_device(db: Session, log: schemas.BodyDeviceTemp):
     """
     Creates new Body device
     """
-    db_body = models.BodyDevice(serial_number=log.serial_number)
+    db_body = models.BodyDevice(serial_number=log.serial_number, inventory_number="", comment="")
     db.add(db_body)
     db.commit()
     db.refresh(db_body)
     return db_body
+
+
+def update_bodydevice_license(db: Session, device_id: int, lic_id: int):
+    """
+    Updates body devices license with one given by user
+    """
+    old_dev = get_body_device(db, device_id)
+    lic = get_license(db, lic_id)
+    new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': old_dev.inventory_number,
+           'comment': old_dev.comment, 'team_id': old_dev.team_id, 'license_id': lic.id}
+    for key, value in new.items():
+        setattr(old_dev, key, value)
+    db.commit()
+    db.refresh(old_dev)
+    return old_dev
+
+
+def update_bodydevice_team(db: Session, device_id: int, team_id: int):
+    """
+    Updates body devices team with one given by user
+    """
+    old_dev = get_body_device(db, device_id)
+    team = get_team(db, team_id)
+    new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': old_dev.inventory_number,
+           'comment': old_dev.comment, 'team_id': team.id, 'license_id': old_dev.license_id}
+    for key, value in new.items():
+        setattr(old_dev, key, value)
+    db.commit()
+    db.refresh(old_dev)
+    return old_dev
+
+
+def update_bodydevice_inv(db: Session, device_id: int, dev_inv: str):
+    """
+    Updates body devices inventory number with new one given by user
+    """
+    old_dev = get_body_device(db, device_id)
+    new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': dev_inv,
+           'comment': old_dev.comment, 'team_id': old_dev.team_id, 'license_id': old_dev.license_id}
+    for key, value in new.items():
+        setattr(old_dev, key, value)
+    db.commit()
+    db.refresh(old_dev)
+    return old_dev
+
+
+def update_bodydevice_comm(db: Session, device_id: int, comm: str):
+    """
+    Updates body devices comment with new one given by user
+    """
+    old_dev = get_body_device(db, device_id)
+    new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': old_dev.inventory_number,
+           'comment': comm, 'team_id': old_dev.team_id, 'license_id': old_dev.license_id}
+    for key, value in new.items():
+        setattr(old_dev, key, value)
+    db.commit()
+    db.refresh(old_dev)
+    return old_dev
+
+
+def update_headdevice_license(db: Session, device_id: int, lic_id: int):
+    """
+    Updates head devices license with one given by user
+    """
+    old_dev = get_head_device(db, device_id)
+    lic = get_license(db, lic_id)
+    new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': old_dev.inventory_number,
+           'comment': old_dev.comment, 'team_id': old_dev.team_id, 'license_id': lic.id}
+    for key, value in new.items():
+        setattr(old_dev, key, value)
+    db.commit()
+    db.refresh(old_dev)
+    return old_dev
+
+
+def update_headdevice_team(db: Session, device_id: int, team_id: int):
+    """
+    Updates head devices team with one given by user
+    """
+    old_dev = get_head_device(db, device_id)
+    team = get_team(db, team_id)
+    new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': old_dev.inventory_number,
+           'comment': old_dev.comment, 'team_id': team.id, 'license_id': old_dev.license_id}
+    for key, value in new.items():
+        setattr(old_dev, key, value)
+    db.commit()
+    db.refresh(old_dev)
+    return old_dev
+
+
+def update_headdevice_inv(db: Session, device_id: int, dev_inv: str):
+    """
+    Updates head devices inventory number with new one given by user
+    """
+    old_dev = get_head_device(db, device_id)
+    new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': dev_inv,
+           'comment': old_dev.comment, 'team_id': old_dev.team_id, 'license_id': old_dev.license_id}
+    for key, value in new.items():
+        setattr(old_dev, key, value)
+    db.commit()
+    db.refresh(old_dev)
+    return old_dev
+
+
+def update_headdevice_comm(db: Session, device_id: int, comm: str):
+    """
+    Updates head devices comment with new one given by user
+    """
+    old_dev = get_head_device(db, device_id)
+    new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': old_dev.inventory_number,
+           'comment': comm, 'team_id': old_dev.team_id, 'license_id': old_dev.license_id}
+    for key, value in new.items():
+        setattr(old_dev, key, value)
+    db.commit()
+    db.refresh(old_dev)
+    return old_dev
 
 
 def get_ld_logs(db: Session, skip: int = 0, limit: int = 100):
@@ -477,41 +608,134 @@ def get_filtered_ldlogs(db: Session, pc: str, tema: str, lic: str):
     Function creates query string used for filtering by pc username, team name and license name.
     Depending on selected filters assembles query string for database
     """
-    execute_string = "SELECT * FROM ld_logs AS logs"
-    pcs = find_pc_by_username(db, pc)
+    execute_string = "SELECT * FROM ld_logs AS logs WHERE"
+    before_me = False
+    all_all = True
     if pc != "all":
-        if pcs is not None:
-            execute_string += "  WHERE logs.pc_id = " + str(pcs.id)
+        all_all = False
+        pc = find_pc_by_username(db, pc)
+        if pc != None:
+            if before_me:
+                execute_string += " AND logs.pc_id = " + str(pc.id)
+            else:
+                before_me = True
+                execute_string += " logs.pc_id = " + str(pc.id)
+        else:
+            if before_me:
+                execute_string += " AND logs.pc_id = -1"
+            else:
+                before_me = True
+                execute_string += " logs.pc_id = -1"
     if tema != "all":
+        all_all = False
         team = find_team(db, tema)
-        if team is not None:
-            devs = get_devices_by_team(db, team.id)
-            d_ids = "("
-            for p in devs:
-                d_ids += str(p.id) + ", "
-            def_d_ids = d_ids[:-2] + ")"
-            if pc != "all" and pcs is not None:
-                if len(def_d_ids) > 1:
-                    execute_string += " AND logs.device_id IN " + def_d_ids
+        if team != None:
+            head_devices = find_headdevices_by_team(db, team.id)
+            body_devices = find_bodydevices_by_team(db, team.id)
+            if len(head_devices) > 0 and len(body_devices) > 0:
+                h_ids = "("
+                for h in head_devices:
+                    h_ids += str(h.id) + ", "
+                def_h_ids = h_ids[:-2] + ")"
+                b_ids = "("
+                for b in body_devices:
+                    b_ids += str(b.id) + ", "
+                def_b_ids = b_ids[:-2] + ")"
+                if before_me:
+                    execute_string += " AND (logs.head_id IN " + def_h_ids + " OR logs.body_id IN " + def_b_ids + ")"
+                else:
+                    before_me = True
+                    execute_string += " (logs.head_id IN " + def_h_ids + " OR logs.body_id IN " + def_b_ids + ")"
+            elif len(head_devices) == 0 and len(body_devices) > 0:
+                b_ids = "("
+                for b in body_devices:
+                    b_ids += str(b.id) + ", "
+                def_b_ids = b_ids[:-2] + ")"
+                if before_me:
+                    execute_string += " AND logs.body_id IN " + def_b_ids
+                else:
+                    before_me = True
+                    execute_string += " logs.body_id IN " + def_b_ids
+            elif len(head_devices) > 0 and len(body_devices) == 0:
+                h_ids = "("
+                for h in head_devices:
+                    h_ids += str(h.id) + ", "
+                def_h_ids = h_ids[:-2] + ")"
+                if before_me:
+                    execute_string += " AND logs.head_id IN " + def_h_ids
+                else:
+                    before_me = True
+                    execute_string += " logs.head_id IN " + def_h_ids
             else:
-                if len(def_d_ids) > 1:
-                    execute_string += " WHERE logs.device_id IN " + def_d_ids
+                if before_me:
+                    execute_string += " AND (logs.head_id = -1 OR logs.body_id = -1)"
+                else:
+                    before_me = True
+                    execute_string += " (logs.head_id = -1 OR logs.body_id = -1)"
+        else:
+            if before_me:
+                execute_string += " AND logs.pc_id = -1"
+            else:
+                before_me = True
+                execute_string += " logs.pc_id = -1"
     if lic != "all":
-        license = get_licenses_by_name(db, lic)
-        if license is not None:
-            device_licenses = get_license_bodydevice(db, license.id)
-            dev_ids = "("
-            for dev in device_licenses:
-                dev_ids += str(dev.bodydevice_id) + ", "
-            defin_ids = dev_ids[:-2] + ")"
-            if pc != "all" or tema != "all":
-                if len(defin_ids) > 1:
-                    execute_string += " AND logs.body_id IN " + defin_ids
+        all_all = False
+        license = find_license(db, lic)
+        if license != None:
+            head_devices = find_headdevices_by_license(db, license.id)
+            body_devices = find_bodydevices_by_license(db, license.id)
+            if len(head_devices) > 0 and len(body_devices) > 0:
+                h_ids = "("
+                for h in head_devices:
+                    h_ids += str(h.id) + ", "
+                def_h_ids = h_ids[:-2] + ")"
+                b_ids = "("
+                for b in body_devices:
+                    b_ids += str(b.id) + ", "
+                def_b_ids = b_ids[:-2] + ")"
+                if before_me:
+                    execute_string += " AND (logs.head_id IN " + def_h_ids + " OR logs.body_id IN " + def_b_ids + ")"
+                else:
+                    before_me = True
+                    execute_string += " (logs.head_id IN " + def_h_ids + " OR logs.body_id IN " + def_b_ids + ")"
+            elif len(head_devices) == 0 and len(body_devices) > 0:
+                b_ids = "("
+                for b in body_devices:
+                    b_ids += str(b.id) + ", "
+                def_b_ids = b_ids[:-2] + ")"
+                if before_me:
+                    execute_string += " AND logs.body_id IN " + def_b_ids
+                else:
+                    before_me = True
+                    execute_string += " logs.body_id IN " + def_b_ids
+            elif len(head_devices) > 0 and len(body_devices) == 0:
+                h_ids = "("
+                for h in head_devices:
+                    h_ids += str(h.id) + ", "
+                def_h_ids = h_ids[:-2] + ")"
+                if before_me:
+                    execute_string += " AND logs.head_id IN " + def_h_ids
+                else:
+                    before_me = True
+                    execute_string += " logs.head_id IN " + def_h_ids
             else:
-                if len(defin_ids) > 1:
-                    execute_string += " WHERE logs.body_id IN " + defin_ids
+                if before_me:
+                    execute_string += " AND (logs.head_id = -1 OR logs.body_id = -1)"
+                else:
+                    before_me = True
+                    execute_string += " (logs.head_id = -1 OR logs.body_id = -1)"
+        else:
+            if before_me:
+                execute_string += " AND logs.pc_id = -1"
+            else:
+                before_me = True
+                execute_string += " logs.pc_id = -1"
+    if all_all:
+        before_me = True
+        execute_string = "SELECT * FROM ld_logs AS logs"
 
-    # executing assembled query string
+    if not before_me:
+        execute_string = "SELECT * FROM ld_logs AS logs WHERE logs.id = -1"
     result = db.execute(execute_string)
     return result
 
@@ -526,6 +750,8 @@ def get_filtered_logs(db: Session, pc: str, tema: str, lic: str):
     if pc != "all":
         if pcs is not None:
             execute_string += "  WHERE logs.pc_id = " + str(pcs.id)
+        else:
+            execute_string += "  WHERE logs.pc_id = -1"
     if tema != "all":
         team = find_team(db, tema)
         if team is not None:
@@ -534,16 +760,28 @@ def get_filtered_logs(db: Session, pc: str, tema: str, lic: str):
             for p in devs:
                 d_ids += str(p.id) + ", "
             def_d_ids = d_ids[:-2] + ")"
-            if pc != "all" and pcs is not None:
+            if pc != "all":
                 if len(def_d_ids) > 1:
                     execute_string += " AND logs.device_id IN " + def_d_ids
+                else:
+                    execute_string += " AND logs.device_id IN (-1)"
             else:
                 if len(def_d_ids) > 1:
                     execute_string += " WHERE logs.device_id IN " + def_d_ids
+                else:
+                    execute_string += " WHERE logs.device_id IN (-1)"
+        else:
+            if pc != "all":
+                execute_string += " AND logs.device_id IN (-1)"
+            else:
+                execute_string += " WHERE logs.device_id IN (-1)"
     if lic != "all":
         license = get_licenses_by_name(db, lic)
-        if license is not None:
-            device_licenses = get_license_devices(db, license.id)
+        if len(license) > 0:
+            ids = []
+            for l in license:
+                ids.append(l.id)
+            device_licenses = find_devicelicenses_by_licid_array(db, ids)
             dev_ids = "("
             for dev in device_licenses:
                 dev_ids += str(dev.device_id) + ", "
@@ -551,18 +789,151 @@ def get_filtered_logs(db: Session, pc: str, tema: str, lic: str):
             if pc != "all" or tema != "all":
                 if len(defin_ids) > 1:
                     execute_string += " AND logs.device_id IN " + defin_ids
+                else:
+                    execute_string += " AND logs.device_id IN (-1)"
             else:
                 if len(defin_ids) > 1:
                     execute_string += " WHERE logs.device_id IN " + defin_ids
+                else:
+                    execute_string += " WHERE logs.device_id IN (-1)"
+        else:
+            if pc != "all" or tema != "all":
+                execute_string += " AND logs.device_id IN (-1)"
+            else:
+                execute_string += " WHERE logs.device_id IN (-1)"
 
     # executing assembled query string
     result = db.execute(execute_string)
     return result
 
 
+def get_filtered_bodydevices(db: Session, body_id: str, license_id: str, team: str):
+    """
+    returns filtered body devices based on given attributes
+    """
+    execute_string = "SELECT * FROM body_devices AS device WHERE"
+    before_me = False
+    all_all = True
+    if body_id != "all":
+        all_all = False
+        body_dev = find_bodydevice_by_serial(db, body_id)
+        if body_dev != None:
+            if before_me:
+                execute_string += " AND device.id = " + str(body_dev.id)
+            else:
+                before_me = True
+                execute_string += " device.id = " + str(body_dev.id)
+        else:
+            if before_me:
+                execute_string += " AND device.id = -1"
+            else:
+                before_me = True
+                execute_string += " device.id = -1"
+    if license_id != "all":
+        all_all = False
+        license = find_license(db, license_id)
+        if license != None:
+            if before_me:
+                execute_string += " AND device.license_id = " + str(license.id)
+            else:
+                before_me = True
+                execute_string += " device.license_id = " + str(license.id)
+        else:
+            if before_me:
+                execute_string += " AND device.id = -1"
+            else:
+                before_me = True
+                execute_string += " device.id = -1"
+    if team != "all":
+        all_all = False
+        tem = find_team(db, team)
+        if tem != None:
+            if before_me:
+                execute_string += " AND device.team_id = " + str(tem.id)
+            else:
+                before_me = True
+                execute_string += " device.team_id = " + str(tem.id)
+        else:
+            if before_me:
+                execute_string += " AND device.id = -1"
+            else:
+                before_me = True
+                execute_string += " device.id = -1"
+    if all_all:
+        before_me = True
+        execute_string = "SELECT * FROM body_devices AS devices"
+
+    if not before_me:
+        execute_string = "SELECT * FROM body_devices AS devices WHERE devices.id = -1"
+    result = db.execute(execute_string)
+    return result
+
+
+def get_filtered_headdevices(db: Session, body_id: str, license_id: str, team: str):
+    """
+    returns filtered head devices based on given attributes
+    """
+    execute_string = "SELECT * FROM head_devices AS device WHERE"
+    before_me = False
+    all_all = True
+    if body_id != "all":
+        all_all = False
+        head_dev = find_headdevice_by_serial(db, body_id)
+        if head_dev != None:
+            if before_me:
+                execute_string += " AND device.id = " + str(head_dev.id)
+            else:
+                before_me = True
+                execute_string += " device.id = " + str(head_dev.id)
+        else:
+            if before_me:
+                execute_string += " AND device.id = -1"
+            else:
+                before_me = True
+                execute_string += " device.id = -1"
+    if license_id != "all":
+        all_all = False
+        license = find_license(db, license_id)
+        if license != None:
+            if before_me:
+                execute_string += " AND device.license_id = " + str(license.id)
+            else:
+                before_me = True
+                execute_string += " device.license_id = " + str(license.id)
+        else:
+            if before_me:
+                execute_string += " AND device.id = -1"
+            else:
+                before_me = True
+                execute_string += " device.id = -1"
+    if team != "all":
+        all_all = False
+        tem = find_team(db, team)
+        if tem != None:
+            if before_me:
+                execute_string += " AND device.team_id = " + str(tem.id)
+            else:
+                before_me = True
+                execute_string += " device.team_id = " + str(tem.id)
+        else:
+            if before_me:
+                execute_string += " AND device.id = -1"
+            else:
+                before_me = True
+                execute_string += " device.id = -1"
+    if all_all:
+        before_me = True
+        execute_string = "SELECT * FROM body_devices AS devices"
+
+    if not before_me:
+        execute_string = "SELECT * FROM body_devices AS devices WHERE devices.id = -1"
+    result = db.execute(execute_string)
+    return result
+
+
 def get_filtered_devices(db: Session, keyman_id: str, license_name: str, license_id: str, team: str):
     """
-    returns filtered devices based on given atributes
+    returns filtered keyman devices based on given attributes
     """
     execute_string = "SELECT * FROM devices AS device WHERE"
     before_me = False
@@ -576,6 +947,12 @@ def get_filtered_devices(db: Session, keyman_id: str, license_name: str, license
             else:
                 before_me = True
                 execute_string += " device.id = " + str(keyman_dev.id)
+        else:
+            if before_me:
+                execute_string += " AND device.id = -1"
+            else:
+                before_me = True
+                execute_string += " device.id = -1"
     if license_name != "all":
         all_all = False
         license = get_licenses_by_name(db, license_name)
@@ -588,20 +965,30 @@ def get_filtered_devices(db: Session, keyman_id: str, license_name: str, license
             for l in dev_lics:
                 lic_ids += str(l.device_id) + ", "
             def_lic_ids = lic_ids[:-2] + ")"
+            if len(def_lic_ids) < 1:
+                def_lic_ids = "(-1)"
             if before_me:
                 execute_string += " AND device.id IN " + def_lic_ids
             else:
                 before_me = True
                 execute_string += " device.id IN " + def_lic_ids
+        else:
+            if before_me:
+                execute_string += " AND device.id = -1"
+            else:
+                before_me = True
+                execute_string += " device.id = -1"
     if license_id != "all":
         all_all = False
         license = find_license(db, license_id)
-        licen_devs = get_license_devices(db, license.id)
-        ids = "("
-        for lic in licen_devs:
-            ids += str(lic.device_id) + ", "
-        def_ids = ids[:-2] + ")"
         if license != None:
+            licen_devs = get_license_devices(db, license.id)
+            ids = "("
+            for lic in licen_devs:
+                ids += str(lic.device_id) + ", "
+            def_ids = ids[:-2] + ")"
+            if len(def_ids) < 1:
+                def_ids = "(-1)"
             if before_me:
                 execute_string += " AND device.id IN " + def_ids
             else:

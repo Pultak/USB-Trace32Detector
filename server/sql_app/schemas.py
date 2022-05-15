@@ -69,6 +69,9 @@ class Device(DeviceCreate):
 
 
 class DeviceTemp(BaseModel):
+    """
+    Class used for reading data from client
+    """
     vendor_id: str
     product_id: str
     serial_number: str
@@ -117,6 +120,9 @@ class BodyDevice(BodyDeviceCreate):
 
 
 class BodyDeviceTemp(BaseModel):
+    """
+    Class used for reading body device data from client
+    """
     serial_number: str
 
 
@@ -142,6 +148,9 @@ class HeadDevice(HeadDeviceCreate):
 
 
 class HeadDeviceTemp(BaseModel):
+    """
+    Class used for reading head device data from client
+    """
     serial_number: str
 
 

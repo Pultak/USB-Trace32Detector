@@ -26,17 +26,18 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import List
+<pre><code class="python">from datetime import datetime
 
-from fastapi import Depends, FastAPI, HTTPException, APIRouter, Form
-from sqlalchemy.orm import Session
-from sql_app import crud, models, schemas
-from datetime import datetime
-from ..database import SessionLocal, engine
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi import Depends, APIRouter, Form
+from fastapi import Request
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from fastapi_jwt_auth import AuthJWT
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from sql_app.api.auth import fake_users_db
+from sql_app import crud, models, schemas
+from ..database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -44,7 +45,7 @@ models.Base.metadata.create_all(bind=engine)
 templates = Jinja2Templates(directory=&#34;../templates/devices&#34;)
 
 # prefix used for all endpoints in this file
-device_web = APIRouter(prefix=&#34;/api/v1&#34;)
+device_web = APIRouter(prefix=&#34;&#34;)
 
 
 # Dependency
@@ -57,71 +58,173 @@ def get_db():
 
 
 @device_web.get(&#34;/devices-web&#34;, response_class=HTMLResponse)
-async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                       Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Returns template with all devices and its current states
+    Returns template with all devices and its necessary attributes
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+
+    device_dict = []
     devices = crud.get_devices(db, skip=skip, limit=limit)
-    statuses = []
-    # adding state for each device in list
-    for i in range(0, len(devices)):
-        statuses.append(devices[i].logs[len(devices[i].logs)-1].status)
+    teams = crud.get_teams(db, skip=skip, limit=limit)
+    # adding dictionary entry with all inforamtions needed in template
+    for dev in devices:
+        if len(dev.licenses) &gt; 0:
+            for lic in dev.licenses:
+                device_dict.append({&#34;device&#34;: dev, &#34;license&#34;: lic.licenses, &#34;log&#34;: dev.logs[len(dev.logs) - 1]})
+        else:
+            device_dict.append({&#34;device&#34;: dev, &#34;license&#34;: dev.licenses, &#34;log&#34;: dev.logs[len(dev.logs) - 1]})
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;devices.html&#34;, {&#34;request&#34;: request, &#34;devs&#34;: len(devices), &#34;devices&#34;: devices,
-                                                       &#34;statuses&#34;: statuses, &#34;licenses&#34;: licenses})
+    if current_user == &#34;admin&#34;:
+        return templates.TemplateResponse(&#34;devices.html&#34;, {&#34;request&#34;: request, &#34;devices&#34;: device_dict,
+                                                           &#34;licenses&#34;: licenses, &#34;devs&#34;: devices,
+                                                           &#34;teams&#34;: teams, &#34;user&#34;: current_user})
+    else:
+        current_user = &#34;guest&#34;
+        return templates.TemplateResponse(&#34;devices_normal.html&#34;, {&#34;request&#34;: request, &#34;devices&#34;: device_dict,
+                                                                  &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})
 
 
 @device_web.post(&#34;/devices-web&#34;, response_class=HTMLResponse)
-async def filter_devices(request: Request, skip: int = 0, limit: int = 100, lic: str = Form(&#34;all&#34;),
-                         db: Session = Depends(get_db)):
+async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
+                         keyman_id: str = Form(&#34;all&#34;), lic_name: str = Form(&#34;all&#34;),
+                         lic_id: str = Form(&#34;all&#34;), team: str = Form(&#34;all&#34;),
+                         db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Endpoint used for filtering devices by license. returns html template with only
+    Endpoint used for filtering devices by user given inputs. returns html template with only
     devices that has assigned license defined by user input
     &#34;&#34;&#34;
-    devices = crud.get_devices(db, skip=skip, limit=limit)
-    def_devices = []
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    device_dict = []
+    devices_f = crud.get_filtered_devices(db, keyman_id, lic_name, lic_id, team)
+    ids = []
+    for d in devices_f:
+        ids.append(d[0])
+    devices = crud.get_devices_with_ids(db, ids)
+    teams = crud.get_teams(db, skip=skip, limit=limit)
+    # adding dictionary entry with all inforamtions needed in template
     for dev in devices:
-        for l in dev.licenses:
-            if dev not in def_devices and l.licenses.name == lic:
-                def_devices.append(dev)
-    # if input was default all
-    if lic == &#34;all&#34;:
-        def_devices = devices
-    statuses = []
-    for i in range(0, len(def_devices)):
-        statuses.append(def_devices[i].logs[len(def_devices[i].logs) - 1].status)
+        if len(dev.licenses) &gt; 0:
+            for lic in dev.licenses:
+                device_dict.append({&#34;device&#34;: dev, &#34;license&#34;: lic.licenses, &#34;log&#34;: dev.logs[len(dev.logs) - 1]})
+        else:
+            device_dict.append({&#34;device&#34;: dev, &#34;license&#34;: dev.licenses, &#34;log&#34;: dev.logs[len(dev.logs) - 1]})
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;devices.html&#34;, {&#34;request&#34;: request, &#34;devs&#34;: len(def_devices), &#34;devices&#34;: def_devices,
-                                                       &#34;statuses&#34;: statuses, &#34;licenses&#34;: licenses})
+    if current_user == &#34;admin&#34;:
+        return templates.TemplateResponse(&#34;devices.html&#34;, {&#34;request&#34;: request, &#34;devices&#34;: device_dict,
+                                                           &#34;licenses&#34;: licenses, &#34;devs&#34;: devices,
+                                                           &#34;teams&#34;: teams, &#34;user&#34;: current_user})
+    else:
+        current_user = &#34;guest&#34;
+        return templates.TemplateResponse(&#34;devices_normal.html&#34;, {&#34;request&#34;: request, &#34;devices&#34;: device_dict,
+                                                                  &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})
 
 
 @device_web.get(&#34;/device-license/{device_id}&#34;, response_class=HTMLResponse)
-async def connect_dev_lic(request: Request, device_id: int, db: Session = Depends(get_db)):
+async def connect_dev_lic(request: Request, device_id: int, db: Session = Depends(get_db),
+                          Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Returns template with one device and all available licenses that can be assigned to it.
+    Returns template with one device and all available licenses that can be assigned to it. Plus all teams that can
+    be assigned to device, inventory number text input and comment text input
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
     device = crud.get_device(db, device_id)
+    dev_licenses = crud.get_device_licenses(db, device_id)
+    lic_ids = []
+    dev_lics = []
+    for dev_lic in dev_licenses:
+        dev_lics.append(dev_lic.licenses)
+    for dev_lic in dev_licenses:
+        lic_ids.append(dev_lic.licenses.license_id)
     licenses = crud.get_licenses(db, 0, 100)
+    lic_left = []
+    for lic in licenses:
+        if lic.license_id not in lic_ids and lic not in lic_left:
+            lic_left.append(lic)
+    teams = crud.get_teams(db, 0, 100)
     return templates.TemplateResponse(&#34;devicelicense.html&#34;,
-                                      {&#34;request&#34;: request, &#34;device&#34;: device, &#34;licenses&#34;: licenses})
+                                      {&#34;request&#34;: request, &#34;device&#34;: device, &#34;licenses&#34;: lic_left, &#34;dev_lic&#34;: dev_lics,
+                                       &#34;teams&#34;: teams})
 
 
-@device_web.post(&#34;/devices-web/{device_id}&#34;, response_class=HTMLResponse)
-async def connect_post(request: Request, device_id: int, lic: str = Form(...), skip: int = 0, limit: int = 100,
-                       db: Session = Depends(get_db)):
+@device_web.post(&#34;/devices-web/{device_id}&#34;)
+async def connect_post(device_id: int, lic: str = Form(...), db: Session = Depends(get_db),
+                       Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Endpoint called from template for connecting device with license. Adds entry to devices_licenses
-    table and returns template with all devices in database
+    Endpoint called from devicelicense.html template. Adds entry to devices_licenses
+    table and redirects to devices-web endpoint
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
     crud.create_device_license(db, device_id, int(lic), datetime.now())
-    devices = crud.get_devices(db, skip=skip, limit=limit)
-    statuses = []
-    # adding state for each device in list
-    for i in range(0, len(devices)):
-        statuses.append(devices[i].logs[len(devices[i].logs) - 1].status)
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;devices.html&#34;, {&#34;request&#34;: request, &#34;devs&#34;: len(devices), &#34;devices&#34;: devices,
-                                                       &#34;statuses&#34;: statuses, &#34;licenses&#34;: licenses})</code></pre>
+    return RedirectResponse(url=f&#34;/devices-web&#34;, status_code=303)
+
+
+@device_web.post(&#34;/devices-web-del/{device_id}&#34;)
+async def delete_post(device_id: int, lic_del: str = Form(...), db: Session = Depends(get_db),
+                      Authorize: AuthJWT = Depends()):
+    &#34;&#34;&#34;
+    Endpoint called from devicelicense.html template for deleting device-license connection. Deletes entry in
+    bodydevices_licenses table and redirects to devices-web endpoint
+    &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
+    crud.delete_device_license(db, device_id, int(lic_del))
+    return RedirectResponse(url=f&#34;/devices-web&#34;, status_code=303)
+
+
+@device_web.post(&#34;/devices-web-team/{device_id}&#34;)
+async def dev_team_con(device_id: int, team_con: str = Form(...), db: Session = Depends(get_db),
+                       Authorize: AuthJWT = Depends()):
+    &#34;&#34;&#34;
+    Endpoint called from devicelicense.html template, connects device with team and redirects to devices-web endpoint
+    &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
+    crud.update_device(db, device_id, team_con)
+    return RedirectResponse(url=f&#34;/devices-web&#34;, status_code=303)
+
+
+@device_web.post(&#34;/devices-web-inv/{device_id}&#34;)
+async def dev_inv_new(device_id: int, dev_inv: str = Form(...), db: Session = Depends(get_db),
+                      Authorize: AuthJWT = Depends()):
+    &#34;&#34;&#34;
+    Endpoint called from template devicelicense.html, updates inventory number of device and redirects to devices-web
+    endpoint
+    &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
+    crud.update_device_inv(db, device_id, dev_inv)
+    return RedirectResponse(url=f&#34;/devices-web&#34;, status_code=303)
+
+
+@device_web.post(&#34;/devices-web-comment/{device_id}&#34;)
+async def dev_comm_new(device_id: int, dev_com: str = Form(...), db: Session = Depends(get_db),
+                       Authorize: AuthJWT = Depends()):
+    &#34;&#34;&#34;
+    Endpoint called from template devicelicense.html, updates comment of device and redirects to devices-web
+    endpoint
+    &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
+    crud.update_device_com(db, device_id, dev_com)
+    return RedirectResponse(url=f&#34;/devices-web&#34;, status_code=303)</code></pre>
 </details>
 </section>
 <section>
@@ -132,85 +235,212 @@ async def connect_post(request: Request, device_id: int, lic: str = Form(...), s
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="sql_app.api.devices_web.connect_dev_lic"><code class="name flex">
-<span>async def <span class="ident">connect_dev_lic</span></span>(<span>request: starlette.requests.Request, device_id: int, db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
+<span>async def <span class="ident">connect_dev_lic</span></span>(<span>request: starlette.requests.Request, device_id: int, db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns template with one device and all available licenses that can be assigned to it.</p></div>
+<div class="desc"><p>Returns template with one device and all available licenses that can be assigned to it. Plus all teams that can
+be assigned to device, inventory number text input and comment text input</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@device_web.get(&#34;/device-license/{device_id}&#34;, response_class=HTMLResponse)
-async def connect_dev_lic(request: Request, device_id: int, db: Session = Depends(get_db)):
+async def connect_dev_lic(request: Request, device_id: int, db: Session = Depends(get_db),
+                          Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Returns template with one device and all available licenses that can be assigned to it.
+    Returns template with one device and all available licenses that can be assigned to it. Plus all teams that can
+    be assigned to device, inventory number text input and comment text input
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
     device = crud.get_device(db, device_id)
+    dev_licenses = crud.get_device_licenses(db, device_id)
+    lic_ids = []
+    dev_lics = []
+    for dev_lic in dev_licenses:
+        dev_lics.append(dev_lic.licenses)
+    for dev_lic in dev_licenses:
+        lic_ids.append(dev_lic.licenses.license_id)
     licenses = crud.get_licenses(db, 0, 100)
+    lic_left = []
+    for lic in licenses:
+        if lic.license_id not in lic_ids and lic not in lic_left:
+            lic_left.append(lic)
+    teams = crud.get_teams(db, 0, 100)
     return templates.TemplateResponse(&#34;devicelicense.html&#34;,
-                                      {&#34;request&#34;: request, &#34;device&#34;: device, &#34;licenses&#34;: licenses})</code></pre>
+                                      {&#34;request&#34;: request, &#34;device&#34;: device, &#34;licenses&#34;: lic_left, &#34;dev_lic&#34;: dev_lics,
+                                       &#34;teams&#34;: teams})</code></pre>
 </details>
 </dd>
 <dt id="sql_app.api.devices_web.connect_post"><code class="name flex">
-<span>async def <span class="ident">connect_post</span></span>(<span>request: starlette.requests.Request, device_id: int, lic: str = Form(Ellipsis), skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
+<span>async def <span class="ident">connect_post</span></span>(<span>device_id: int, lic: str = Form(Ellipsis), db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Endpoint called from template for connecting device with license. Adds entry to devices_licenses
-table and returns template with all devices in database</p></div>
+<div class="desc"><p>Endpoint called from devicelicense.html template. Adds entry to devices_licenses
+table and redirects to devices-web endpoint</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">@device_web.post(&#34;/devices-web/{device_id}&#34;, response_class=HTMLResponse)
-async def connect_post(request: Request, device_id: int, lic: str = Form(...), skip: int = 0, limit: int = 100,
-                       db: Session = Depends(get_db)):
+<pre><code class="python">@device_web.post(&#34;/devices-web/{device_id}&#34;)
+async def connect_post(device_id: int, lic: str = Form(...), db: Session = Depends(get_db),
+                       Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Endpoint called from template for connecting device with license. Adds entry to devices_licenses
-    table and returns template with all devices in database
+    Endpoint called from devicelicense.html template. Adds entry to devices_licenses
+    table and redirects to devices-web endpoint
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
     crud.create_device_license(db, device_id, int(lic), datetime.now())
-    devices = crud.get_devices(db, skip=skip, limit=limit)
-    statuses = []
-    # adding state for each device in list
-    for i in range(0, len(devices)):
-        statuses.append(devices[i].logs[len(devices[i].logs) - 1].status)
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;devices.html&#34;, {&#34;request&#34;: request, &#34;devs&#34;: len(devices), &#34;devices&#34;: devices,
-                                                       &#34;statuses&#34;: statuses, &#34;licenses&#34;: licenses})</code></pre>
+    return RedirectResponse(url=f&#34;/devices-web&#34;, status_code=303)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.api.devices_web.delete_post"><code class="name flex">
+<span>async def <span class="ident">delete_post</span></span>(<span>device_id: int, lic_del: str = Form(Ellipsis), db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Endpoint called from devicelicense.html template for deleting device-license connection. Deletes entry in
+bodydevices_licenses table and redirects to devices-web endpoint</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@device_web.post(&#34;/devices-web-del/{device_id}&#34;)
+async def delete_post(device_id: int, lic_del: str = Form(...), db: Session = Depends(get_db),
+                      Authorize: AuthJWT = Depends()):
+    &#34;&#34;&#34;
+    Endpoint called from devicelicense.html template for deleting device-license connection. Deletes entry in
+    bodydevices_licenses table and redirects to devices-web endpoint
+    &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
+    crud.delete_device_license(db, device_id, int(lic_del))
+    return RedirectResponse(url=f&#34;/devices-web&#34;, status_code=303)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.api.devices_web.dev_comm_new"><code class="name flex">
+<span>async def <span class="ident">dev_comm_new</span></span>(<span>device_id: int, dev_com: str = Form(Ellipsis), db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Endpoint called from template devicelicense.html, updates comment of device and redirects to devices-web
+endpoint</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@device_web.post(&#34;/devices-web-comment/{device_id}&#34;)
+async def dev_comm_new(device_id: int, dev_com: str = Form(...), db: Session = Depends(get_db),
+                       Authorize: AuthJWT = Depends()):
+    &#34;&#34;&#34;
+    Endpoint called from template devicelicense.html, updates comment of device and redirects to devices-web
+    endpoint
+    &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
+    crud.update_device_com(db, device_id, dev_com)
+    return RedirectResponse(url=f&#34;/devices-web&#34;, status_code=303)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.api.devices_web.dev_inv_new"><code class="name flex">
+<span>async def <span class="ident">dev_inv_new</span></span>(<span>device_id: int, dev_inv: str = Form(Ellipsis), db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Endpoint called from template devicelicense.html, updates inventory number of device and redirects to devices-web
+endpoint</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@device_web.post(&#34;/devices-web-inv/{device_id}&#34;)
+async def dev_inv_new(device_id: int, dev_inv: str = Form(...), db: Session = Depends(get_db),
+                      Authorize: AuthJWT = Depends()):
+    &#34;&#34;&#34;
+    Endpoint called from template devicelicense.html, updates inventory number of device and redirects to devices-web
+    endpoint
+    &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
+    crud.update_device_inv(db, device_id, dev_inv)
+    return RedirectResponse(url=f&#34;/devices-web&#34;, status_code=303)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.api.devices_web.dev_team_con"><code class="name flex">
+<span>async def <span class="ident">dev_team_con</span></span>(<span>device_id: int, team_con: str = Form(Ellipsis), db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Endpoint called from devicelicense.html template, connects device with team and redirects to devices-web endpoint</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@device_web.post(&#34;/devices-web-team/{device_id}&#34;)
+async def dev_team_con(device_id: int, team_con: str = Form(...), db: Session = Depends(get_db),
+                       Authorize: AuthJWT = Depends()):
+    &#34;&#34;&#34;
+    Endpoint called from devicelicense.html template, connects device with team and redirects to devices-web endpoint
+    &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != &#34;admin&#34;:
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
+    crud.update_device(db, device_id, team_con)
+    return RedirectResponse(url=f&#34;/devices-web&#34;, status_code=303)</code></pre>
 </details>
 </dd>
 <dt id="sql_app.api.devices_web.filter_devices"><code class="name flex">
-<span>async def <span class="ident">filter_devices</span></span>(<span>request: starlette.requests.Request, skip: int = 0, limit: int = 100, lic: str = Form(all), db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
+<span>async def <span class="ident">filter_devices</span></span>(<span>request: starlette.requests.Request, skip: int = 0, limit: int = 100, keyman_id: str = Form(all), lic_name: str = Form(all), lic_id: str = Form(all), team: str = Form(all), db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Endpoint used for filtering devices by license. returns html template with only
+<div class="desc"><p>Endpoint used for filtering devices by user given inputs. returns html template with only
 devices that has assigned license defined by user input</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@device_web.post(&#34;/devices-web&#34;, response_class=HTMLResponse)
-async def filter_devices(request: Request, skip: int = 0, limit: int = 100, lic: str = Form(&#34;all&#34;),
-                         db: Session = Depends(get_db)):
+async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
+                         keyman_id: str = Form(&#34;all&#34;), lic_name: str = Form(&#34;all&#34;),
+                         lic_id: str = Form(&#34;all&#34;), team: str = Form(&#34;all&#34;),
+                         db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Endpoint used for filtering devices by license. returns html template with only
+    Endpoint used for filtering devices by user given inputs. returns html template with only
     devices that has assigned license defined by user input
     &#34;&#34;&#34;
-    devices = crud.get_devices(db, skip=skip, limit=limit)
-    def_devices = []
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    device_dict = []
+    devices_f = crud.get_filtered_devices(db, keyman_id, lic_name, lic_id, team)
+    ids = []
+    for d in devices_f:
+        ids.append(d[0])
+    devices = crud.get_devices_with_ids(db, ids)
+    teams = crud.get_teams(db, skip=skip, limit=limit)
+    # adding dictionary entry with all inforamtions needed in template
     for dev in devices:
-        for l in dev.licenses:
-            if dev not in def_devices and l.licenses.name == lic:
-                def_devices.append(dev)
-    # if input was default all
-    if lic == &#34;all&#34;:
-        def_devices = devices
-    statuses = []
-    for i in range(0, len(def_devices)):
-        statuses.append(def_devices[i].logs[len(def_devices[i].logs) - 1].status)
+        if len(dev.licenses) &gt; 0:
+            for lic in dev.licenses:
+                device_dict.append({&#34;device&#34;: dev, &#34;license&#34;: lic.licenses, &#34;log&#34;: dev.logs[len(dev.logs) - 1]})
+        else:
+            device_dict.append({&#34;device&#34;: dev, &#34;license&#34;: dev.licenses, &#34;log&#34;: dev.logs[len(dev.logs) - 1]})
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;devices.html&#34;, {&#34;request&#34;: request, &#34;devs&#34;: len(def_devices), &#34;devices&#34;: def_devices,
-                                                       &#34;statuses&#34;: statuses, &#34;licenses&#34;: licenses})</code></pre>
+    if current_user == &#34;admin&#34;:
+        return templates.TemplateResponse(&#34;devices.html&#34;, {&#34;request&#34;: request, &#34;devices&#34;: device_dict,
+                                                           &#34;licenses&#34;: licenses, &#34;devs&#34;: devices,
+                                                           &#34;teams&#34;: teams, &#34;user&#34;: current_user})
+    else:
+        current_user = &#34;guest&#34;
+        return templates.TemplateResponse(&#34;devices_normal.html&#34;, {&#34;request&#34;: request, &#34;devices&#34;: device_dict,
+                                                                  &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})</code></pre>
 </details>
 </dd>
 <dt id="sql_app.api.devices_web.get_db"><code class="name flex">
@@ -231,27 +461,42 @@ async def filter_devices(request: Request, skip: int = 0, limit: int = 100, lic:
 </details>
 </dd>
 <dt id="sql_app.api.devices_web.read_devices"><code class="name flex">
-<span>async def <span class="ident">read_devices</span></span>(<span>request: starlette.requests.Request, skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
+<span>async def <span class="ident">read_devices</span></span>(<span>request: starlette.requests.Request, skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns template with all devices and its current states</p></div>
+<div class="desc"><p>Returns template with all devices and its necessary attributes</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@device_web.get(&#34;/devices-web&#34;, response_class=HTMLResponse)
-async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                       Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Returns template with all devices and its current states
+    Returns template with all devices and its necessary attributes
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+
+    device_dict = []
     devices = crud.get_devices(db, skip=skip, limit=limit)
-    statuses = []
-    # adding state for each device in list
-    for i in range(0, len(devices)):
-        statuses.append(devices[i].logs[len(devices[i].logs)-1].status)
+    teams = crud.get_teams(db, skip=skip, limit=limit)
+    # adding dictionary entry with all inforamtions needed in template
+    for dev in devices:
+        if len(dev.licenses) &gt; 0:
+            for lic in dev.licenses:
+                device_dict.append({&#34;device&#34;: dev, &#34;license&#34;: lic.licenses, &#34;log&#34;: dev.logs[len(dev.logs) - 1]})
+        else:
+            device_dict.append({&#34;device&#34;: dev, &#34;license&#34;: dev.licenses, &#34;log&#34;: dev.logs[len(dev.logs) - 1]})
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;devices.html&#34;, {&#34;request&#34;: request, &#34;devs&#34;: len(devices), &#34;devices&#34;: devices,
-                                                       &#34;statuses&#34;: statuses, &#34;licenses&#34;: licenses})</code></pre>
+    if current_user == &#34;admin&#34;:
+        return templates.TemplateResponse(&#34;devices.html&#34;, {&#34;request&#34;: request, &#34;devices&#34;: device_dict,
+                                                           &#34;licenses&#34;: licenses, &#34;devs&#34;: devices,
+                                                           &#34;teams&#34;: teams, &#34;user&#34;: current_user})
+    else:
+        current_user = &#34;guest&#34;
+        return templates.TemplateResponse(&#34;devices_normal.html&#34;, {&#34;request&#34;: request, &#34;devices&#34;: device_dict,
+                                                                  &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})</code></pre>
 </details>
 </dd>
 </dl>
@@ -271,9 +516,13 @@ async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Se
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="sql_app.api.devices_web.connect_dev_lic" href="#sql_app.api.devices_web.connect_dev_lic">connect_dev_lic</a></code></li>
 <li><code><a title="sql_app.api.devices_web.connect_post" href="#sql_app.api.devices_web.connect_post">connect_post</a></code></li>
+<li><code><a title="sql_app.api.devices_web.delete_post" href="#sql_app.api.devices_web.delete_post">delete_post</a></code></li>
+<li><code><a title="sql_app.api.devices_web.dev_comm_new" href="#sql_app.api.devices_web.dev_comm_new">dev_comm_new</a></code></li>
+<li><code><a title="sql_app.api.devices_web.dev_inv_new" href="#sql_app.api.devices_web.dev_inv_new">dev_inv_new</a></code></li>
+<li><code><a title="sql_app.api.devices_web.dev_team_con" href="#sql_app.api.devices_web.dev_team_con">dev_team_con</a></code></li>
 <li><code><a title="sql_app.api.devices_web.filter_devices" href="#sql_app.api.devices_web.filter_devices">filter_devices</a></code></li>
 <li><code><a title="sql_app.api.devices_web.get_db" href="#sql_app.api.devices_web.get_db">get_db</a></code></li>
 <li><code><a title="sql_app.api.devices_web.read_devices" href="#sql_app.api.devices_web.read_devices">read_devices</a></code></li>

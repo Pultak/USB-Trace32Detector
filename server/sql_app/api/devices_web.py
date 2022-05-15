@@ -33,7 +33,7 @@ def get_db():
 async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
                        Authorize: AuthJWT = Depends()):
     """
-    Returns template with all devices and its current states
+    Returns template with all devices and its necessary attributes
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
@@ -65,7 +65,7 @@ async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
                          lic_id: str = Form("all"), team: str = Form("all"),
                          db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     """
-    Endpoint used for filtering devices by license. returns html template with only
+    Endpoint used for filtering devices by user given inputs. returns html template with only
     devices that has assigned license defined by user input
     """
     Authorize.jwt_optional()
@@ -99,7 +99,8 @@ async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
 async def connect_dev_lic(request: Request, device_id: int, db: Session = Depends(get_db),
                           Authorize: AuthJWT = Depends()):
     """
-    Returns template with one device and all available licenses that can be assigned to it.
+    Returns template with one device and all available licenses that can be assigned to it. Plus all teams that can
+    be assigned to device, inventory number text input and comment text input
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
@@ -128,7 +129,7 @@ async def connect_dev_lic(request: Request, device_id: int, db: Session = Depend
 async def connect_post(device_id: int, lic: str = Form(...), db: Session = Depends(get_db),
                        Authorize: AuthJWT = Depends()):
     """
-    Endpoint called from template for connecting device with license. Adds entry to devices_licenses
+    Endpoint called from devicelicense.html template. Adds entry to devices_licenses
     table and redirects to devices-web endpoint
     """
     Authorize.jwt_optional()
@@ -143,8 +144,8 @@ async def connect_post(device_id: int, lic: str = Form(...), db: Session = Depen
 async def delete_post(device_id: int, lic_del: str = Form(...), db: Session = Depends(get_db),
                       Authorize: AuthJWT = Depends()):
     """
-    Endpoint called from template for deleting device-license connection. Adds entry to bodydevices_licenses
-    table and redirects to devices-web endpoint
+    Endpoint called from devicelicense.html template for deleting device-license connection. Deletes entry in
+    bodydevices_licenses table and redirects to devices-web endpoint
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
@@ -153,12 +154,12 @@ async def delete_post(device_id: int, lic_del: str = Form(...), db: Session = De
     crud.delete_device_license(db, device_id, int(lic_del))
     return RedirectResponse(url=f"/devices-web", status_code=303)
 
+
 @device_web.post("/devices-web-team/{device_id}")
 async def dev_team_con(device_id: int, team_con: str = Form(...), db: Session = Depends(get_db),
-                      Authorize: AuthJWT = Depends()):
+                       Authorize: AuthJWT = Depends()):
     """
-    Endpoint called from template for deleting device-license connection. Adds entry to bodydevices_licenses
-    table and redirects to devices-web endpoint
+    Endpoint called from devicelicense.html template, connects device with team and redirects to devices-web endpoint
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
@@ -167,12 +168,13 @@ async def dev_team_con(device_id: int, team_con: str = Form(...), db: Session = 
     crud.update_device(db, device_id, team_con)
     return RedirectResponse(url=f"/devices-web", status_code=303)
 
+
 @device_web.post("/devices-web-inv/{device_id}")
 async def dev_inv_new(device_id: int, dev_inv: str = Form(...), db: Session = Depends(get_db),
                       Authorize: AuthJWT = Depends()):
     """
-    Endpoint called from template for deleting device-license connection. Adds entry to bodydevices_licenses
-    table and redirects to devices-web endpoint
+    Endpoint called from template devicelicense.html, updates inventory number of device and redirects to devices-web
+    endpoint
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
@@ -181,12 +183,13 @@ async def dev_inv_new(device_id: int, dev_inv: str = Form(...), db: Session = De
     crud.update_device_inv(db, device_id, dev_inv)
     return RedirectResponse(url=f"/devices-web", status_code=303)
 
+
 @device_web.post("/devices-web-comment/{device_id}")
 async def dev_comm_new(device_id: int, dev_com: str = Form(...), db: Session = Depends(get_db),
-                      Authorize: AuthJWT = Depends()):
+                       Authorize: AuthJWT = Depends()):
     """
-    Endpoint called from template for deleting device-license connection. Adds entry to bodydevices_licenses
-    table and redirects to devices-web endpoint
+    Endpoint called from template devicelicense.html, updates comment of device and redirects to devices-web
+    endpoint
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
