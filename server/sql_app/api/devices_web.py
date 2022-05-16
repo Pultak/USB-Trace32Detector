@@ -51,12 +51,15 @@ async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Se
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
     if current_user == "admin":
         return templates.TemplateResponse("devices.html", {"request": request, "devices": device_dict,
-                                                           "licenses": licenses, "devs": devices,
+                                                           "licenses": licenses, "devs": devices, "keyman_val": "",
+                                                           "licn_val": "", "lici_val": "", "team_val": "",
                                                            "teams": teams, "user": current_user})
     else:
         current_user = "guest"
         return templates.TemplateResponse("devices_normal.html", {"request": request, "devices": device_dict,
-                                                                  "licenses": licenses, "user": current_user})
+                                                                  "licenses": licenses, "devs": devices, "keyman_val": "",
+                                                                  "licn_val": "", "lici_val": "", "team_val": "",
+                                                                  "teams": teams, "user": current_user})
 
 
 @device_web.post("/devices-web", response_class=HTMLResponse)
@@ -85,14 +88,25 @@ async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
         else:
             device_dict.append({"device": dev, "license": dev.licenses, "log": dev.logs[len(dev.logs) - 1]})
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    if keyman_id == "all":
+        keyman_id = ""
+    if lic_name == "all":
+        lic_name = ""
+    if lic_id == "all":
+        lic_id = ""
+    if team == "all":
+        team = ""
     if current_user == "admin":
         return templates.TemplateResponse("devices.html", {"request": request, "devices": device_dict,
-                                                           "licenses": licenses, "devs": devices,
+                                                           "licenses": licenses, "devs": devices, "keyman_val": keyman_id,
+                                                           "licn_val": lic_name, "lici_val": lic_id, "team_val": team,
                                                            "teams": teams, "user": current_user})
     else:
         current_user = "guest"
         return templates.TemplateResponse("devices_normal.html", {"request": request, "devices": device_dict,
-                                                                  "licenses": licenses, "user": current_user})
+                                                                  "licenses": licenses, "devs": devices, "keyman_val": keyman_id,
+                                                                  "licn_val": lic_name, "lici_val": lic_id, "team_val": team,
+                                                                  "teams": teams, "user": current_user})
 
 
 @device_web.get("/device-license/{device_id}", response_class=HTMLResponse)

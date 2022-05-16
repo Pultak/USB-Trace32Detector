@@ -58,11 +58,32 @@
   <input type="submit" value="OK">
 </form>
 <form action="/devices-web" method="post">
-    <label for="lic">License:</label>
-    <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
-    <datalist id="licenses">
+    <label for="keyman_id">Keyman ID:</label>
+    <input id="keyman_id" name="keyman_id" type="text" list="keyman_ids" value="{{keyman_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="keyman_ids">
+        {% for dev in devs %}
+        <option value="{{dev.serial_number}}"></option>
+        {% endfor %}
+    </datalist>
+    <label for="lic_name">License Type:</label>
+    <input id="lic_name" name="lic_name" type="text" list="licenses_names" value="{{licn_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="licenses_names">
         {% for license in licenses %}
         <option value="{{license.name}}"></option>
+        {% endfor %}
+    </datalist>
+    <label for="lic_id">License ID:</label>
+    <input id="lic_id" name="lic_id" type="text" list="licenses_ids" value="{{lici_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="licenses_ids">
+        {% for license in licenses %}
+        <option value="{{license.license_id}}"></option>
+        {% endfor %}
+    </datalist>
+    <label for="team">Team:</label>
+    <input id="team" name="team" type="text" list="teams" value="{{team_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="teams">
+        {% for team in teams %}
+        <option value="{{team.name}}">{{team.name}}</option>
         {% endfor %}
     </datalist>
   <input type="submit" value="Filter">
@@ -83,7 +104,7 @@
     </TR>
     {% for dev in devices %}
     <TR>
-        <TD class="ID">{{dev['device'].id}}</TD>
+        <TD class="ID"><a href="/device-license/{{dev['device'].id}}">{{dev['device'].id}}</a></TD>
         <TD class="Serial Number">{{dev['device'].serial_number}}</TD>
         <TD class="License">{{dev['license'].name}}</TD>
         <TD class="License ID">{{dev['license'].license_id}}</TD>

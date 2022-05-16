@@ -59,21 +59,21 @@
 </form>
 <form action="/body-devices-web" method="post">
     <label for="body_id">Body Device ID:</label>
-    <input id="body_id" name="body_id" type="text" list="body_ids" value="" placeholder="all">
+    <input id="body_id" name="body_id" type="text" list="body_ids" value="{{body_val}}" placeholder="all" onClick="this.select();">
     <datalist id="body_ids">
         {% for dev in devs %}
         <option value="{{dev.serial_number}}"></option>
         {% endfor %}
     </datalist>
     <label for="lic_id">License ID:</label>
-    <input id="lic_id" name="lic_id" type="text" list="licenses_ids" value="" placeholder="all">
+    <input id="lic_id" name="lic_id" type="text" list="licenses_ids" value="{{lic_val}}" placeholder="all" onClick="this.select();">
     <datalist id="licenses_ids">
         {% for license in licenses %}
         <option value="{{license.license_id}}"></option>
         {% endfor %}
     </datalist>
     <label for="team">Team:</label>
-    <input id="team" name="team" type="text" list="teams" value="" placeholder="all">
+    <input id="team" name="team" type="text" list="teams" value="{{team_val}}" placeholder="all" onClick="this.select();">
     <datalist id="teams">
         {% for team in teams %}
         <option value="{{team.name}}">{{team.name}}</option>

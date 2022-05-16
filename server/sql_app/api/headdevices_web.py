@@ -48,12 +48,14 @@ async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Se
     if current_user == "admin":
         return templates.TemplateResponse("head_devices.html", {"request": request, "devices": device_dict,
                                                                 "devs": devices, "teams": teams, "licenses": licenses,
-                                                                "user": current_user})
+                                                                "user": current_user, "body_val": "", "lic_val": "",
+                                                                "team_val": ""})
     else:
         current_user = "guest"
         return templates.TemplateResponse("head_devices_normal.html", {"request": request, "devices": device_dict,
                                                                 "devs": devices, "teams": teams, "licenses": licenses,
-                                                                "user": current_user})
+                                                                "user": current_user, "body_val": "", "lic_val": "",
+                                                                "team_val": ""})
 
 
 @head_device_web.post("/head-devices-web", response_class=HTMLResponse)
@@ -77,16 +79,24 @@ async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
         lic = crud.get_license(db, dev.license_id)
         device_dict.append({"device": dev, "license": lic, "log": dev.h_logs[len(dev.h_logs) - 1]})
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    if body_id == "all":
+        body_id = ""
+    if lic_id == "all":
+        lic_id = ""
+    if team == "all":
+        team = ""
     if current_user == "admin":
         return templates.TemplateResponse("head_devices.html", {"request": request, "devices": device_dict,
                                                                 "devs": devices, "teams": teams, "licenses": licenses,
-                                                                "user": current_user})
+                                                                "user": current_user, "body_val": body_id, "lic_val": lic_id,
+                                                                "team_val": team})
     else:
         current_user = "guest"
         return templates.TemplateResponse("head_devices_normal.html", {"request": request, "devices": device_dict,
                                                                        "devs": devices, "teams": teams,
                                                                        "licenses": licenses,
-                                                                       "user": current_user})
+                                                                       "user": current_user, "body_val": body_id, "lic_val": lic_id,
+                                                                       "team_val": team})
 
 
 @head_device_web.get("/head-device-license/{device_id}", response_class=HTMLResponse)

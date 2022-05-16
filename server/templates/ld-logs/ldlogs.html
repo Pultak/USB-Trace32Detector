@@ -60,21 +60,21 @@
 </form>
 <form action="/ldlogs-web" method="post">
   <label for="pc">PC:</label>
-  <input id="pc" name="pc" type="text" list="pcs" value="" placeholder="all">
+  <input id="pc" name="pc" type="text" list="pcs" value="{{pc_val}}" placeholder="all" onClick="this.select();">
     <datalist id="pcs">
         {% for pc in pcs %}
         <option value="{{pc.username}}"></option>
         {% endfor %}
     </datalist>
     <label for="team">Team:</label>
-  <input id="team" name="team" type="text" list="teams" value="" placeholder="all">
+  <input id="team" name="team" type="text" list="teams" value="{{team_val}}" placeholder="all" onClick="this.select();">
     <datalist id="teams">
         {% for team in teams %}
         <option value="{{team.name}}"></option>
         {% endfor %}
     </datalist>
     <label for="lic">License:</label>
-    <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
+    <input id="lic" name="lic" type="text" list="licenses" value="{{lic_val}}" placeholder="all" onClick="this.select();">
     <datalist id="licenses">
         {% for license in licenses %}
         <option value="{{license.license_id}}"></option>
