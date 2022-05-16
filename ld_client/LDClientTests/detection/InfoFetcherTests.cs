@@ -8,8 +8,8 @@ using NUnit.Framework;
 namespace LDClientTests.detection; 
 
 internal class InfoFetcherTests {
-    private InfoFetcher _defaultFetcher;
-    private InfoFetcher _fetcherWithoutPars;
+    private AInfoFetcher _defaultFetcher;
+    private AInfoFetcher _fetcherWithoutPars;
         
 
     private readonly string[] _defaultArguments = new[] { "argument 1", "argument 2" , "argument 3"};
@@ -25,14 +25,14 @@ internal class InfoFetcherTests {
         _mockFileUtils = new Mock<IFileUtils>(MockBehavior.Strict);
     
 
-        _defaultFetcher = new InfoFetcher(DefaultMaxAttempts, 50, "info.txt", "executable.exe",
+        _defaultFetcher = new T32RemFetcher(DefaultMaxAttempts, 50, "info.txt", "executable.exe",
             _defaultArguments, 0, 50) {
             FileUtils = _mockFileUtils.Object,
             ProcessUtils = _mockProcessUtils.Object
         };
 
 
-        _fetcherWithoutPars = new InfoFetcher(DefaultMaxAttempts, 50, "info.txt", "executable.exe",
+        _fetcherWithoutPars = new T32RemFetcher(DefaultMaxAttempts, 50, "info.txt", "executable.exe",
             null, 0, 50) {
             FileUtils = _mockFileUtils.Object,
             ProcessUtils = _mockProcessUtils.Object

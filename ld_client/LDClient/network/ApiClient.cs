@@ -70,6 +70,7 @@ namespace LDClient.network {
         /// </summary>
         /// <param name="payload">instance of a payload to be sent off to the server</param>
         public async Task SendPayloadAsync(Payload payload) {
+            Program.DefaultLogger.Debug("SendPayloadAsync called.");
             try {
                 // Create an instance of Stopwatch (to measure how much
                 // the action took).
