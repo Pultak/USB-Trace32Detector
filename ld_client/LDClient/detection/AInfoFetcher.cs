@@ -115,7 +115,7 @@ public abstract class AInfoFetcher : IInfoFetcher {
             BodySerialNumber = bodySerialNumber;
 
             // Finally, delete the file.
-            //File.Delete(filePath);
+            File.Delete(filePath);
         } catch (Exception exception) {
             Program.DefaultLogger.Error($"Failed to retrieve debugger info. File {filePath} may not exist or it does not have the right format. {exception.Message}");
             return false;

@@ -61,6 +61,16 @@ public sealed class ProcessDetection : IProcessDetection {
     /// Flag used to stop the thread (process detection).
     /// </summary>
     public bool DetectionRunning = false;
+
+    /// <summary>
+    /// Superior number of attempts to fetch the information (outer loop).
+    /// </summary>
+    private uint _fetchInfoSuperiorMaxAttempts;
+    
+    /// <summary>
+    /// Period of the superior (outer) loop to fetch the data.
+    /// </summary>
+    private uint _fetchInfoSuperiorAttemptPeriod;
         
     /// <summary>
     /// Creates an instance of this class.
@@ -71,13 +81,15 @@ public sealed class ProcessDetection : IProcessDetection {
     /// <param name="apiClient">Instance of API clients used for sending data off to the server</param>
     /// <param name="processUtils">Instance of ProcessUtils which encapsulates common functionality when it comes to dealing with processes (limited by the needs of this application)</param>
     public ProcessDetection(string processName, uint detectionPeriodMs, IInfoFetcher infoFetcher,
-        IApiClient apiClient, IProcessUtils processUtils) {
+        IApiClient apiClient, IProcessUtils processUtils, uint fetchInfoSuperiorMaxAttempts, uint fetchInfoSuperiorAttemptPeriod) {
         _processName = processName;
         _detectionPeriodMs = detectionPeriodMs;
         _infoFetcher = infoFetcher;
         _apiClient = apiClient;
         _failedToRetrieveData = false;
         _processUtils = processUtils;
+        _fetchInfoSuperiorMaxAttempts = fetchInfoSuperiorMaxAttempts;
+        _fetchInfoSuperiorAttemptPeriod = fetchInfoSuperiorAttemptPeriod;
     }
 
     /// <summary>
@@ -86,14 +98,19 @@ public sealed class ProcessDetection : IProcessDetection {
     /// <returns>True, if the data was fetched successfully. False, otherwise.</returns>
     private async Task<bool> RetrieveDataFromDebugger() {
         // Try to fetch data from the debugger.
-        var success = await _infoFetcher.FetchDataAsync();
-            
-        // If the data was fetched successfully, send a payload off to the server.
-        if (success) {
-            _lastConnectedPayload = await SendDataToServerAsync(_infoFetcher.HeadSerialNumber,
-                _infoFetcher.BodySerialNumber, DatetimeFormat);
+
+        for (var i = 0; i < _fetchInfoSuperiorMaxAttempts; i++) {
+            var success = await _infoFetcher.FetchDataAsync();
+
+            // If the data was fetched successfully, send a payload off to the server.
+            if (success) {
+                _lastConnectedPayload = await SendDataToServerAsync(_infoFetcher.HeadSerialNumber,
+                    _infoFetcher.BodySerialNumber, DatetimeFormat);
+                return true;
+            }
+            await Task.Delay((int)_fetchInfoSuperiorAttemptPeriod);
         }
-        return success;
+        return false;
     }
 
     /// <summary>
