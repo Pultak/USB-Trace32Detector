@@ -149,10 +149,9 @@ async def login(username: str = Form(...), password: str = Form(...), db: Sessio
             refresh_token = Authorize.create_refresh_token(subject="guest", expires_time=False)
     else:
         usr = fake_users_db.get(username)
-        if usr != None:
-            if usr["username"] == username and usr["password"] == password:
-                access_token = Authorize.create_access_token(subject="admin", expires_time=False)
-                refresh_token = Authorize.create_refresh_token(subject="admin", expires_time=False)
+        if usr is not None and (usr["username"] == username and usr["password"] == password):
+            access_token = Authorize.create_access_token(subject="admin", expires_time=False)
+            refresh_token = Authorize.create_refresh_token(subject="admin", expires_time=False)
         else:
             return """
                 <html>
