@@ -76,6 +76,8 @@ class DeviceBase(BaseModel):
     vendor_id: str
     product_id: str
     serial_number: str
+    inventory_number: str
+    comment: str
 
 
 class DeviceCreate(DeviceBase):
@@ -87,12 +89,20 @@ class Device(DeviceCreate):
     Class used for creating and reading devices entries
     &#34;&#34;&#34;
     id: int
-    assigned: bool
     logs: List[USBLog] = []
     licenses: List[DeviceLicense] = []
 
     class Config:
         orm_mode = True
+
+
+class DeviceTemp(BaseModel):
+    &#34;&#34;&#34;
+    Class used for reading data from client
+    &#34;&#34;&#34;
+    vendor_id: str
+    product_id: str
+    serial_number: str
 
 
 class LDLogBase(BaseModel):
@@ -118,6 +128,8 @@ class LDLog(LDLogCreate):
 
 class BodyDeviceBase(BaseModel):
     serial_number: str
+    inventory_number: str
+    comment: str
 
 
 class BodyDeviceCreate(BodyDeviceBase):
@@ -135,8 +147,17 @@ class BodyDevice(BodyDeviceCreate):
         orm_mode = True
 
 
+class BodyDeviceTemp(BaseModel):
+    &#34;&#34;&#34;
+    Class used for reading body device data from client
+    &#34;&#34;&#34;
+    serial_number: str
+
+
 class HeadDeviceBase(BaseModel):
     serial_number: str
+    inventory_number: str
+    comment: str
 
 
 class HeadDeviceCreate(HeadDeviceBase):
@@ -154,6 +175,13 @@ class HeadDevice(HeadDeviceCreate):
         orm_mode = True
 
 
+class HeadDeviceTemp(BaseModel):
+    &#34;&#34;&#34;
+    Class used for reading head device data from client
+    &#34;&#34;&#34;
+    serial_number: str
+
+
 class PCBase(BaseModel):
     username: str
     hostname: str
@@ -168,8 +196,8 @@ class PC(PCCreate):
     Class used for creating and reading pc entries
     &#34;&#34;&#34;
     id: int
-    assigned: bool
     logs_pc: List[USBLog] = []
+    logs_ld: List[LDLog] = []
 
     class Config:
         orm_mode = True
@@ -188,7 +216,7 @@ class Team(TeamCreate):
     Class used for creating and reading team entries
     &#34;&#34;&#34;
     id: int
-    pcs: List[PC] = []
+    devices: List[Device] = []
 
     class Config:
         orm_mode = True
@@ -196,6 +224,7 @@ class Team(TeamCreate):
 
 class LicenseBase(BaseModel):
     name: str
+    license_id: str
     expiration_date: date
 
 
@@ -209,6 +238,8 @@ class License(LicenseCreate):
     &#34;&#34;&#34;
     id: int
     devices: List[DeviceLicense] = []
+    head_devices: List[HeadDevice] = []
+    body_devices: List[BodyDevice] = []
 
     class Config:
         orm_mode = True
@@ -221,7 +252,7 @@ class USBTempBase(BaseModel):
     username: str
     hostname: str
     timestamp: str
-    device: DeviceBase
+    device: DeviceTemp
     status: str
 
 
@@ -244,8 +275,8 @@ class LDTempBase(BaseModel):
     username: str
     hostname: str
     timestamp: str
-    head_device: HeadDeviceBase
-    body_device: BodyDeviceBase
+    head_device: HeadDeviceTemp
+    body_device: BodyDeviceTemp
     status: str
 
 
@@ -257,6 +288,26 @@ class LDTemp(LDTempCreate):
     id: int
     head_id: int
     body_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class UserBase(BaseModel):
+    &#34;&#34;&#34;
+    Classes used for creating new User entry
+    &#34;&#34;&#34;
+    username: str
+    password: str
+    role: str
+
+
+class UserCreate(UserBase):
+    pass
+
+
+class User(UserCreate):
+    id: int
 
     class Config:
         orm_mode = True</code></pre>
@@ -300,6 +351,11 @@ class LDTemp(LDTempCreate):
 <li>pydantic.main.BaseModel</li>
 <li>pydantic.utils.Representation</li>
 </ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li>pydantic.main.BodyDevice</li>
+<li>pydantic.main.BodyDevice</li>
+</ul>
 <h3>Class variables</h3>
 <dl>
 <dt id="sql_app.schemas.BodyDevice.Config"><code class="name">var <span class="ident">Config</span></code></dt>
@@ -328,7 +384,9 @@ class LDTemp(LDTempCreate):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class BodyDeviceBase(BaseModel):
-    serial_number: str</code></pre>
+    serial_number: str
+    inventory_number: str
+    comment: str</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -341,6 +399,14 @@ class LDTemp(LDTempCreate):
 </ul>
 <h3>Class variables</h3>
 <dl>
+<dt id="sql_app.schemas.BodyDeviceBase.comment"><code class="name">var <span class="ident">comment</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="sql_app.schemas.BodyDeviceBase.inventory_number"><code class="name">var <span class="ident">inventory_number</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="sql_app.schemas.BodyDeviceBase.serial_number"><code class="name">var <span class="ident">serial_number</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
@@ -372,6 +438,37 @@ class LDTemp(LDTempCreate):
 <li><a title="sql_app.schemas.BodyDevice" href="#sql_app.schemas.BodyDevice">BodyDevice</a></li>
 </ul>
 </dd>
+<dt id="sql_app.schemas.BodyDeviceTemp"><code class="flex name class">
+<span>class <span class="ident">BodyDeviceTemp</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class used for reading body device data from client</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BodyDeviceTemp(BaseModel):
+    &#34;&#34;&#34;
+    Class used for reading body device data from client
+    &#34;&#34;&#34;
+    serial_number: str</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+<li>pydantic.utils.Representation</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="sql_app.schemas.BodyDeviceTemp.serial_number"><code class="name">var <span class="ident">serial_number</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="sql_app.schemas.Device"><code class="flex name class">
 <span>class <span class="ident">Device</span></span>
 <span>(</span><span>**data: Any)</span>
@@ -389,7 +486,6 @@ class LDTemp(LDTempCreate):
     Class used for creating and reading devices entries
     &#34;&#34;&#34;
     id: int
-    assigned: bool
     logs: List[USBLog] = []
     licenses: List[DeviceLicense] = []
 
@@ -415,14 +511,12 @@ class LDTemp(LDTempCreate):
 <li>pydantic.main.Device</li>
 <li>pydantic.main.Device</li>
 <li>pydantic.main.Device</li>
+<li>pydantic.main.Device</li>
+<li>pydantic.main.Device</li>
 </ul>
 <h3>Class variables</h3>
 <dl>
 <dt id="sql_app.schemas.Device.Config"><code class="name">var <span class="ident">Config</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="sql_app.schemas.Device.assigned"><code class="name">var <span class="ident">assigned</span> : bool</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -454,7 +548,9 @@ class LDTemp(LDTempCreate):
 <pre><code class="python">class DeviceBase(BaseModel):
     vendor_id: str
     product_id: str
-    serial_number: str</code></pre>
+    serial_number: str
+    inventory_number: str
+    comment: str</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -467,6 +563,14 @@ class LDTemp(LDTempCreate):
 </ul>
 <h3>Class variables</h3>
 <dl>
+<dt id="sql_app.schemas.DeviceBase.comment"><code class="name">var <span class="ident">comment</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="sql_app.schemas.DeviceBase.inventory_number"><code class="name">var <span class="ident">inventory_number</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="sql_app.schemas.DeviceBase.product_id"><code class="name">var <span class="ident">product_id</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
@@ -536,6 +640,8 @@ class LDTemp(LDTempCreate):
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
+<li>pydantic.main.DeviceLicense</li>
+<li>pydantic.main.DeviceLicense</li>
 <li>pydantic.main.DeviceLicense</li>
 <li>pydantic.main.DeviceLicense</li>
 <li>pydantic.main.DeviceLicense</li>
@@ -629,6 +735,47 @@ class LDTemp(LDTempCreate):
 <li><a title="sql_app.schemas.DeviceLicense" href="#sql_app.schemas.DeviceLicense">DeviceLicense</a></li>
 </ul>
 </dd>
+<dt id="sql_app.schemas.DeviceTemp"><code class="flex name class">
+<span>class <span class="ident">DeviceTemp</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class used for reading data from client</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DeviceTemp(BaseModel):
+    &#34;&#34;&#34;
+    Class used for reading data from client
+    &#34;&#34;&#34;
+    vendor_id: str
+    product_id: str
+    serial_number: str</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+<li>pydantic.utils.Representation</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="sql_app.schemas.DeviceTemp.product_id"><code class="name">var <span class="ident">product_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="sql_app.schemas.DeviceTemp.serial_number"><code class="name">var <span class="ident">serial_number</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="sql_app.schemas.DeviceTemp.vendor_id"><code class="name">var <span class="ident">vendor_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="sql_app.schemas.HeadDevice"><code class="flex name class">
 <span>class <span class="ident">HeadDevice</span></span>
 <span>(</span><span>**data: Any)</span>
@@ -658,6 +805,11 @@ class LDTemp(LDTempCreate):
 <li>pydantic.main.BaseModel</li>
 <li>pydantic.utils.Representation</li>
 </ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li>pydantic.main.HeadDevice</li>
+<li>pydantic.main.HeadDevice</li>
+</ul>
 <h3>Class variables</h3>
 <dl>
 <dt id="sql_app.schemas.HeadDevice.Config"><code class="name">var <span class="ident">Config</span></code></dt>
@@ -686,7 +838,9 @@ class LDTemp(LDTempCreate):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class HeadDeviceBase(BaseModel):
-    serial_number: str</code></pre>
+    serial_number: str
+    inventory_number: str
+    comment: str</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -699,6 +853,14 @@ class LDTemp(LDTempCreate):
 </ul>
 <h3>Class variables</h3>
 <dl>
+<dt id="sql_app.schemas.HeadDeviceBase.comment"><code class="name">var <span class="ident">comment</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="sql_app.schemas.HeadDeviceBase.inventory_number"><code class="name">var <span class="ident">inventory_number</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="sql_app.schemas.HeadDeviceBase.serial_number"><code class="name">var <span class="ident">serial_number</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
@@ -729,6 +891,37 @@ class LDTemp(LDTempCreate):
 <ul class="hlist">
 <li><a title="sql_app.schemas.HeadDevice" href="#sql_app.schemas.HeadDevice">HeadDevice</a></li>
 </ul>
+</dd>
+<dt id="sql_app.schemas.HeadDeviceTemp"><code class="flex name class">
+<span>class <span class="ident">HeadDeviceTemp</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class used for reading head device data from client</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class HeadDeviceTemp(BaseModel):
+    &#34;&#34;&#34;
+    Class used for reading head device data from client
+    &#34;&#34;&#34;
+    serial_number: str</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+<li>pydantic.utils.Representation</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="sql_app.schemas.HeadDeviceTemp.serial_number"><code class="name">var <span class="ident">serial_number</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 <dt id="sql_app.schemas.LDLog"><code class="flex name class">
 <span>class <span class="ident">LDLog</span></span>
@@ -762,6 +955,14 @@ class LDTemp(LDTempCreate):
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
+<li>pydantic.main.LDLog</li>
+<li>pydantic.main.LDLog</li>
+<li>pydantic.main.LDLog</li>
+<li>pydantic.main.LDLog</li>
+<li>pydantic.main.LDLog</li>
+<li>pydantic.main.LDLog</li>
+<li>pydantic.main.LDLog</li>
+<li>pydantic.main.LDLog</li>
 <li>pydantic.main.LDLog</li>
 <li>pydantic.main.LDLog</li>
 </ul>
@@ -912,8 +1113,8 @@ class LDTemp(LDTempCreate):
     username: str
     hostname: str
     timestamp: str
-    head_device: HeadDeviceBase
-    body_device: BodyDeviceBase
+    head_device: HeadDeviceTemp
+    body_device: BodyDeviceTemp
     status: str</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -927,11 +1128,11 @@ class LDTemp(LDTempCreate):
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="sql_app.schemas.LDTempBase.body_device"><code class="name">var <span class="ident">body_device</span> : <a title="sql_app.schemas.BodyDeviceBase" href="#sql_app.schemas.BodyDeviceBase">BodyDeviceBase</a></code></dt>
+<dt id="sql_app.schemas.LDTempBase.body_device"><code class="name">var <span class="ident">body_device</span> : <a title="sql_app.schemas.BodyDeviceTemp" href="#sql_app.schemas.BodyDeviceTemp">BodyDeviceTemp</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="sql_app.schemas.LDTempBase.head_device"><code class="name">var <span class="ident">head_device</span> : <a title="sql_app.schemas.HeadDeviceBase" href="#sql_app.schemas.HeadDeviceBase">HeadDeviceBase</a></code></dt>
+<dt id="sql_app.schemas.LDTempBase.head_device"><code class="name">var <span class="ident">head_device</span> : <a title="sql_app.schemas.HeadDeviceTemp" href="#sql_app.schemas.HeadDeviceTemp">HeadDeviceTemp</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -997,6 +1198,8 @@ class LDTemp(LDTempCreate):
     &#34;&#34;&#34;
     id: int
     devices: List[DeviceLicense] = []
+    head_devices: List[HeadDevice] = []
+    body_devices: List[BodyDevice] = []
 
     class Config:
         orm_mode = True</code></pre>
@@ -1019,7 +1222,15 @@ class LDTemp(LDTempCreate):
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="sql_app.schemas.License.body_devices"><code class="name">var <span class="ident">body_devices</span> : List[<a title="sql_app.schemas.BodyDevice" href="#sql_app.schemas.BodyDevice">BodyDevice</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="sql_app.schemas.License.devices"><code class="name">var <span class="ident">devices</span> : List[<a title="sql_app.schemas.DeviceLicense" href="#sql_app.schemas.DeviceLicense">DeviceLicense</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="sql_app.schemas.License.head_devices"><code class="name">var <span class="ident">head_devices</span> : List[<a title="sql_app.schemas.HeadDevice" href="#sql_app.schemas.HeadDevice">HeadDevice</a>]</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -1042,6 +1253,7 @@ class LDTemp(LDTempCreate):
 </summary>
 <pre><code class="python">class LicenseBase(BaseModel):
     name: str
+    license_id: str
     expiration_date: date</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1056,6 +1268,10 @@ class LDTemp(LDTempCreate):
 <h3>Class variables</h3>
 <dl>
 <dt id="sql_app.schemas.LicenseBase.expiration_date"><code class="name">var <span class="ident">expiration_date</span> : datetime.date</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="sql_app.schemas.LicenseBase.license_id"><code class="name">var <span class="ident">license_id</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -1107,8 +1323,8 @@ class LDTemp(LDTempCreate):
     Class used for creating and reading pc entries
     &#34;&#34;&#34;
     id: int
-    assigned: bool
     logs_pc: List[USBLog] = []
+    logs_ld: List[LDLog] = []
 
     class Config:
         orm_mode = True</code></pre>
@@ -1128,8 +1344,6 @@ class LDTemp(LDTempCreate):
 <li>pydantic.main.PC</li>
 <li>pydantic.main.PC</li>
 <li>pydantic.main.PC</li>
-<li>pydantic.main.PC</li>
-<li>pydantic.main.PC</li>
 </ul>
 <h3>Class variables</h3>
 <dl>
@@ -1137,11 +1351,11 @@ class LDTemp(LDTempCreate):
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="sql_app.schemas.PC.assigned"><code class="name">var <span class="ident">assigned</span> : bool</code></dt>
+<dt id="sql_app.schemas.PC.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="sql_app.schemas.PC.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
+<dt id="sql_app.schemas.PC.logs_ld"><code class="name">var <span class="ident">logs_ld</span> : List[<a title="sql_app.schemas.LDLog" href="#sql_app.schemas.LDLog">LDLog</a>]</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -1229,7 +1443,7 @@ class LDTemp(LDTempCreate):
     Class used for creating and reading team entries
     &#34;&#34;&#34;
     id: int
-    pcs: List[PC] = []
+    devices: List[Device] = []
 
     class Config:
         orm_mode = True</code></pre>
@@ -1252,11 +1466,11 @@ class LDTemp(LDTempCreate):
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="sql_app.schemas.Team.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
+<dt id="sql_app.schemas.Team.devices"><code class="name">var <span class="ident">devices</span> : List[<a title="sql_app.schemas.Device" href="#sql_app.schemas.Device">Device</a>]</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="sql_app.schemas.Team.pcs"><code class="name">var <span class="ident">pcs</span> : List[<a title="sql_app.schemas.PC" href="#sql_app.schemas.PC">PC</a>]</code></dt>
+<dt id="sql_app.schemas.Team.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -1512,7 +1726,7 @@ class LDTemp(LDTempCreate):
     username: str
     hostname: str
     timestamp: str
-    device: DeviceBase
+    device: DeviceTemp
     status: str</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1527,7 +1741,7 @@ class LDTemp(LDTempCreate):
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="sql_app.schemas.USBTempBase.device"><code class="name">var <span class="ident">device</span> : <a title="sql_app.schemas.DeviceBase" href="#sql_app.schemas.DeviceBase">DeviceBase</a></code></dt>
+<dt id="sql_app.schemas.USBTempBase.device"><code class="name">var <span class="ident">device</span> : <a title="sql_app.schemas.DeviceTemp" href="#sql_app.schemas.DeviceTemp">DeviceTemp</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -1571,6 +1785,114 @@ class LDTemp(LDTempCreate):
 <li>pydantic.utils.Representation</li>
 </ul>
 </dd>
+<dt id="sql_app.schemas.User"><code class="flex name class">
+<span>class <span class="ident">User</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Classes used for creating new User entry</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class User(UserCreate):
+    id: int
+
+    class Config:
+        orm_mode = True</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="sql_app.schemas.UserCreate" href="#sql_app.schemas.UserCreate">UserCreate</a></li>
+<li><a title="sql_app.schemas.UserBase" href="#sql_app.schemas.UserBase">UserBase</a></li>
+<li>pydantic.main.BaseModel</li>
+<li>pydantic.utils.Representation</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="sql_app.schemas.User.Config"><code class="name">var <span class="ident">Config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="sql_app.schemas.User.id"><code class="name">var <span class="ident">id</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="sql_app.schemas.UserBase"><code class="flex name class">
+<span>class <span class="ident">UserBase</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Classes used for creating new User entry</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UserBase(BaseModel):
+    &#34;&#34;&#34;
+    Classes used for creating new User entry
+    &#34;&#34;&#34;
+    username: str
+    password: str
+    role: str</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+<li>pydantic.utils.Representation</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="sql_app.schemas.UserCreate" href="#sql_app.schemas.UserCreate">UserCreate</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="sql_app.schemas.UserBase.password"><code class="name">var <span class="ident">password</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="sql_app.schemas.UserBase.role"><code class="name">var <span class="ident">role</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="sql_app.schemas.UserBase.username"><code class="name">var <span class="ident">username</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="sql_app.schemas.UserCreate"><code class="flex name class">
+<span>class <span class="ident">UserCreate</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Classes used for creating new User entry</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UserCreate(UserBase):
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="sql_app.schemas.UserBase" href="#sql_app.schemas.UserBase">UserBase</a></li>
+<li>pydantic.main.BaseModel</li>
+<li>pydantic.utils.Representation</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="sql_app.schemas.User" href="#sql_app.schemas.User">User</a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </article>
@@ -1598,6 +1920,8 @@ class LDTemp(LDTempCreate):
 <li>
 <h4><code><a title="sql_app.schemas.BodyDeviceBase" href="#sql_app.schemas.BodyDeviceBase">BodyDeviceBase</a></code></h4>
 <ul class="">
+<li><code><a title="sql_app.schemas.BodyDeviceBase.comment" href="#sql_app.schemas.BodyDeviceBase.comment">comment</a></code></li>
+<li><code><a title="sql_app.schemas.BodyDeviceBase.inventory_number" href="#sql_app.schemas.BodyDeviceBase.inventory_number">inventory_number</a></code></li>
 <li><code><a title="sql_app.schemas.BodyDeviceBase.serial_number" href="#sql_app.schemas.BodyDeviceBase.serial_number">serial_number</a></code></li>
 </ul>
 </li>
@@ -1605,10 +1929,15 @@ class LDTemp(LDTempCreate):
 <h4><code><a title="sql_app.schemas.BodyDeviceCreate" href="#sql_app.schemas.BodyDeviceCreate">BodyDeviceCreate</a></code></h4>
 </li>
 <li>
+<h4><code><a title="sql_app.schemas.BodyDeviceTemp" href="#sql_app.schemas.BodyDeviceTemp">BodyDeviceTemp</a></code></h4>
+<ul class="">
+<li><code><a title="sql_app.schemas.BodyDeviceTemp.serial_number" href="#sql_app.schemas.BodyDeviceTemp.serial_number">serial_number</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="sql_app.schemas.Device" href="#sql_app.schemas.Device">Device</a></code></h4>
 <ul class="">
 <li><code><a title="sql_app.schemas.Device.Config" href="#sql_app.schemas.Device.Config">Config</a></code></li>
-<li><code><a title="sql_app.schemas.Device.assigned" href="#sql_app.schemas.Device.assigned">assigned</a></code></li>
 <li><code><a title="sql_app.schemas.Device.id" href="#sql_app.schemas.Device.id">id</a></code></li>
 <li><code><a title="sql_app.schemas.Device.licenses" href="#sql_app.schemas.Device.licenses">licenses</a></code></li>
 <li><code><a title="sql_app.schemas.Device.logs" href="#sql_app.schemas.Device.logs">logs</a></code></li>
@@ -1617,6 +1946,8 @@ class LDTemp(LDTempCreate):
 <li>
 <h4><code><a title="sql_app.schemas.DeviceBase" href="#sql_app.schemas.DeviceBase">DeviceBase</a></code></h4>
 <ul class="">
+<li><code><a title="sql_app.schemas.DeviceBase.comment" href="#sql_app.schemas.DeviceBase.comment">comment</a></code></li>
+<li><code><a title="sql_app.schemas.DeviceBase.inventory_number" href="#sql_app.schemas.DeviceBase.inventory_number">inventory_number</a></code></li>
 <li><code><a title="sql_app.schemas.DeviceBase.product_id" href="#sql_app.schemas.DeviceBase.product_id">product_id</a></code></li>
 <li><code><a title="sql_app.schemas.DeviceBase.serial_number" href="#sql_app.schemas.DeviceBase.serial_number">serial_number</a></code></li>
 <li><code><a title="sql_app.schemas.DeviceBase.vendor_id" href="#sql_app.schemas.DeviceBase.vendor_id">vendor_id</a></code></li>
@@ -1644,6 +1975,14 @@ class LDTemp(LDTempCreate):
 <h4><code><a title="sql_app.schemas.DeviceLicenseCreate" href="#sql_app.schemas.DeviceLicenseCreate">DeviceLicenseCreate</a></code></h4>
 </li>
 <li>
+<h4><code><a title="sql_app.schemas.DeviceTemp" href="#sql_app.schemas.DeviceTemp">DeviceTemp</a></code></h4>
+<ul class="">
+<li><code><a title="sql_app.schemas.DeviceTemp.product_id" href="#sql_app.schemas.DeviceTemp.product_id">product_id</a></code></li>
+<li><code><a title="sql_app.schemas.DeviceTemp.serial_number" href="#sql_app.schemas.DeviceTemp.serial_number">serial_number</a></code></li>
+<li><code><a title="sql_app.schemas.DeviceTemp.vendor_id" href="#sql_app.schemas.DeviceTemp.vendor_id">vendor_id</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="sql_app.schemas.HeadDevice" href="#sql_app.schemas.HeadDevice">HeadDevice</a></code></h4>
 <ul class="">
 <li><code><a title="sql_app.schemas.HeadDevice.Config" href="#sql_app.schemas.HeadDevice.Config">Config</a></code></li>
@@ -1654,11 +1993,19 @@ class LDTemp(LDTempCreate):
 <li>
 <h4><code><a title="sql_app.schemas.HeadDeviceBase" href="#sql_app.schemas.HeadDeviceBase">HeadDeviceBase</a></code></h4>
 <ul class="">
+<li><code><a title="sql_app.schemas.HeadDeviceBase.comment" href="#sql_app.schemas.HeadDeviceBase.comment">comment</a></code></li>
+<li><code><a title="sql_app.schemas.HeadDeviceBase.inventory_number" href="#sql_app.schemas.HeadDeviceBase.inventory_number">inventory_number</a></code></li>
 <li><code><a title="sql_app.schemas.HeadDeviceBase.serial_number" href="#sql_app.schemas.HeadDeviceBase.serial_number">serial_number</a></code></li>
 </ul>
 </li>
 <li>
 <h4><code><a title="sql_app.schemas.HeadDeviceCreate" href="#sql_app.schemas.HeadDeviceCreate">HeadDeviceCreate</a></code></h4>
+</li>
+<li>
+<h4><code><a title="sql_app.schemas.HeadDeviceTemp" href="#sql_app.schemas.HeadDeviceTemp">HeadDeviceTemp</a></code></h4>
+<ul class="">
+<li><code><a title="sql_app.schemas.HeadDeviceTemp.serial_number" href="#sql_app.schemas.HeadDeviceTemp.serial_number">serial_number</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="sql_app.schemas.LDLog" href="#sql_app.schemas.LDLog">LDLog</a></code></h4>
@@ -1706,7 +2053,9 @@ class LDTemp(LDTempCreate):
 <h4><code><a title="sql_app.schemas.License" href="#sql_app.schemas.License">License</a></code></h4>
 <ul class="">
 <li><code><a title="sql_app.schemas.License.Config" href="#sql_app.schemas.License.Config">Config</a></code></li>
+<li><code><a title="sql_app.schemas.License.body_devices" href="#sql_app.schemas.License.body_devices">body_devices</a></code></li>
 <li><code><a title="sql_app.schemas.License.devices" href="#sql_app.schemas.License.devices">devices</a></code></li>
+<li><code><a title="sql_app.schemas.License.head_devices" href="#sql_app.schemas.License.head_devices">head_devices</a></code></li>
 <li><code><a title="sql_app.schemas.License.id" href="#sql_app.schemas.License.id">id</a></code></li>
 </ul>
 </li>
@@ -1714,6 +2063,7 @@ class LDTemp(LDTempCreate):
 <h4><code><a title="sql_app.schemas.LicenseBase" href="#sql_app.schemas.LicenseBase">LicenseBase</a></code></h4>
 <ul class="">
 <li><code><a title="sql_app.schemas.LicenseBase.expiration_date" href="#sql_app.schemas.LicenseBase.expiration_date">expiration_date</a></code></li>
+<li><code><a title="sql_app.schemas.LicenseBase.license_id" href="#sql_app.schemas.LicenseBase.license_id">license_id</a></code></li>
 <li><code><a title="sql_app.schemas.LicenseBase.name" href="#sql_app.schemas.LicenseBase.name">name</a></code></li>
 </ul>
 </li>
@@ -1724,8 +2074,8 @@ class LDTemp(LDTempCreate):
 <h4><code><a title="sql_app.schemas.PC" href="#sql_app.schemas.PC">PC</a></code></h4>
 <ul class="">
 <li><code><a title="sql_app.schemas.PC.Config" href="#sql_app.schemas.PC.Config">Config</a></code></li>
-<li><code><a title="sql_app.schemas.PC.assigned" href="#sql_app.schemas.PC.assigned">assigned</a></code></li>
 <li><code><a title="sql_app.schemas.PC.id" href="#sql_app.schemas.PC.id">id</a></code></li>
+<li><code><a title="sql_app.schemas.PC.logs_ld" href="#sql_app.schemas.PC.logs_ld">logs_ld</a></code></li>
 <li><code><a title="sql_app.schemas.PC.logs_pc" href="#sql_app.schemas.PC.logs_pc">logs_pc</a></code></li>
 </ul>
 </li>
@@ -1743,8 +2093,8 @@ class LDTemp(LDTempCreate):
 <h4><code><a title="sql_app.schemas.Team" href="#sql_app.schemas.Team">Team</a></code></h4>
 <ul class="">
 <li><code><a title="sql_app.schemas.Team.Config" href="#sql_app.schemas.Team.Config">Config</a></code></li>
+<li><code><a title="sql_app.schemas.Team.devices" href="#sql_app.schemas.Team.devices">devices</a></code></li>
 <li><code><a title="sql_app.schemas.Team.id" href="#sql_app.schemas.Team.id">id</a></code></li>
-<li><code><a title="sql_app.schemas.Team.pcs" href="#sql_app.schemas.Team.pcs">pcs</a></code></li>
 </ul>
 </li>
 <li>
@@ -1795,6 +2145,24 @@ class LDTemp(LDTempCreate):
 </li>
 <li>
 <h4><code><a title="sql_app.schemas.USBTempCreate" href="#sql_app.schemas.USBTempCreate">USBTempCreate</a></code></h4>
+</li>
+<li>
+<h4><code><a title="sql_app.schemas.User" href="#sql_app.schemas.User">User</a></code></h4>
+<ul class="">
+<li><code><a title="sql_app.schemas.User.Config" href="#sql_app.schemas.User.Config">Config</a></code></li>
+<li><code><a title="sql_app.schemas.User.id" href="#sql_app.schemas.User.id">id</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.schemas.UserBase" href="#sql_app.schemas.UserBase">UserBase</a></code></h4>
+<ul class="">
+<li><code><a title="sql_app.schemas.UserBase.password" href="#sql_app.schemas.UserBase.password">password</a></code></li>
+<li><code><a title="sql_app.schemas.UserBase.role" href="#sql_app.schemas.UserBase.role">role</a></code></li>
+<li><code><a title="sql_app.schemas.UserBase.username" href="#sql_app.schemas.UserBase.username">username</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.schemas.UserCreate" href="#sql_app.schemas.UserCreate">UserCreate</a></code></h4>
 </li>
 </ul>
 </li>

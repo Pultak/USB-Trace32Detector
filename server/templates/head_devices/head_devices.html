@@ -24,7 +24,7 @@
   color: black;
 }
     </style>
-    <title>Devices Details</title>
+    <title>Head Devices Details</title>
 </head>
 <body>
 <div style='float:left;padding-right:20px'>
@@ -48,32 +48,26 @@
   <select id="view" name="view" onchange="this.form.action=this.value;">
       <option value="/logs-web">Vector Logs</option>
       <option value="/ldlogs-web">Lauterbach Logs</option>
-      <option value="/devices-web" selected>Keyman Devices</option>
+      <option value="/devices-web">Keyman Devices</option>
       <option value="/body-devices-web">Lauterbach Body Devices</option>
-      <option value="/head-devices-web">Lauterbach Head Devices</option>
+      <option value="/head-devices-web" selected>Lauterbach Head Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
+      <option value="/users-web">Users</option>
   </select>
   <input type="submit" value="OK">
 </form>
-<form action="/devices-web" method="post">
-    <label for="keyman_id">Keyman ID:</label>
-    <input id="keyman_id" name="keyman_id" type="text" list="keyman_ids" value="{{keyman_val}}" placeholder="all" onClick="this.select();">
-    <datalist id="keyman_ids">
+<form action="/head-devices-web" method="post">
+    <label for="body_id">Head Device ID:</label>
+    <input id="body_id" name="body_id" type="text" list="body_ids" value="{{body_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="body_ids">
         {% for dev in devs %}
         <option value="{{dev.serial_number}}"></option>
         {% endfor %}
     </datalist>
-    <label for="lic_name">License Type:</label>
-    <input id="lic_name" name="lic_name" type="text" list="licenses_names" value="{{licn_val}}" placeholder="all" onClick="this.select();">
-    <datalist id="licenses_names">
-        {% for license in licenses %}
-        <option value="{{license.name}}"></option>
-        {% endfor %}
-    </datalist>
     <label for="lic_id">License ID:</label>
-    <input id="lic_id" name="lic_id" type="text" list="licenses_ids" value="{{lici_val}}" placeholder="all" onClick="this.select();">
+    <input id="lic_id" name="lic_id" type="text" list="licenses_ids" value="{{lic_val}}" placeholder="all" onClick="this.select();">
     <datalist id="licenses_ids">
         {% for license in licenses %}
         <option value="{{license.license_id}}"></option>
@@ -91,8 +85,7 @@
 <table id="devices">
     <TR>
         <TH>ID</TH>
-        <TH>Keyman ID</TH>
-        <TH>License Type</TH>
+        <TH>Lauterbach Head ID</TH>
         <TH>License ID</TH>
         <TH>Inventory Number</TH>
         <TH>Team</TH>
@@ -104,14 +97,13 @@
     </TR>
     {% for dev in devices %}
     <TR>
-        <TD class="ID"><a href="/device-license/{{dev['device'].id}}">{{dev['device'].id}}</a></TD>
-        <TD class="Serial Number">{{dev['device'].serial_number}}</TD>
-        <TD class="License">{{dev['license'].name}}</TD>
+        <TD class="ID"><a href="/head-device-license/{{dev['device'].id}}">{{dev['device'].id}}</a></TD>
+        <TD class="Lauterbach Head ID">{{dev['device'].serial_number}}</TD>
         <TD class="License ID">{{dev['license'].license_id}}</TD>
         <TD class="Inventory Number">{{dev['device'].inventory_number}}</TD>
         <TD class="Team">{{dev['device'].team.name}}</TD>
-        <TD class="Last Username">{{dev['log'].pc.username}}</TD>
-        <TD class="Last Hostname">{{dev['log'].pc.hostname}}</TD>
+        <TD class="Last Username">{{dev['log'].ldpc.username}}</TD>
+        <TD class="Last Hostname">{{dev['log'].ldpc.hostname}}</TD>
         <TD class="Last Detection">{{dev['log'].timestamp}}</TD>
         <TD class="Status">{{dev['log'].status}}</TD>
         <TD class="Comment">{{dev['device'].comment}}</TD>

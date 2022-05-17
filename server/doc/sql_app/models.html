@@ -42,12 +42,16 @@ class Device(Base):
     vendor_id = Column(String, index=True, nullable=False)
     product_id = Column(String, index=True, nullable=False)
     serial_number = Column(String, index=True, nullable=False)
-    assigned = Column(Boolean, index=True, nullable=False)
+    inventory_number = Column(String, index=True, nullable=True)
+    comment = Column(String, index=True, nullable=True)
+
+    team_id = Column(Integer, ForeignKey(&#34;teams.id&#34;))
 
     # relationships for foreign keys, thus connecting table with usb_logs and licenses
     # tables
     logs = relationship(&#34;USBLog&#34;, back_populates=&#34;device&#34;)
     licenses = relationship(&#34;DeviceLicense&#34;, back_populates=&#34;device_lic&#34;)
+    team = relationship(&#34;Team&#34;, back_populates=&#34;devices&#34;)
 
 
 class USBLog(Base):
@@ -75,11 +79,14 @@ class License(Base):
     __tablename__ = &#34;licenses&#34;
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True, nullable=False)
-    expiration_date = Column(DateTime(timezone=True), server_default=func.now())
+    name = Column(String, index=True, nullable=True)
+    license_id = Column(String, index=True, nullable=False)
+    expiration_date = Column(DateTime(timezone=True), nullable=True)
 
     # relationships for foreign keys, thus connecting table with devices table
     devices = relationship(&#34;DeviceLicense&#34;, back_populates=&#34;licenses&#34;)
+    bodydevice_lic = relationship(&#34;BodyDevice&#34;, back_populates=&#34;license&#34;)
+    headdevice_lic = relationship(&#34;HeadDevice&#34;, back_populates=&#34;license&#34;)
 
 
 class DeviceLicense(Base):
@@ -108,12 +115,9 @@ class PC(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, index=True, nullable=False)
     hostname = Column(String, index=True, nullable=False)
-    assigned = Column(Boolean, index=True, nullable=False)
-    team_id = Column(Integer, ForeignKey(&#34;teams.id&#34;))
 
     # relationships for foreign keys, thus connecting table with teams, usb_logs and ld_logs
     # tables
-    team = relationship(&#34;Team&#34;, back_populates=&#34;pcs&#34;)
     logs_pc = relationship(&#34;USBLog&#34;, back_populates=&#34;pc&#34;)
     ld_pc = relationship(&#34;LDLog&#34;, back_populates=&#34;ldpc&#34;)
 
@@ -127,8 +131,9 @@ class Team(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
 
-    # relationships for foreign keys, thus connecting table with pc table
-    pcs = relationship(&#34;PC&#34;, back_populates=&#34;team&#34;)
+    devices = relationship(&#34;Device&#34;, back_populates=&#34;team&#34;)
+    body_devices = relationship(&#34;BodyDevice&#34;, back_populates=&#34;team&#34;)
+    head_devices = relationship(&#34;HeadDevice&#34;, back_populates=&#34;team&#34;)
 
 
 class HeadDevice(Base):
@@ -139,9 +144,16 @@ class HeadDevice(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     serial_number = Column(String, index=True, nullable=False)
+    inventory_number = Column(String, index=True, nullable=True)
+    comment = Column(String, index=True, nullable=True)
+
+    team_id = Column(Integer, ForeignKey(&#34;teams.id&#34;))
+    license_id = Column(Integer, ForeignKey(&#34;licenses.id&#34;))
 
     # relationships for foreign keys, thus connecting table with ld_logs table
     h_logs = relationship(&#34;LDLog&#34;, back_populates=&#34;head_device&#34;)
+    license = relationship(&#34;License&#34;, back_populates=&#34;headdevice_lic&#34;)
+    team = relationship(&#34;Team&#34;, back_populates=&#34;head_devices&#34;)
 
 
 class BodyDevice(Base):
@@ -152,9 +164,16 @@ class BodyDevice(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     serial_number = Column(String, index=True, nullable=False)
+    inventory_number = Column(String, index=True, nullable=True)
+    comment = Column(String, index=True, nullable=True)
+
+    team_id = Column(Integer, ForeignKey(&#34;teams.id&#34;))
+    license_id = Column(Integer, ForeignKey(&#34;licenses.id&#34;))
 
     # relationships for foreign keys, thus connecting table with ld_logs table
     b_logs = relationship(&#34;LDLog&#34;, back_populates=&#34;body_device&#34;)
+    license = relationship(&#34;License&#34;, back_populates=&#34;bodydevice_lic&#34;)
+    team = relationship(&#34;Team&#34;, back_populates=&#34;body_devices&#34;)
 
 
 class LDLog(Base):
@@ -174,7 +193,19 @@ class LDLog(Base):
     # tables
     ldpc = relationship(&#34;PC&#34;, back_populates=&#34;ld_pc&#34;)
     head_device = relationship(&#34;HeadDevice&#34;, back_populates=&#34;h_logs&#34;)
-    body_device = relationship(&#34;BodyDevice&#34;, back_populates=&#34;b_logs&#34;)</code></pre>
+    body_device = relationship(&#34;BodyDevice&#34;, back_populates=&#34;b_logs&#34;)
+
+
+class User(Base):
+    &#34;&#34;&#34;
+    Class defining user in database with its own role
+    &#34;&#34;&#34;
+    __tablename__ = &#34;users&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, index=True, nullable=False)
+    password = Column(String, index=True, nullable=False)
+    role = Column(String, index=True, nullable=False)</code></pre>
 </details>
 </section>
 <section>
@@ -210,9 +241,16 @@ for example, any mapped columns or relationships.</p></div>
 
     id = Column(Integer, primary_key=True, index=True)
     serial_number = Column(String, index=True, nullable=False)
+    inventory_number = Column(String, index=True, nullable=True)
+    comment = Column(String, index=True, nullable=True)
+
+    team_id = Column(Integer, ForeignKey(&#34;teams.id&#34;))
+    license_id = Column(Integer, ForeignKey(&#34;licenses.id&#34;))
 
     # relationships for foreign keys, thus connecting table with ld_logs table
-    b_logs = relationship(&#34;LDLog&#34;, back_populates=&#34;body_device&#34;)</code></pre>
+    b_logs = relationship(&#34;LDLog&#34;, back_populates=&#34;body_device&#34;)
+    license = relationship(&#34;License&#34;, back_populates=&#34;bodydevice_lic&#34;)
+    team = relationship(&#34;Team&#34;, back_populates=&#34;body_devices&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -221,6 +259,31 @@ for example, any mapped columns or relationships.</p></div>
 <h3>Instance variables</h3>
 <dl>
 <dt id="sql_app.models.BodyDevice.b_logs"><code class="name">var <span class="ident">b_logs</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.BodyDevice.comment"><code class="name">var <span class="ident">comment</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -270,7 +333,132 @@ for example, any mapped columns or relationships.</p></div>
         return self.impl.get(state, dict_)</code></pre>
 </details>
 </dd>
+<dt id="sql_app.models.BodyDevice.inventory_number"><code class="name">var <span class="ident">inventory_number</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.BodyDevice.license"><code class="name">var <span class="ident">license</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.BodyDevice.license_id"><code class="name">var <span class="ident">license_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
 <dt id="sql_app.models.BodyDevice.serial_number"><code class="name">var <span class="ident">serial_number</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.BodyDevice.team"><code class="name">var <span class="ident">team</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.BodyDevice.team_id"><code class="name">var <span class="ident">team_id</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -323,12 +511,16 @@ for example, any mapped columns or relationships.</p></div>
     vendor_id = Column(String, index=True, nullable=False)
     product_id = Column(String, index=True, nullable=False)
     serial_number = Column(String, index=True, nullable=False)
-    assigned = Column(Boolean, index=True, nullable=False)
+    inventory_number = Column(String, index=True, nullable=True)
+    comment = Column(String, index=True, nullable=True)
+
+    team_id = Column(Integer, ForeignKey(&#34;teams.id&#34;))
 
     # relationships for foreign keys, thus connecting table with usb_logs and licenses
     # tables
     logs = relationship(&#34;USBLog&#34;, back_populates=&#34;device&#34;)
-    licenses = relationship(&#34;DeviceLicense&#34;, back_populates=&#34;device_lic&#34;)</code></pre>
+    licenses = relationship(&#34;DeviceLicense&#34;, back_populates=&#34;device_lic&#34;)
+    team = relationship(&#34;Team&#34;, back_populates=&#34;devices&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -336,7 +528,7 @@ for example, any mapped columns or relationships.</p></div>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="sql_app.models.Device.assigned"><code class="name">var <span class="ident">assigned</span></code></dt>
+<dt id="sql_app.models.Device.comment"><code class="name">var <span class="ident">comment</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -362,6 +554,31 @@ for example, any mapped columns or relationships.</p></div>
 </details>
 </dd>
 <dt id="sql_app.models.Device.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Device.inventory_number"><code class="name">var <span class="ident">inventory_number</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -462,6 +679,56 @@ for example, any mapped columns or relationships.</p></div>
 </details>
 </dd>
 <dt id="sql_app.models.Device.serial_number"><code class="name">var <span class="ident">serial_number</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Device.team"><code class="name">var <span class="ident">team</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Device.team_id"><code class="name">var <span class="ident">team_id</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -727,9 +994,16 @@ for example, any mapped columns or relationships.</p></div>
 
     id = Column(Integer, primary_key=True, index=True)
     serial_number = Column(String, index=True, nullable=False)
+    inventory_number = Column(String, index=True, nullable=True)
+    comment = Column(String, index=True, nullable=True)
+
+    team_id = Column(Integer, ForeignKey(&#34;teams.id&#34;))
+    license_id = Column(Integer, ForeignKey(&#34;licenses.id&#34;))
 
     # relationships for foreign keys, thus connecting table with ld_logs table
-    h_logs = relationship(&#34;LDLog&#34;, back_populates=&#34;head_device&#34;)</code></pre>
+    h_logs = relationship(&#34;LDLog&#34;, back_populates=&#34;head_device&#34;)
+    license = relationship(&#34;License&#34;, back_populates=&#34;headdevice_lic&#34;)
+    team = relationship(&#34;Team&#34;, back_populates=&#34;head_devices&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -737,6 +1011,31 @@ for example, any mapped columns or relationships.</p></div>
 </ul>
 <h3>Instance variables</h3>
 <dl>
+<dt id="sql_app.models.HeadDevice.comment"><code class="name">var <span class="ident">comment</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
 <dt id="sql_app.models.HeadDevice.h_logs"><code class="name">var <span class="ident">h_logs</span></code></dt>
 <dd>
 <div class="desc"></div>
@@ -787,7 +1086,132 @@ for example, any mapped columns or relationships.</p></div>
         return self.impl.get(state, dict_)</code></pre>
 </details>
 </dd>
+<dt id="sql_app.models.HeadDevice.inventory_number"><code class="name">var <span class="ident">inventory_number</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.HeadDevice.license"><code class="name">var <span class="ident">license</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.HeadDevice.license_id"><code class="name">var <span class="ident">license_id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
 <dt id="sql_app.models.HeadDevice.serial_number"><code class="name">var <span class="ident">serial_number</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.HeadDevice.team"><code class="name">var <span class="ident">team</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.HeadDevice.team_id"><code class="name">var <span class="ident">team_id</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -1105,11 +1529,14 @@ for example, any mapped columns or relationships.</p></div>
     __tablename__ = &#34;licenses&#34;
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True, nullable=False)
-    expiration_date = Column(DateTime(timezone=True), server_default=func.now())
+    name = Column(String, index=True, nullable=True)
+    license_id = Column(String, index=True, nullable=False)
+    expiration_date = Column(DateTime(timezone=True), nullable=True)
 
     # relationships for foreign keys, thus connecting table with devices table
-    devices = relationship(&#34;DeviceLicense&#34;, back_populates=&#34;licenses&#34;)</code></pre>
+    devices = relationship(&#34;DeviceLicense&#34;, back_populates=&#34;licenses&#34;)
+    bodydevice_lic = relationship(&#34;BodyDevice&#34;, back_populates=&#34;license&#34;)
+    headdevice_lic = relationship(&#34;HeadDevice&#34;, back_populates=&#34;license&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1117,6 +1544,31 @@ for example, any mapped columns or relationships.</p></div>
 </ul>
 <h3>Instance variables</h3>
 <dl>
+<dt id="sql_app.models.License.bodydevice_lic"><code class="name">var <span class="ident">bodydevice_lic</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
 <dt id="sql_app.models.License.devices"><code class="name">var <span class="ident">devices</span></code></dt>
 <dd>
 <div class="desc"></div>
@@ -1167,7 +1619,57 @@ for example, any mapped columns or relationships.</p></div>
         return self.impl.get(state, dict_)</code></pre>
 </details>
 </dd>
+<dt id="sql_app.models.License.headdevice_lic"><code class="name">var <span class="ident">headdevice_lic</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
 <dt id="sql_app.models.License.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.License.license_id"><code class="name">var <span class="ident">license_id</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -1244,12 +1746,9 @@ for example, any mapped columns or relationships.</p></div>
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, index=True, nullable=False)
     hostname = Column(String, index=True, nullable=False)
-    assigned = Column(Boolean, index=True, nullable=False)
-    team_id = Column(Integer, ForeignKey(&#34;teams.id&#34;))
 
     # relationships for foreign keys, thus connecting table with teams, usb_logs and ld_logs
     # tables
-    team = relationship(&#34;Team&#34;, back_populates=&#34;pcs&#34;)
     logs_pc = relationship(&#34;USBLog&#34;, back_populates=&#34;pc&#34;)
     ld_pc = relationship(&#34;LDLog&#34;, back_populates=&#34;ldpc&#34;)</code></pre>
 </details>
@@ -1259,31 +1758,6 @@ for example, any mapped columns or relationships.</p></div>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="sql_app.models.PC.assigned"><code class="name">var <span class="ident">assigned</span></code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def __get__(self, instance, owner):
-    if instance is None:
-        return self
-
-    dict_ = instance_dict(instance)
-    if self._supports_population and self.key in dict_:
-        return dict_[self.key]
-    else:
-        try:
-            state = instance_state(instance)
-        except AttributeError as err:
-            util.raise_(
-                orm_exc.UnmappedInstanceError(instance),
-                replace_context=err,
-            )
-        return self.impl.get(state, dict_)</code></pre>
-</details>
-</dd>
 <dt id="sql_app.models.PC.hostname"><code class="name">var <span class="ident">hostname</span></code></dt>
 <dd>
 <div class="desc"></div>
@@ -1384,56 +1858,6 @@ for example, any mapped columns or relationships.</p></div>
         return self.impl.get(state, dict_)</code></pre>
 </details>
 </dd>
-<dt id="sql_app.models.PC.team"><code class="name">var <span class="ident">team</span></code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def __get__(self, instance, owner):
-    if instance is None:
-        return self
-
-    dict_ = instance_dict(instance)
-    if self._supports_population and self.key in dict_:
-        return dict_[self.key]
-    else:
-        try:
-            state = instance_state(instance)
-        except AttributeError as err:
-            util.raise_(
-                orm_exc.UnmappedInstanceError(instance),
-                replace_context=err,
-            )
-        return self.impl.get(state, dict_)</code></pre>
-</details>
-</dd>
-<dt id="sql_app.models.PC.team_id"><code class="name">var <span class="ident">team_id</span></code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def __get__(self, instance, owner):
-    if instance is None:
-        return self
-
-    dict_ = instance_dict(instance)
-    if self._supports_population and self.key in dict_:
-        return dict_[self.key]
-    else:
-        try:
-            state = instance_state(instance)
-        except AttributeError as err:
-            util.raise_(
-                orm_exc.UnmappedInstanceError(instance),
-                replace_context=err,
-            )
-        return self.impl.get(state, dict_)</code></pre>
-</details>
-</dd>
 <dt id="sql_app.models.PC.username"><code class="name">var <span class="ident">username</span></code></dt>
 <dd>
 <div class="desc"></div>
@@ -1486,8 +1910,9 @@ for example, any mapped columns or relationships.</p></div>
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
 
-    # relationships for foreign keys, thus connecting table with pc table
-    pcs = relationship(&#34;PC&#34;, back_populates=&#34;team&#34;)</code></pre>
+    devices = relationship(&#34;Device&#34;, back_populates=&#34;team&#34;)
+    body_devices = relationship(&#34;BodyDevice&#34;, back_populates=&#34;team&#34;)
+    head_devices = relationship(&#34;HeadDevice&#34;, back_populates=&#34;team&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1495,6 +1920,81 @@ for example, any mapped columns or relationships.</p></div>
 </ul>
 <h3>Instance variables</h3>
 <dl>
+<dt id="sql_app.models.Team.body_devices"><code class="name">var <span class="ident">body_devices</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Team.devices"><code class="name">var <span class="ident">devices</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.Team.head_devices"><code class="name">var <span class="ident">head_devices</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
 <dt id="sql_app.models.Team.id"><code class="name">var <span class="ident">id</span></code></dt>
 <dd>
 <div class="desc"></div>
@@ -1521,31 +2021,6 @@ for example, any mapped columns or relationships.</p></div>
 </details>
 </dd>
 <dt id="sql_app.models.Team.name"><code class="name">var <span class="ident">name</span></code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def __get__(self, instance, owner):
-    if instance is None:
-        return self
-
-    dict_ = instance_dict(instance)
-    if self._supports_population and self.key in dict_:
-        return dict_[self.key]
-    else:
-        try:
-            state = instance_state(instance)
-        except AttributeError as err:
-            util.raise_(
-                orm_exc.UnmappedInstanceError(instance),
-                replace_context=err,
-            )
-        return self.impl.get(state, dict_)</code></pre>
-</details>
-</dd>
-<dt id="sql_app.models.Team.pcs"><code class="name">var <span class="ident">pcs</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -1788,6 +2263,141 @@ for example, any mapped columns or relationships.</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="sql_app.models.User"><code class="flex name class">
+<span>class <span class="ident">User</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining user in database with its own role</p>
+<p>A simple constructor that allows initialization from kwargs.</p>
+<p>Sets attributes on the constructed instance using the names and
+values in <code>kwargs</code>.</p>
+<p>Only keys that are present as
+attributes of the instance's class are allowed. These could be,
+for example, any mapped columns or relationships.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class User(Base):
+    &#34;&#34;&#34;
+    Class defining user in database with its own role
+    &#34;&#34;&#34;
+    __tablename__ = &#34;users&#34;
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, index=True, nullable=False)
+    password = Column(String, index=True, nullable=False)
+    role = Column(String, index=True, nullable=False)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>sqlalchemy.orm.decl_api.Base</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="sql_app.models.User.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.User.password"><code class="name">var <span class="ident">password</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.User.role"><code class="name">var <span class="ident">role</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+<dt id="sql_app.models.User.username"><code class="name">var <span class="ident">username</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __get__(self, instance, owner):
+    if instance is None:
+        return self
+
+    dict_ = instance_dict(instance)
+    if self._supports_population and self.key in dict_:
+        return dict_[self.key]
+    else:
+        try:
+            state = instance_state(instance)
+        except AttributeError as err:
+            util.raise_(
+                orm_exc.UnmappedInstanceError(instance),
+                replace_context=err,
+            )
+        return self.impl.get(state, dict_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 </dl>
 </section>
 </article>
@@ -1806,21 +2416,30 @@ for example, any mapped columns or relationships.</p></div>
 <ul>
 <li>
 <h4><code><a title="sql_app.models.BodyDevice" href="#sql_app.models.BodyDevice">BodyDevice</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="sql_app.models.BodyDevice.b_logs" href="#sql_app.models.BodyDevice.b_logs">b_logs</a></code></li>
+<li><code><a title="sql_app.models.BodyDevice.comment" href="#sql_app.models.BodyDevice.comment">comment</a></code></li>
 <li><code><a title="sql_app.models.BodyDevice.id" href="#sql_app.models.BodyDevice.id">id</a></code></li>
+<li><code><a title="sql_app.models.BodyDevice.inventory_number" href="#sql_app.models.BodyDevice.inventory_number">inventory_number</a></code></li>
+<li><code><a title="sql_app.models.BodyDevice.license" href="#sql_app.models.BodyDevice.license">license</a></code></li>
+<li><code><a title="sql_app.models.BodyDevice.license_id" href="#sql_app.models.BodyDevice.license_id">license_id</a></code></li>
 <li><code><a title="sql_app.models.BodyDevice.serial_number" href="#sql_app.models.BodyDevice.serial_number">serial_number</a></code></li>
+<li><code><a title="sql_app.models.BodyDevice.team" href="#sql_app.models.BodyDevice.team">team</a></code></li>
+<li><code><a title="sql_app.models.BodyDevice.team_id" href="#sql_app.models.BodyDevice.team_id">team_id</a></code></li>
 </ul>
 </li>
 <li>
 <h4><code><a title="sql_app.models.Device" href="#sql_app.models.Device">Device</a></code></h4>
 <ul class="two-column">
-<li><code><a title="sql_app.models.Device.assigned" href="#sql_app.models.Device.assigned">assigned</a></code></li>
+<li><code><a title="sql_app.models.Device.comment" href="#sql_app.models.Device.comment">comment</a></code></li>
 <li><code><a title="sql_app.models.Device.id" href="#sql_app.models.Device.id">id</a></code></li>
+<li><code><a title="sql_app.models.Device.inventory_number" href="#sql_app.models.Device.inventory_number">inventory_number</a></code></li>
 <li><code><a title="sql_app.models.Device.licenses" href="#sql_app.models.Device.licenses">licenses</a></code></li>
 <li><code><a title="sql_app.models.Device.logs" href="#sql_app.models.Device.logs">logs</a></code></li>
 <li><code><a title="sql_app.models.Device.product_id" href="#sql_app.models.Device.product_id">product_id</a></code></li>
 <li><code><a title="sql_app.models.Device.serial_number" href="#sql_app.models.Device.serial_number">serial_number</a></code></li>
+<li><code><a title="sql_app.models.Device.team" href="#sql_app.models.Device.team">team</a></code></li>
+<li><code><a title="sql_app.models.Device.team_id" href="#sql_app.models.Device.team_id">team_id</a></code></li>
 <li><code><a title="sql_app.models.Device.vendor_id" href="#sql_app.models.Device.vendor_id">vendor_id</a></code></li>
 </ul>
 </li>
@@ -1837,10 +2456,16 @@ for example, any mapped columns or relationships.</p></div>
 </li>
 <li>
 <h4><code><a title="sql_app.models.HeadDevice" href="#sql_app.models.HeadDevice">HeadDevice</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="sql_app.models.HeadDevice.comment" href="#sql_app.models.HeadDevice.comment">comment</a></code></li>
 <li><code><a title="sql_app.models.HeadDevice.h_logs" href="#sql_app.models.HeadDevice.h_logs">h_logs</a></code></li>
 <li><code><a title="sql_app.models.HeadDevice.id" href="#sql_app.models.HeadDevice.id">id</a></code></li>
+<li><code><a title="sql_app.models.HeadDevice.inventory_number" href="#sql_app.models.HeadDevice.inventory_number">inventory_number</a></code></li>
+<li><code><a title="sql_app.models.HeadDevice.license" href="#sql_app.models.HeadDevice.license">license</a></code></li>
+<li><code><a title="sql_app.models.HeadDevice.license_id" href="#sql_app.models.HeadDevice.license_id">license_id</a></code></li>
 <li><code><a title="sql_app.models.HeadDevice.serial_number" href="#sql_app.models.HeadDevice.serial_number">serial_number</a></code></li>
+<li><code><a title="sql_app.models.HeadDevice.team" href="#sql_app.models.HeadDevice.team">team</a></code></li>
+<li><code><a title="sql_app.models.HeadDevice.team_id" href="#sql_app.models.HeadDevice.team_id">team_id</a></code></li>
 </ul>
 </li>
 <li>
@@ -1859,32 +2484,34 @@ for example, any mapped columns or relationships.</p></div>
 </li>
 <li>
 <h4><code><a title="sql_app.models.License" href="#sql_app.models.License">License</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="sql_app.models.License.bodydevice_lic" href="#sql_app.models.License.bodydevice_lic">bodydevice_lic</a></code></li>
 <li><code><a title="sql_app.models.License.devices" href="#sql_app.models.License.devices">devices</a></code></li>
 <li><code><a title="sql_app.models.License.expiration_date" href="#sql_app.models.License.expiration_date">expiration_date</a></code></li>
+<li><code><a title="sql_app.models.License.headdevice_lic" href="#sql_app.models.License.headdevice_lic">headdevice_lic</a></code></li>
 <li><code><a title="sql_app.models.License.id" href="#sql_app.models.License.id">id</a></code></li>
+<li><code><a title="sql_app.models.License.license_id" href="#sql_app.models.License.license_id">license_id</a></code></li>
 <li><code><a title="sql_app.models.License.name" href="#sql_app.models.License.name">name</a></code></li>
 </ul>
 </li>
 <li>
 <h4><code><a title="sql_app.models.PC" href="#sql_app.models.PC">PC</a></code></h4>
-<ul class="two-column">
-<li><code><a title="sql_app.models.PC.assigned" href="#sql_app.models.PC.assigned">assigned</a></code></li>
+<ul class="">
 <li><code><a title="sql_app.models.PC.hostname" href="#sql_app.models.PC.hostname">hostname</a></code></li>
 <li><code><a title="sql_app.models.PC.id" href="#sql_app.models.PC.id">id</a></code></li>
 <li><code><a title="sql_app.models.PC.ld_pc" href="#sql_app.models.PC.ld_pc">ld_pc</a></code></li>
 <li><code><a title="sql_app.models.PC.logs_pc" href="#sql_app.models.PC.logs_pc">logs_pc</a></code></li>
-<li><code><a title="sql_app.models.PC.team" href="#sql_app.models.PC.team">team</a></code></li>
-<li><code><a title="sql_app.models.PC.team_id" href="#sql_app.models.PC.team_id">team_id</a></code></li>
 <li><code><a title="sql_app.models.PC.username" href="#sql_app.models.PC.username">username</a></code></li>
 </ul>
 </li>
 <li>
 <h4><code><a title="sql_app.models.Team" href="#sql_app.models.Team">Team</a></code></h4>
 <ul class="">
+<li><code><a title="sql_app.models.Team.body_devices" href="#sql_app.models.Team.body_devices">body_devices</a></code></li>
+<li><code><a title="sql_app.models.Team.devices" href="#sql_app.models.Team.devices">devices</a></code></li>
+<li><code><a title="sql_app.models.Team.head_devices" href="#sql_app.models.Team.head_devices">head_devices</a></code></li>
 <li><code><a title="sql_app.models.Team.id" href="#sql_app.models.Team.id">id</a></code></li>
 <li><code><a title="sql_app.models.Team.name" href="#sql_app.models.Team.name">name</a></code></li>
-<li><code><a title="sql_app.models.Team.pcs" href="#sql_app.models.Team.pcs">pcs</a></code></li>
 </ul>
 </li>
 <li>
@@ -1897,6 +2524,15 @@ for example, any mapped columns or relationships.</p></div>
 <li><code><a title="sql_app.models.USBLog.pc_id" href="#sql_app.models.USBLog.pc_id">pc_id</a></code></li>
 <li><code><a title="sql_app.models.USBLog.status" href="#sql_app.models.USBLog.status">status</a></code></li>
 <li><code><a title="sql_app.models.USBLog.timestamp" href="#sql_app.models.USBLog.timestamp">timestamp</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="sql_app.models.User" href="#sql_app.models.User">User</a></code></h4>
+<ul class="">
+<li><code><a title="sql_app.models.User.id" href="#sql_app.models.User.id">id</a></code></li>
+<li><code><a title="sql_app.models.User.password" href="#sql_app.models.User.password">password</a></code></li>
+<li><code><a title="sql_app.models.User.role" href="#sql_app.models.User.role">role</a></code></li>
+<li><code><a title="sql_app.models.User.username" href="#sql_app.models.User.username">username</a></code></li>
 </ul>
 </li>
 </ul>

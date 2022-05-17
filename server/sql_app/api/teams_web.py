@@ -59,7 +59,7 @@ async def team_create_web(request: Request, Authorize: AuthJWT = Depends()):
 @teams_web.post("/teams-web-con")
 def create_team(name: str = Form(...), db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     """
-    Endpoint called from within form for creating new team. Creates new team and returns all teams in database
+    Endpoint called from within form for creating new team. Creates new team and redirects to view with all teams
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
@@ -73,4 +73,31 @@ def create_team(name: str = Form(...), db: Session = Depends(get_db), Authorize:
         team = crud.create_team(db, name)
         if team is None:
             print("something went wrong")
+    return RedirectResponse(url=f"/teams-web", status_code=303)
+
+
+@teams_web.get("/team-change/{team_id}", response_class=HTMLResponse)
+async def team_change_web(request: Request, team_id: int, db: Session = Depends(get_db),
+                          Authorize: AuthJWT = Depends()):
+    """
+    Returns template with form for changing teams name
+    """
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
+    team = crud.get_team(db, team_id)
+    return templates.TemplateResponse("team_change.html", {"request": request, "team": team})
+
+@teams_web.post("/teams-change-process/{team_id}")
+async def team_change_process(team_id: int, db:Session = Depends(get_db), name: str = Form(...),
+                              Authorize: AuthJWT = Depends()):
+    """
+    Changes teams name to a new one given by user
+    """
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
+    if current_user != "admin":
+        return RedirectResponse(url=f"/logs-web", status_code=303)
+    team = crud.change_team(db, team_id, name)
     return RedirectResponse(url=f"/teams-web", status_code=303)

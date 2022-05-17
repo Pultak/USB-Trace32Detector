@@ -1,5 +1,29 @@
 <html>
 <head>
+    <style>
+        #devices {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#devices td, #devices th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#devices tr:nth-child(even){background-color: #f2f2f2;}
+
+#devices tr:hover {background-color: #ddd;}
+
+#devices th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #47BBF5;
+  color: black;
+}
+    </style>
     <title> LD Logs Details</title>
 </head>
 <body>
@@ -22,11 +46,11 @@
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
-      <option value=""></option>
-      <option value="/logs-web">Logs</option>
-      <option value="/ldlogs-web">LD Logs</option>
-      <option value="/devices-web">Devices</option>
-      <option value="/body-devices-web">Body Devices</option>
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web" selected>Lauterbach Logs</option>
+      <option value="/devices-web">Keyman Devices</option>
+      <option value="/body-devices-web">Lauterbach Body Devices</option>
+      <option value="/head-devices-web">Lauterbach Head Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
@@ -35,55 +59,53 @@
 </form>
 <form action="/ldlogs-web" method="post">
   <label for="pc">PC:</label>
-  <input id="pc" name="pc" type="text" list="pcs" value="" placeholder="all">
+  <input id="pc" name="pc" type="text" list="pcs" value="{{pc_val}}" placeholder="all" onClick="this.select();">
     <datalist id="pcs">
         {% for pc in pcs %}
         <option value="{{pc.username}}"></option>
         {% endfor %}
     </datalist>
     <label for="team">Team:</label>
-  <input id="team" name="team" type="text" list="teams" value="" placeholder="all">
+  <input id="team" name="team" type="text" list="teams" value="{{team_val}}" placeholder="all" onClick="this.select();">
     <datalist id="teams">
         {% for team in teams %}
         <option value="{{team.name}}"></option>
         {% endfor %}
     </datalist>
     <label for="lic">License:</label>
-    <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
+    <input id="lic" name="lic" type="text" list="licenses" value="{{lic_val}}" placeholder="all" onClick="this.select();">
     <datalist id="licenses">
         {% for license in licenses %}
-        <option value="{{license.name}}"></option>
+        <option value="{{license.name}} : {{license.license_id}}"></option>
         {% endfor %}
     </datalist>
   <input type="submit" value="Filter">
 </form>
-    <table>
+    <table id="devices">
     <TR>
         <TH>ID</TH>
         <TH>PC Username</TH>
         <TH>PC Hostname</TH>
-        <TH>Team</TH>
+        <TH>Head Team</TH>
+        <TH>Body Team</TH>
         <TH>Timestamp</TH>
         <TH>Status</TH>
-        <TH>Head Device Serial Number</TH>
-        <TH>Body Device Serial Number</TH>
+        <TH>Lauterbach Head ID</TH>
+        <TH>Lauterbach Body ID</TH>
     </TR>
     {% for log in logs %}
     <TR>
         <TD class="ID">{{log.id}}</TD>
         <TD class="Username">{{log.ldpc.username}}</TD>
         <TD class="Hostname">{{log.ldpc.hostname}}</TD>
-        {% if log.ldpc.team == None %}
-            <TD class="Team">NONE</TD>
-        {% else %}
-            <TD class="Team">{{log.ldpc.team.name}}</TD>
-        {% endif %}
+        <TD class="Head Team">{{log.head_device.team.name}}</TD>
+        <TD class="Body Team">{{log.body_device.team.name}}</TD>
         <TD class="Timestamp">{{log.timestamp}}</TD>
         <TD class="Status">{{log.status}}</TD>
         <TD class="HeadDeviceSerialNumber">{{log.head_device.serial_number}}</TD>
         <TD class="BodyDeviceSerialNumber">{{log.body_device.serial_number}}</TD>
     </TR>
-    {% endfor %}
+        {% endfor %}
 </table>
 </body>
 </html>
