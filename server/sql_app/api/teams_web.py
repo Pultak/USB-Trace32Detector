@@ -99,5 +99,10 @@ async def team_change_process(team_id: int, db:Session = Depends(get_db), name: 
     current_user = Authorize.get_jwt_subject()
     if current_user != "admin":
         return RedirectResponse(url=f"/logs-web", status_code=303)
-    team = crud.change_team(db, team_id, name)
+    teams = crud.get_teams(db, 0, 100)
+    teams_names = []
+    for t in teams:
+        teams_names.append(t.name)
+    if name not in teams_names:
+        team = crud.change_team(db, team_id, name)
     return RedirectResponse(url=f"/teams-web", status_code=303)
