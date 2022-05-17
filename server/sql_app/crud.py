@@ -965,7 +965,7 @@ def get_filtered_devices(db: Session, keyman_id: str, license_name: str, license
             for l in dev_lics:
                 lic_ids += str(l.device_id) + ", "
             def_lic_ids = lic_ids[:-2] + ")"
-            if len(def_lic_ids) < 1:
+            if len(def_lic_ids) <= 1:
                 def_lic_ids = "(-1)"
             if before_me:
                 execute_string += " AND device.id IN " + def_lic_ids
@@ -987,7 +987,7 @@ def get_filtered_devices(db: Session, keyman_id: str, license_name: str, license
             for lic in licen_devs:
                 ids += str(lic.device_id) + ", "
             def_ids = ids[:-2] + ")"
-            if len(def_ids) < 1:
+            if len(def_ids) <= 1:
                 def_ids = "(-1)"
             if before_me:
                 execute_string += " AND device.id IN " + def_ids
