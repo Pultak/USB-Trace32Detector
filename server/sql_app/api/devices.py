@@ -21,7 +21,7 @@ def get_db():
 
 
 @device.post("/device", response_model=schemas.Device)
-def create_device(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
+def create_device(device: schemas.DeviceTemp, db: Session = Depends(get_db)):
     """
     Endpoint used for creating new device
     """

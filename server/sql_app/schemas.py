@@ -48,6 +48,8 @@ class DeviceBase(BaseModel):
     vendor_id: str
     product_id: str
     serial_number: str
+    inventory_number: str
+    comment: str
 
 
 class DeviceCreate(DeviceBase):
@@ -59,12 +61,20 @@ class Device(DeviceCreate):
     Class used for creating and reading devices entries
     """
     id: int
-    assigned: bool
     logs: List[USBLog] = []
     licenses: List[DeviceLicense] = []
 
     class Config:
         orm_mode = True
+
+
+class DeviceTemp(BaseModel):
+    """
+    Class used for reading data from client
+    """
+    vendor_id: str
+    product_id: str
+    serial_number: str
 
 
 class LDLogBase(BaseModel):
@@ -90,6 +100,8 @@ class LDLog(LDLogCreate):
 
 class BodyDeviceBase(BaseModel):
     serial_number: str
+    inventory_number: str
+    comment: str
 
 
 class BodyDeviceCreate(BodyDeviceBase):
@@ -107,8 +119,17 @@ class BodyDevice(BodyDeviceCreate):
         orm_mode = True
 
 
+class BodyDeviceTemp(BaseModel):
+    """
+    Class used for reading body device data from client
+    """
+    serial_number: str
+
+
 class HeadDeviceBase(BaseModel):
     serial_number: str
+    inventory_number: str
+    comment: str
 
 
 class HeadDeviceCreate(HeadDeviceBase):
@@ -126,6 +147,13 @@ class HeadDevice(HeadDeviceCreate):
         orm_mode = True
 
 
+class HeadDeviceTemp(BaseModel):
+    """
+    Class used for reading head device data from client
+    """
+    serial_number: str
+
+
 class PCBase(BaseModel):
     username: str
     hostname: str
@@ -140,8 +168,8 @@ class PC(PCCreate):
     Class used for creating and reading pc entries
     """
     id: int
-    assigned: bool
     logs_pc: List[USBLog] = []
+    logs_ld: List[LDLog] = []
 
     class Config:
         orm_mode = True
@@ -160,7 +188,7 @@ class Team(TeamCreate):
     Class used for creating and reading team entries
     """
     id: int
-    pcs: List[PC] = []
+    devices: List[Device] = []
 
     class Config:
         orm_mode = True
@@ -168,6 +196,7 @@ class Team(TeamCreate):
 
 class LicenseBase(BaseModel):
     name: str
+    license_id: str
     expiration_date: date
 
 
@@ -181,6 +210,8 @@ class License(LicenseCreate):
     """
     id: int
     devices: List[DeviceLicense] = []
+    head_devices: List[HeadDevice] = []
+    body_devices: List[BodyDevice] = []
 
     class Config:
         orm_mode = True
@@ -193,7 +224,7 @@ class USBTempBase(BaseModel):
     username: str
     hostname: str
     timestamp: str
-    device: DeviceBase
+    device: DeviceTemp
     status: str
 
 
@@ -216,8 +247,8 @@ class LDTempBase(BaseModel):
     username: str
     hostname: str
     timestamp: str
-    head_device: HeadDeviceBase
-    body_device: BodyDeviceBase
+    head_device: HeadDeviceTemp
+    body_device: BodyDeviceTemp
     status: str
 
 
@@ -241,6 +272,7 @@ class UserBase(BaseModel):
     username: str
     password: str
     role: str
+
 
 class UserCreate(UserBase):
     pass

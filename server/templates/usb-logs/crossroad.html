@@ -9,10 +9,11 @@
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
       <option value=""></option>
-      <option value="/logs-web">Logs</option>
-      <option value="/ldlogs-web">LD Logs</option>
-      <option value="/devices-web">Devices</option>
-      <option value="/body-devices-web">Body Devices</option>
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web">Lauterbach Logs</option>
+      <option value="/devices-web">Keyman Devices</option>
+      <option value="/body-devices-web">Lauterbach Body Devices</option>
+      <option value="/head-devices-web">Lauterbach Head Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
@@ -24,34 +25,50 @@
 <table>
     <TR>
         <TH>URL</TH>
+        <TH>Name</TH>
         <TH>Purpose</TH>
     </TR>
     <TR>
         <TD class="URL">/logs-web</TD>
-        <TD class="Purpose">Shows all saves Keyman logs. User can filter through license, team and user</TD>
+        <TD class="Name">Vector Logs</TD>
+        <TD class="Purpose">Shows all saved Keyman logs. User can filter through license, team and user</TD>
     </TR>
     <TR>
         <TD class="URL">/ldlogs-web</TD>
-        <TD class="Purpose">Shows all saves LD debugger logs. User can filter through license, team and user</TD>
+        <TD class="Name">Lauterbach Logs</TD>
+        <TD class="Purpose">Shows all saved LD debugger logs. User can filter through license, team and user</TD>
     </TR>
     <TR>
         <TD class="URL">/devices-web</TD>
-        <TD class="Purpose">Shows all Keyman devices saved in database and its last state (connected, disconnected)</TD>
+        <TD class="Name">Keyman Devices</TD>
+        <TD class="Purpose">Shows all Keyman devices saved in database and its license, inventory number, last pc and
+                            last detection. User can filter through keyman id, license type, license id and team</TD>
     </TR>
     <TR>
         <TD class="URL">/body-devices-web</TD>
-        <TD class="Purpose">Shows all LD Body devices saved in database and its last state (connected, disconnected)</TD>
+        <TD class="Name">Lauterbach Body Devices</TD>
+        <TD class="Purpose">Shows all Lauterbach Body devices saved in database and its license, inventory number, last pc and
+                            last detection. User can filter through body device serial nummber, license id and team</TD>
+    </TR>
+     <TR>
+        <TD class="URL">/head-devices-web</TD>
+        <TD class="Name">Lauterbach Head Devices</TD>
+        <TD class="Purpose">Shows all Lauterbach Head devices saved in database and its license, inventory number, last pc and
+                            last detection. User can filter through body device serial nummber, license id and team</TD>
     </TR>
     <TR>
         <TD class="URL">/teams-web</TD>
-        <TD class="Purpose">Shows all teams currently saved in database and its members</TD>
+        <TD class="Name">Teams</TD>
+        <TD class="Purpose">Shows all teams currently saved in database</TD>
     </TR>
     <TR>
         <TD class="URL">/pcs-web</TD>
-        <TD class="Purpose">Shows all PCS currently saved in database and its team</TD>
+        <TD class="Name">PCs</TD>
+        <TD class="Purpose">Shows all PCS currently saved in database</TD>
     </TR>
     <TR>
         <TD class="URL">/licenses-web</TD>
+        <TD class="Name">Licenses</TD>
         <TD class="Purpose">Shows all Licenses currently saved in database and its expiration date</TD>
     </TR>
 </table>

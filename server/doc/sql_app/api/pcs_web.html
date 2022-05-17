@@ -32,7 +32,8 @@ from sqlalchemy.orm import Session
 from sql_app import crud, models, schemas
 from ..database import SessionLocal, engine
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi_jwt_auth import AuthJWT
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -42,7 +43,7 @@ models.Base.metadata.create_all(bind=engine)
 templates = Jinja2Templates(directory=&#34;../templates/pcs&#34;)
 
 # prefix used for all endpoints in this file
-pcs_web = APIRouter(prefix=&#34;/api/v1&#34;)
+pcs_web = APIRouter(prefix=&#34;&#34;)
 
 
 # Dependency
@@ -55,34 +56,19 @@ def get_db():
 
 
 @pcs_web.get(&#34;/pcs-web&#34;, response_class=HTMLResponse)
-async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                   Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
     Returns template with all pcs currently saved in database
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
     pcs = crud.get_pcs(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;pcs.html&#34;, {&#34;request&#34;: request, &#34;pcs&#34;: pcs})
-
-
-@pcs_web.get(&#34;/pc-team/{pc_id}&#34;, response_class=HTMLResponse)
-async def connect_pc_team(request: Request, pc_id: int, db: Session = Depends(get_db)):
-    &#34;&#34;&#34;
-    Returns template with Form for connecting pc with team
-    &#34;&#34;&#34;
-    pc = crud.get_pc(db, pc_id)
-    teams = crud.get_teams(db, 0, 100)
-    return templates.TemplateResponse(&#34;pcteam.html&#34;,
-                                      {&#34;request&#34;: request, &#34;pc&#34;: pc, &#34;teams&#34;: teams})
-
-
-@pcs_web.post(&#34;/pcs-web/{pc_id}&#34;, response_class=HTMLResponse)
-async def connect_post(request: Request, pc_id: int, team: str = Form(...), skip: int = 0, limit: int = 100,
-                       db: Session = Depends(get_db)):
-    &#34;&#34;&#34;
-    Endpoint called from within form for connecting pc with team. Updates certain pc with new team.
-    &#34;&#34;&#34;
-    old_pc = crud.update_pc(db, pc_id, team)
-    pcs = crud.get_pcs(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;pcs.html&#34;, {&#34;request&#34;: request, &#34;pcs&#34;: pcs})</code></pre>
+    if current_user == &#34;admin&#34;:
+        return templates.TemplateResponse(&#34;pcs.html&#34;, {&#34;request&#34;: request, &#34;pcs&#34;: pcs, &#34;user&#34;: current_user})
+    else:
+        current_user = &#34;guest&#34;
+        return templates.TemplateResponse(&#34;pcs_normal.html&#34;, {&#34;request&#34;: request, &#34;pcs&#34;: pcs, &#34;user&#34;: current_user})</code></pre>
 </details>
 </section>
 <section>
@@ -92,46 +78,6 @@ async def connect_post(request: Request, pc_id: int, team: str = Form(...), skip
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="sql_app.api.pcs_web.connect_pc_team"><code class="name flex">
-<span>async def <span class="ident">connect_pc_team</span></span>(<span>request: starlette.requests.Request, pc_id: int, db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns template with Form for connecting pc with team</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@pcs_web.get(&#34;/pc-team/{pc_id}&#34;, response_class=HTMLResponse)
-async def connect_pc_team(request: Request, pc_id: int, db: Session = Depends(get_db)):
-    &#34;&#34;&#34;
-    Returns template with Form for connecting pc with team
-    &#34;&#34;&#34;
-    pc = crud.get_pc(db, pc_id)
-    teams = crud.get_teams(db, 0, 100)
-    return templates.TemplateResponse(&#34;pcteam.html&#34;,
-                                      {&#34;request&#34;: request, &#34;pc&#34;: pc, &#34;teams&#34;: teams})</code></pre>
-</details>
-</dd>
-<dt id="sql_app.api.pcs_web.connect_post"><code class="name flex">
-<span>async def <span class="ident">connect_post</span></span>(<span>request: starlette.requests.Request, pc_id: int, team: str = Form(Ellipsis), skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Endpoint called from within form for connecting pc with team. Updates certain pc with new team.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@pcs_web.post(&#34;/pcs-web/{pc_id}&#34;, response_class=HTMLResponse)
-async def connect_post(request: Request, pc_id: int, team: str = Form(...), skip: int = 0, limit: int = 100,
-                       db: Session = Depends(get_db)):
-    &#34;&#34;&#34;
-    Endpoint called from within form for connecting pc with team. Updates certain pc with new team.
-    &#34;&#34;&#34;
-    old_pc = crud.update_pc(db, pc_id, team)
-    pcs = crud.get_pcs(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;pcs.html&#34;, {&#34;request&#34;: request, &#34;pcs&#34;: pcs})</code></pre>
-</details>
-</dd>
 <dt id="sql_app.api.pcs_web.get_db"><code class="name flex">
 <span>def <span class="ident">get_db</span></span>(<span>)</span>
 </code></dt>
@@ -150,7 +96,7 @@ async def connect_post(request: Request, pc_id: int, team: str = Form(...), skip
 </details>
 </dd>
 <dt id="sql_app.api.pcs_web.read_pcs"><code class="name flex">
-<span>async def <span class="ident">read_pcs</span></span>(<span>request: starlette.requests.Request, skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
+<span>async def <span class="ident">read_pcs</span></span>(<span>request: starlette.requests.Request, skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns template with all pcs currently saved in database</p></div>
@@ -159,12 +105,19 @@ async def connect_post(request: Request, pc_id: int, team: str = Form(...), skip
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@pcs_web.get(&#34;/pcs-web&#34;, response_class=HTMLResponse)
-async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                   Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
     Returns template with all pcs currently saved in database
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
     pcs = crud.get_pcs(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;pcs.html&#34;, {&#34;request&#34;: request, &#34;pcs&#34;: pcs})</code></pre>
+    if current_user == &#34;admin&#34;:
+        return templates.TemplateResponse(&#34;pcs.html&#34;, {&#34;request&#34;: request, &#34;pcs&#34;: pcs, &#34;user&#34;: current_user})
+    else:
+        current_user = &#34;guest&#34;
+        return templates.TemplateResponse(&#34;pcs_normal.html&#34;, {&#34;request&#34;: request, &#34;pcs&#34;: pcs, &#34;user&#34;: current_user})</code></pre>
 </details>
 </dd>
 </dl>
@@ -185,8 +138,6 @@ async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Sessio
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="sql_app.api.pcs_web.connect_pc_team" href="#sql_app.api.pcs_web.connect_pc_team">connect_pc_team</a></code></li>
-<li><code><a title="sql_app.api.pcs_web.connect_post" href="#sql_app.api.pcs_web.connect_post">connect_post</a></code></li>
 <li><code><a title="sql_app.api.pcs_web.get_db" href="#sql_app.api.pcs_web.get_db">get_db</a></code></li>
 <li><code><a title="sql_app.api.pcs_web.read_pcs" href="#sql_app.api.pcs_web.read_pcs">read_pcs</a></code></li>
 </ul>

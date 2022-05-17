@@ -30,7 +30,7 @@ And docker will create image for server application and postgresql database. Dat
 Data from database are easily accesibly from web browser. Main web views url is
 
 ```bash
-http://localhost:8000/api/v1/logs-web
+http://localhost:8000/
 ```
 
 On this page there is select box at the top of the page for accessing different views on other data in database as well as creating new ones

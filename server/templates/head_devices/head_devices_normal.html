@@ -1,0 +1,113 @@
+<html>
+<head>
+    <style>
+        #devices {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#devices td, #devices th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#devices tr:nth-child(even){background-color: #f2f2f2;}
+
+#devices tr:hover {background-color: #ddd;}
+
+#devices th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #47BBF5;
+  color: black;
+}
+    </style>
+    <title>Devices Details</title>
+</head>
+<body>
+<div style='float:left;padding-right:20px'>
+<b>Your role: {{user}}</b>
+</div>
+<div style='float:left;padding-right:5px'>
+<form action="/login" method="get">
+    <input type="submit" value="Login" />
+</form>
+</div>
+<div style='float:left;padding-right:5px'>
+<form action="/signup" method="get">
+    <input type="submit" value="Sign Up" />
+</form>
+</div>
+<form action="/logout" method="get">
+    <input type="submit" value="Logout" />
+</form>
+<form action="" method="get">
+  <label for="view">Choose view:</label>
+  <select id="view" name="view" onchange="this.form.action=this.value;">
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web">Lauterbach Logs</option>
+      <option value="/devices-web">Keyman Devices</option>
+      <option value="/body-devices-web">Lauterbach Body Devices</option>
+      <option value="/head-devices-web" selected>Lauterbach Head Devices</option>
+      <option value="/teams-web">Teams</option>
+      <option value="/pcs-web">PCs</option>
+      <option value="/licenses-web">Licenses</option>
+  </select>
+  <input type="submit" value="OK">
+</form>
+<form action="/head-devices-web" method="post">
+    <label for="body_id">Head Device ID:</label>
+    <input id="body_id" name="body_id" type="text" list="body_ids" value="{{body_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="body_ids">
+        {% for dev in devs %}
+        <option value="{{dev.serial_number}}"></option>
+        {% endfor %}
+    </datalist>
+    <label for="lic_id">License ID:</label>
+    <input id="lic_id" name="lic_id" type="text" list="licenses_ids" value="{{lic_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="licenses_ids">
+        {% for license in licenses %}
+        <option value="{{license.license_id}}"></option>
+        {% endfor %}
+    </datalist>
+    <label for="team">Team:</label>
+    <input id="team" name="team" type="text" list="teams" value="{{team_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="teams">
+        {% for team in teams %}
+        <option value="{{team.name}}">{{team.name}}</option>
+        {% endfor %}
+    </datalist>
+  <input type="submit" value="Filter">
+</form>
+<table id="devices">
+    <TR>
+        <TH>ID</TH>
+        <TH>Lauterbach Head ID</TH>
+        <TH>License ID</TH>
+        <TH>Inventory Number</TH>
+        <TH>Team</TH>
+        <TH>Last Username</TH>
+        <TH>Last Hostname</TH>
+        <TH>Last Detection</TH>
+        <TH>Status</TH>
+        <TH>Comment</TH>
+    </TR>
+    {% for dev in devices %}
+    <TR>
+        <TD class="ID">{{dev['device'].id}}</TD>
+        <TD class="Lauterbach Head ID">{{dev['device'].serial_number}}</TD>
+        <TD class="License ID">{{dev['license'].license_id}}</TD>
+        <TD class="Inventory Number">{{dev['device'].inventory_number}}</TD>
+        <TD class="Team">{{dev['device'].team.name}}</TD>
+        <TD class="Last Username">{{dev['log'].ldpc.username}}</TD>
+        <TD class="Last Hostname">{{dev['log'].ldpc.hostname}}</TD>
+        <TD class="Last Detection">{{dev['log'].timestamp}}</TD>
+        <TD class="Status">{{dev['log'].status}}</TD>
+        <TD class="Comment">{{dev['device'].comment}}</TD>
+    </TR>
+    {% endfor %}
+</table>
+</body>
+</html>

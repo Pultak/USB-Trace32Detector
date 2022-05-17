@@ -49,7 +49,7 @@ def get_db():
 
 
 @device.post(&#34;/device&#34;, response_model=schemas.Device)
-def create_device(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
+def create_device(device: schemas.DeviceTemp, db: Session = Depends(get_db)):
     &#34;&#34;&#34;
     Endpoint used for creating new device
     &#34;&#34;&#34;
@@ -84,7 +84,7 @@ def read_device(device_id: int, db: Session = Depends(get_db)):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="sql_app.api.devices.create_device"><code class="name flex">
-<span>def <span class="ident">create_device</span></span>(<span>device: <a title="sql_app.schemas.DeviceCreate" href="../schemas.html#sql_app.schemas.DeviceCreate">DeviceCreate</a>, db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
+<span>def <span class="ident">create_device</span></span>(<span>device: <a title="sql_app.schemas.DeviceTemp" href="../schemas.html#sql_app.schemas.DeviceTemp">DeviceTemp</a>, db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Endpoint used for creating new device</p></div>
@@ -93,7 +93,7 @@ def read_device(device_id: int, db: Session = Depends(get_db)):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@device.post(&#34;/device&#34;, response_model=schemas.Device)
-def create_device(device: schemas.DeviceCreate, db: Session = Depends(get_db)):
+def create_device(device: schemas.DeviceTemp, db: Session = Depends(get_db)):
     &#34;&#34;&#34;
     Endpoint used for creating new device
     &#34;&#34;&#34;

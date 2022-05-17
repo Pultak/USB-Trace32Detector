@@ -7,25 +7,52 @@
 <body>
 <h6><p>Vendor ID: {{device.vendor_id}}</p>
     <p>Product ID: {{device.product_id}}</p>
-    <p>Serial Number: {{device.serial_number}}</p>
 </h6>
+<h4>Serial Number: {{device.serial_number}}</h4>
 <form action="/devices-web/{{device.id}}" method="post">
   <label for="lic">Licenses:</label>
   <select id="lic" name="lic">
       {% for license in licenses %}
-    <option value={{license.id}}>{{license.name}}</option>
+    <option value={{license.id}}>{{license.name}} : {{license.license_id}}</option>
       {% endfor %}
   </select>
   <input type="submit" value="Connect">
 </form>
+<div style='padding-top:20px'>
 <form action="/devices-web-del/{{device.id}}" method="post">
   <label for="lic_del">Licenses:</label>
   <select id="lic_del" name="lic_del">
       {% for license in dev_lic %}
-    <option value={{license.id}}>{{license.name}}</option>
+    <option value={{license.id}}>{{license.name}} : {{license.license_id}}</option>
       {% endfor %}
   </select>
   <input type="submit" value="Delete">
 </form>
+</div>
+<div style='padding-top:20px'>
+<form action="/devices-web-team/{{device.id}}" method="post">
+  <label for="team_con">Teams:</label>
+  <select id="team_con" name="team_con">
+      {% for team in teams %}
+    <option value={{team.id}}>{{team.name}}</option>
+      {% endfor %}
+  </select>
+  <input type="submit" value="Connect">
+</form>
+</div>
+<div style='padding-top:20px'>
+<form action="/devices-web-inv/{{device.id}}" method="post">
+  <label for="dev_inv">Inventory Number:</label><br>
+  <input type="text" id="dev_inv" name="dev_inv" value="{{device.inventory_number}}">
+  <input type="submit" value="Submit">
+</form>
+</div>
+<div style='padding-top:20px'>
+<form action="/devices-web-comment/{{device.id}}" method="post">
+  <label for="dev_com">Comment:</label><br>
+  <input type="text" id="dev_com" name="dev_com" value="{{device.comment}}">
+  <input type="submit" value="Submit">
+</form>
+</div>
 </body>
 </html>
