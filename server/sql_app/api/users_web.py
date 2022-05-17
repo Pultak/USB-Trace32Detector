@@ -37,7 +37,7 @@ async def read_usrs(request: Request, skip: int = 0, limit: int = 100, db: Sessi
     current_user = Authorize.get_jwt_subject()
     users = crud.get_users(db, skip, limit)
     if current_user == "admin":
-        return templates.TemplateResponse("users.html", {"request": request, "users": users})
+        return templates.TemplateResponse("users.html", {"request": request, "users": users, "user": current_user})
     else:
         return RedirectResponse(url=f"/logs-web", status_code=303)
 

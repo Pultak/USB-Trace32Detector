@@ -1,5 +1,29 @@
 <html>
 <head>
+    <style>
+        #devices {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#devices td, #devices th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#devices tr:nth-child(even){background-color: #f2f2f2;}
+
+#devices tr:hover {background-color: #ddd;}
+
+#devices th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #47BBF5;
+  color: black;
+}
+    </style>
     <title>Devices Details</title>
 </head>
 <body>
@@ -22,11 +46,11 @@
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
-      <option value=""></option>
-      <option value="/logs-web">Logs</option>
-      <option value="/ldlogs-web">LD Logs</option>
-      <option value="/devices-web">Devices</option>
-      <option value="/body-devices-web">Body Devices</option>
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web">Lauterbach Logs</option>
+      <option value="/devices-web" selected>Keyman Devices</option>
+      <option value="/body-devices-web">Lauterbach Body Devices</option>
+      <option value="/head-devices-web">Lauterbach Head Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
@@ -35,49 +59,65 @@
   <input type="submit" value="OK">
 </form>
 <form action="/devices-web" method="post">
-    <label for="lic">License:</label>
-    <input id="lic" name="lic" type="text" list="licenses" value="" placeholder="all">
-    <datalist id="licenses">
+    <label for="keyman_id">Keyman ID:</label>
+    <input id="keyman_id" name="keyman_id" type="text" list="keyman_ids" value="{{keyman_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="keyman_ids">
+        {% for dev in devs %}
+        <option value="{{dev.serial_number}}"></option>
+        {% endfor %}
+    </datalist>
+    <label for="lic_name">License Type:</label>
+    <input id="lic_name" name="lic_name" type="text" list="licenses_names" value="{{licn_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="licenses_names">
         {% for license in licenses %}
         <option value="{{license.name}}"></option>
         {% endfor %}
     </datalist>
+    <label for="lic_id">License ID:</label>
+    <input id="lic_id" name="lic_id" type="text" list="licenses_ids" value="{{lici_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="licenses_ids">
+        {% for license in licenses %}
+        <option value="{{license.license_id}}"></option>
+        {% endfor %}
+    </datalist>
+    <label for="team">Team:</label>
+    <input id="team" name="team" type="text" list="teams" value="{{team_val}}" placeholder="all" onClick="this.select();">
+    <datalist id="teams">
+        {% for team in teams %}
+        <option value="{{team.name}}">{{team.name}}</option>
+        {% endfor %}
+    </datalist>
   <input type="submit" value="Filter">
 </form>
-<table>
+<table id="devices">
     <TR>
         <TH>ID</TH>
-        <TH>Vendor ID</TH>
-        <TH>Product ID</TH>
-        <TH>Serial Number</TH>
-        <TH>Licenses</TH>
+        <TH>Keyman ID</TH>
+        <TH>License Type</TH>
+        <TH>License ID</TH>
+        <TH>Inventory Number</TH>
+        <TH>Team</TH>
+        <TH>Last Username</TH>
+        <TH>Last Hostname</TH>
+        <TH>Last Detection</TH>
         <TH>Status</TH>
+        <TH>Comment</TH>
     </TR>
-    {% for i in range(devs) %}
+    {% for dev in devices %}
     <TR>
-        <TD class="ID"><a href="/device-license/{{devices[i].id}}">{{devices[i].id}}</a></TD>
-        <TD class="Vendor ID">{{devices[i].vendor_id}}</TD>
-        <TD class="Product ID">{{devices[i].product_id}}</TD>
-        <TD class="Serial Number">{{devices[i].serial_number}}</TD>
-        <TD class="License">
-            {% for lic in devices[i].licenses %}
-                {{lic.licenses.name}}<BR>
-            {% endfor %}
-        </TD>
-        <TD class="Status">{{statuses[i]}}</TD>
+        <TD class="ID"><a href="/device-license/{{dev['device'].id}}">{{dev['device'].id}}</a></TD>
+        <TD class="Serial Number">{{dev['device'].serial_number}}</TD>
+        <TD class="License">{{dev['license'].name}}</TD>
+        <TD class="License ID">{{dev['license'].license_id}}</TD>
+        <TD class="Inventory Number">{{dev['device'].inventory_number}}</TD>
+        <TD class="Team">{{dev['device'].team.name}}</TD>
+        <TD class="Last Username">{{dev['log'].pc.username}}</TD>
+        <TD class="Last Hostname">{{dev['log'].pc.hostname}}</TD>
+        <TD class="Last Detection">{{dev['log'].timestamp}}</TD>
+        <TD class="Status">{{dev['log'].status}}</TD>
+        <TD class="Comment">{{dev['device'].comment}}</TD>
     </TR>
     {% endfor %}
-    <TR>
-        <TD class="ID"></TD>
-        <TD class="Vendor ID"></TD>
-        <TD class="Product ID"></TD>
-        <TD class="Serial Number"></TD>
-        <TD class="License">
-            <form action="/license-create" method="get">
-                <input type="submit" value="Add">
-            </form>
-        </TD>
-    </TR>
 </table>
 </body>
 </html>

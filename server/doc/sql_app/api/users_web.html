@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>sql_app.api.licenses_web API documentation</title>
+<title>sql_app.api.users_web API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>sql_app.api.licenses_web</code></h1>
+<h1 class="title">Module <code>sql_app.api.users_web</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -27,10 +27,8 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from typing import List
-from typing import Optional
 from fastapi import Depends, FastAPI, HTTPException, APIRouter, Form
 from sqlalchemy.orm import Session
-from datetime import date
 from sql_app import crud, models, schemas
 from ..database import SessionLocal, engine
 from fastapi import FastAPI, Request
@@ -42,11 +40,10 @@ from fastapi.templating import Jinja2Templates
 models.Base.metadata.create_all(bind=engine)
 
 # Path to html templates used in this file
-templates = Jinja2Templates(directory=&#34;../templates/licenses&#34;)
-device_templates = Jinja2Templates(directory=&#34;../templates/devices&#34;)
+templates = Jinja2Templates(directory=&#34;../templates/users&#34;)
 
 # prefix used for all endpoints in this file
-licenses_web = APIRouter(prefix=&#34;&#34;)
+users = APIRouter(prefix=&#34;&#34;)
 
 
 # Dependency
@@ -58,54 +55,36 @@ def get_db():
         db.close()
 
 
-@licenses_web.get(&#34;/license-create&#34;, response_class=HTMLResponse)
-async def licenses_create_web(request: Request, Authorize: AuthJWT = Depends()):
+@users.get(&#34;/users-web&#34;, response_class=HTMLResponse)
+async def read_usrs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                   Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Returns template with Form for creating new license.
-    &#34;&#34;&#34;
-    Authorize.jwt_optional()
-    current_user = Authorize.get_jwt_subject()
-    if current_user != &#34;admin&#34;:
-        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
-    return templates.TemplateResponse(&#34;license_create.html&#34;, {&#34;request&#34;: request, &#34;minimum_date&#34;: date.today()})
-
-
-@licenses_web.get(&#34;/licenses-web&#34;, response_class=HTMLResponse)
-async def read_licenses_web(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
-                            Authorize: AuthJWT = Depends()):
-    &#34;&#34;&#34;
-    Returns template with all licenses currently saved in database
+    Returns template with all users currently saved in database
     &#34;&#34;&#34;
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    users = crud.get_users(db, skip, limit)
     if current_user == &#34;admin&#34;:
-        return templates.TemplateResponse(&#34;licenses.html&#34;, {&#34;request&#34;: request, &#34;licenses&#34;: licenses,
-                                                            &#34;user&#34;: current_user})
+        return templates.TemplateResponse(&#34;users.html&#34;, {&#34;request&#34;: request, &#34;users&#34;: users})
     else:
-        current_user = &#34;guest&#34;
-        return templates.TemplateResponse(&#34;licenses_normal.html&#34;, {&#34;request&#34;: request, &#34;licenses&#34;: licenses,
-                                                            &#34;user&#34;: current_user})
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
 
-@licenses_web.post(&#34;/licenses-web&#34;)
-def create_license(name: Optional[str] = Form(&#34;&#34;), lic_id: str = Form(...), expdate: Optional[date] = Form(None),
-                   db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
+
+@users.get(&#34;/user-role/{usr_id}&#34;, response_class=HTMLResponse)
+async def connect_pc_team(usr_id: int, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Endpoint called from create license form. Creates new license and redirects to devices-web endpoint
+    Changes role of user to either guest or admin depending on old role.
     &#34;&#34;&#34;
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
     if current_user != &#34;admin&#34;:
         return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
-    licenses = crud.get_licenses(db, 0, 100)
-    licenses_ids = []
-    for l in licenses:
-        licenses_ids.append(l.license_id)
-    if lic_id not in licenses_ids:
-        db_license = crud.create_license(db, name, lic_id, expdate)
-        if db_license is None:
-            print(&#34;something went wrong&#34;)
-    return RedirectResponse(url=f&#34;/licenses-web&#34;, status_code=303)</code></pre>
+    user = crud.find_user_byid(db, usr_id)
+    if user.role == &#34;admin&#34;:
+        crud.change_role(db, usr_id, &#34;guest&#34;)
+    else:
+        crud.change_role(db, usr_id, &#34;admin&#34;)
+    return RedirectResponse(url=f&#34;/users-web&#34;, status_code=303)</code></pre>
 </details>
 </section>
 <section>
@@ -115,37 +94,33 @@ def create_license(name: Optional[str] = Form(&#34;&#34;), lic_id: str = Form(..
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="sql_app.api.licenses_web.create_license"><code class="name flex">
-<span>def <span class="ident">create_license</span></span>(<span>name: Optional[str] = Form(), lic_id: str = Form(Ellipsis), expdate: Optional[datetime.date] = Form(None), db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
+<dt id="sql_app.api.users_web.connect_pc_team"><code class="name flex">
+<span>async def <span class="ident">connect_pc_team</span></span>(<span>usr_id: int, db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Endpoint called from create license form. Creates new license and redirects to devices-web endpoint</p></div>
+<div class="desc"><p>Changes role of user to either guest or admin depending on old role.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">@licenses_web.post(&#34;/licenses-web&#34;)
-def create_license(name: Optional[str] = Form(&#34;&#34;), lic_id: str = Form(...), expdate: Optional[date] = Form(None),
-                   db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
+<pre><code class="python">@users.get(&#34;/user-role/{usr_id}&#34;, response_class=HTMLResponse)
+async def connect_pc_team(usr_id: int, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Endpoint called from create license form. Creates new license and redirects to devices-web endpoint
+    Changes role of user to either guest or admin depending on old role.
     &#34;&#34;&#34;
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
     if current_user != &#34;admin&#34;:
         return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
-    licenses = crud.get_licenses(db, 0, 100)
-    licenses_ids = []
-    for l in licenses:
-        licenses_ids.append(l.license_id)
-    if lic_id not in licenses_ids:
-        db_license = crud.create_license(db, name, lic_id, expdate)
-        if db_license is None:
-            print(&#34;something went wrong&#34;)
-    return RedirectResponse(url=f&#34;/licenses-web&#34;, status_code=303)</code></pre>
+    user = crud.find_user_byid(db, usr_id)
+    if user.role == &#34;admin&#34;:
+        crud.change_role(db, usr_id, &#34;guest&#34;)
+    else:
+        crud.change_role(db, usr_id, &#34;admin&#34;)
+    return RedirectResponse(url=f&#34;/users-web&#34;, status_code=303)</code></pre>
 </details>
 </dd>
-<dt id="sql_app.api.licenses_web.get_db"><code class="name flex">
+<dt id="sql_app.api.users_web.get_db"><code class="name flex">
 <span>def <span class="ident">get_db</span></span>(<span>)</span>
 </code></dt>
 <dd>
@@ -162,52 +137,28 @@ def create_license(name: Optional[str] = Form(&#34;&#34;), lic_id: str = Form(..
         db.close()</code></pre>
 </details>
 </dd>
-<dt id="sql_app.api.licenses_web.licenses_create_web"><code class="name flex">
-<span>async def <span class="ident">licenses_create_web</span></span>(<span>request: starlette.requests.Request, Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
+<dt id="sql_app.api.users_web.read_usrs"><code class="name flex">
+<span>async def <span class="ident">read_usrs</span></span>(<span>request: starlette.requests.Request, skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns template with Form for creating new license.</p></div>
+<div class="desc"><p>Returns template with all users currently saved in database</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">@licenses_web.get(&#34;/license-create&#34;, response_class=HTMLResponse)
-async def licenses_create_web(request: Request, Authorize: AuthJWT = Depends()):
+<pre><code class="python">@users.get(&#34;/users-web&#34;, response_class=HTMLResponse)
+async def read_usrs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                   Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
-    Returns template with Form for creating new license.
-    &#34;&#34;&#34;
-    Authorize.jwt_optional()
-    current_user = Authorize.get_jwt_subject()
-    if current_user != &#34;admin&#34;:
-        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)
-    return templates.TemplateResponse(&#34;license_create.html&#34;, {&#34;request&#34;: request, &#34;minimum_date&#34;: date.today()})</code></pre>
-</details>
-</dd>
-<dt id="sql_app.api.licenses_web.read_licenses_web"><code class="name flex">
-<span>async def <span class="ident">read_licenses_web</span></span>(<span>request: starlette.requests.Request, skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns template with all licenses currently saved in database</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@licenses_web.get(&#34;/licenses-web&#34;, response_class=HTMLResponse)
-async def read_licenses_web(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
-                            Authorize: AuthJWT = Depends()):
-    &#34;&#34;&#34;
-    Returns template with all licenses currently saved in database
+    Returns template with all users currently saved in database
     &#34;&#34;&#34;
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    users = crud.get_users(db, skip, limit)
     if current_user == &#34;admin&#34;:
-        return templates.TemplateResponse(&#34;licenses.html&#34;, {&#34;request&#34;: request, &#34;licenses&#34;: licenses,
-                                                            &#34;user&#34;: current_user})
+        return templates.TemplateResponse(&#34;users.html&#34;, {&#34;request&#34;: request, &#34;users&#34;: users})
     else:
-        current_user = &#34;guest&#34;
-        return templates.TemplateResponse(&#34;licenses_normal.html&#34;, {&#34;request&#34;: request, &#34;licenses&#34;: licenses,
-                                                            &#34;user&#34;: current_user})</code></pre>
+        return RedirectResponse(url=f&#34;/logs-web&#34;, status_code=303)</code></pre>
 </details>
 </dd>
 </dl>
@@ -228,10 +179,9 @@ async def read_licenses_web(request: Request, skip: int = 0, limit: int = 100, d
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="sql_app.api.licenses_web.create_license" href="#sql_app.api.licenses_web.create_license">create_license</a></code></li>
-<li><code><a title="sql_app.api.licenses_web.get_db" href="#sql_app.api.licenses_web.get_db">get_db</a></code></li>
-<li><code><a title="sql_app.api.licenses_web.licenses_create_web" href="#sql_app.api.licenses_web.licenses_create_web">licenses_create_web</a></code></li>
-<li><code><a title="sql_app.api.licenses_web.read_licenses_web" href="#sql_app.api.licenses_web.read_licenses_web">read_licenses_web</a></code></li>
+<li><code><a title="sql_app.api.users_web.connect_pc_team" href="#sql_app.api.users_web.connect_pc_team">connect_pc_team</a></code></li>
+<li><code><a title="sql_app.api.users_web.get_db" href="#sql_app.api.users_web.get_db">get_db</a></code></li>
+<li><code><a title="sql_app.api.users_web.read_usrs" href="#sql_app.api.users_web.read_usrs">read_usrs</a></code></li>
 </ul>
 </li>
 </ul>

@@ -1,8 +1,35 @@
 <html>
 <head>
+    <style>
+        #devices {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#devices td, #devices th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#devices tr:nth-child(even){background-color: #f2f2f2;}
+
+#devices tr:hover {background-color: #ddd;}
+
+#devices th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #47BBF5;
+  color: black;
+}
+    </style>
     <title>Users Details</title>
 </head>
 <body>
+<div style='float:left;padding-right:20px'>
+<b>Your role: {{user}}</b>
+</div>
 <div style='float:left;padding-right:5px'>
 <form action="/login" method="get">
     <input type="submit" value="Login" />
@@ -19,19 +46,19 @@
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
-      <option value=""></option>
-      <option value="/logs-web">Logs</option>
-      <option value="/ldlogs-web">LD Logs</option>
-      <option value="/devices-web">Devices</option>
-      <option value="/body-devices-web">Body Devices</option>
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web">Lauterbach Logs</option>
+      <option value="/devices-web">Keyman Devices</option>
+      <option value="/body-devices-web">Lauterbach Body Devices</option>
+      <option value="/head-devices-web">Lauterbach Head Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
-      <option value="/users-web">Users</option>
+      <option value="/users-web" selected>Users</option>
   </select>
   <input type="submit" value="OK">
 </form>
-<table>
+<table id="devices">
     <TR>
         <TH>ID</TH>
         <TH>Username</TH>

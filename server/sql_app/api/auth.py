@@ -50,14 +50,23 @@ fake_users_db = {
 
 
 def verify_password(plain_password, hashed_password):
+    """
+    Verifies plain text password with hashed password
+    """
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_hash_password(password):
+    """
+    Returns hashed password
+    """
     return pwd_context.hash(password)
 
 
 def auth_user(db, username: str, password: str):
+    """
+    Determines if given password belongs to user with given username
+    """
     user = crud.find_user(db, username)
     if not user:
         return None

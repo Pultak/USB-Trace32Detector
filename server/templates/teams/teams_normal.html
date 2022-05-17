@@ -1,5 +1,29 @@
 <html>
 <head>
+    <style>
+        #devices {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#devices td, #devices th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#devices tr:nth-child(even){background-color: #f2f2f2;}
+
+#devices tr:hover {background-color: #ddd;}
+
+#devices th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #47BBF5;
+  color: black;
+}
+    </style>
     <title>Teams Details</title>
 </head>
 <body>
@@ -22,32 +46,26 @@
 <form action="" method="get">
   <label for="view">Choose view:</label>
   <select id="view" name="view" onchange="this.form.action=this.value;">
-      <option value=""></option>
-      <option value="/logs-web">Logs</option>
-      <option value="/ldlogs-web">LD Logs</option>
-      <option value="/devices-web">Devices</option>
-      <option value="/body-devices-web">Body Devices</option>
-      <option value="/teams-web">Teams</option>
+      <option value="/logs-web">Vector Logs</option>
+      <option value="/ldlogs-web">Lauterbach Logs</option>
+      <option value="/devices-web">Keyman Devices</option>
+      <option value="/body-devices-web">Lauterbach Body Devices</option>
+      <option value="/head-devices-web">Lauterbach Head Devices</option>
+      <option value="/teams-web" selected>Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
   </select>
   <input type="submit" value="OK">
 </form>
-<table>
+<table id="devices">
     <TR>
         <TH>ID</TH>
         <TH>Name</TH>
-        <TH>Members</TH>
     </TR>
     {% for team in teams %}
     <TR>
         <TD class="ID">{{team.id}}</TD>
         <TD class="Vendor ID">{{team.name}}</TD>
-        <TD class="Members">
-        {% for ppl in team.pcs %}
-            {{ppl.username}}<BR>
-        {% endfor %}
-        </TD>
     </TR>
     {% endfor %}
 </table>

@@ -34,6 +34,7 @@ from sql_app import crud, models, schemas
 from ..database import SessionLocal, engine
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi_jwt_auth import AuthJWT
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -43,7 +44,7 @@ models.Base.metadata.create_all(bind=engine)
 templates = Jinja2Templates(directory=&#34;../templates/usb-logs&#34;)
 
 # prefix used for all endpoints in this file
-usblogs_web = APIRouter(prefix=&#34;/api/v1&#34;)
+usblogs_web = APIRouter(prefix=&#34;&#34;)
 
 
 # Dependency
@@ -56,10 +57,13 @@ def get_db():
 
 
 @usblogs_web.get(&#34;/logs-web&#34;, response_class=HTMLResponse)
-async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                    Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
     Returns template with all usb logs currently saved in database with its pcs, teams and licenses.
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
     logs = crud.get_logs(db, skip=skip, limit=limit)
     pcs = []
     for log in logs:
@@ -68,17 +72,24 @@ async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Sessi
     pc_obj = crud.find_pcs(db, pcs)
     teams = crud.get_teams(db, skip=skip, limit=limit)
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;logs.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
-                                                    &#34;licenses&#34;: licenses})
+    if current_user == &#34;admin&#34;:
+        return templates.TemplateResponse(&#34;logs.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
+                                                        &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})
+    else:
+        current_user = &#34;guest&#34;
+        return templates.TemplateResponse(&#34;logs_normal.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
+                                                        &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})
 
 
 @usblogs_web.post(&#34;/logs-web&#34;, response_class=HTMLResponse)
 async def filter_logs(request: Request, pc: str = Form(&#34;all&#34;), team: str = Form(&#34;all&#34;), lic: str = Form(&#34;all&#34;),
                       skip: int = 0, limit: int = 100,
-                      db: Session = Depends(get_db)):
+                      db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
     Endpoint used for filtering usb logs by user given form inputs.
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
     log = crud.get_filtered_logs(db, pc, team, lic)
     logs_ids = []
     for l in log:
@@ -87,8 +98,18 @@ async def filter_logs(request: Request, pc: str = Form(&#34;all&#34;), team: str
     pc_obj = crud.get_pcs(db, skip=skip, limit=limit)
     teams = crud.get_teams(db, skip=skip, limit=limit)
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;logs.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
-                                                    &#34;licenses&#34;: licenses})</code></pre>
+    if current_user == &#34;admin&#34;:
+        return templates.TemplateResponse(&#34;logs.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
+                                                        &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})
+    else:
+        current_user = &#34;guest&#34;
+        return templates.TemplateResponse(&#34;logs_normal.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
+                                                        &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})
+
+
+@usblogs_web.get(&#34;/&#34;, response_class=HTMLResponse)
+async def crossroad(request: Request):
+    return templates.TemplateResponse(&#34;crossroad.html&#34;, {&#34;request&#34;: request})</code></pre>
 </details>
 </section>
 <section>
@@ -98,8 +119,22 @@ async def filter_logs(request: Request, pc: str = Form(&#34;all&#34;), team: str
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="sql_app.api.usb_logs_web.crossroad"><code class="name flex">
+<span>async def <span class="ident">crossroad</span></span>(<span>request: starlette.requests.Request)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@usblogs_web.get(&#34;/&#34;, response_class=HTMLResponse)
+async def crossroad(request: Request):
+    return templates.TemplateResponse(&#34;crossroad.html&#34;, {&#34;request&#34;: request})</code></pre>
+</details>
+</dd>
 <dt id="sql_app.api.usb_logs_web.filter_logs"><code class="name flex">
-<span>async def <span class="ident">filter_logs</span></span>(<span>request: starlette.requests.Request, pc: str = Form(all), team: str = Form(all), lic: str = Form(all), skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
+<span>async def <span class="ident">filter_logs</span></span>(<span>request: starlette.requests.Request, pc: str = Form(all), team: str = Form(all), lic: str = Form(all), skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Endpoint used for filtering usb logs by user given form inputs.</p></div>
@@ -110,10 +145,12 @@ async def filter_logs(request: Request, pc: str = Form(&#34;all&#34;), team: str
 <pre><code class="python">@usblogs_web.post(&#34;/logs-web&#34;, response_class=HTMLResponse)
 async def filter_logs(request: Request, pc: str = Form(&#34;all&#34;), team: str = Form(&#34;all&#34;), lic: str = Form(&#34;all&#34;),
                       skip: int = 0, limit: int = 100,
-                      db: Session = Depends(get_db)):
+                      db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
     Endpoint used for filtering usb logs by user given form inputs.
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
     log = crud.get_filtered_logs(db, pc, team, lic)
     logs_ids = []
     for l in log:
@@ -122,8 +159,13 @@ async def filter_logs(request: Request, pc: str = Form(&#34;all&#34;), team: str
     pc_obj = crud.get_pcs(db, skip=skip, limit=limit)
     teams = crud.get_teams(db, skip=skip, limit=limit)
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;logs.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
-                                                    &#34;licenses&#34;: licenses})</code></pre>
+    if current_user == &#34;admin&#34;:
+        return templates.TemplateResponse(&#34;logs.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
+                                                        &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})
+    else:
+        current_user = &#34;guest&#34;
+        return templates.TemplateResponse(&#34;logs_normal.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
+                                                        &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})</code></pre>
 </details>
 </dd>
 <dt id="sql_app.api.usb_logs_web.get_db"><code class="name flex">
@@ -144,7 +186,7 @@ async def filter_logs(request: Request, pc: str = Form(&#34;all&#34;), team: str
 </details>
 </dd>
 <dt id="sql_app.api.usb_logs_web.read_logs"><code class="name flex">
-<span>async def <span class="ident">read_logs</span></span>(<span>request: starlette.requests.Request, skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db))</span>
+<span>async def <span class="ident">read_logs</span></span>(<span>request: starlette.requests.Request, skip: int = 0, limit: int = 100, db: sqlalchemy.orm.session.Session = Depends(get_db), Authorize: fastapi_jwt_auth.auth_jwt.AuthJWT = Depends(NoneType))</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns template with all usb logs currently saved in database with its pcs, teams and licenses.</p></div>
@@ -153,10 +195,13 @@ async def filter_logs(request: Request, pc: str = Form(&#34;all&#34;), team: str
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@usblogs_web.get(&#34;/logs-web&#34;, response_class=HTMLResponse)
-async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                    Authorize: AuthJWT = Depends()):
     &#34;&#34;&#34;
     Returns template with all usb logs currently saved in database with its pcs, teams and licenses.
     &#34;&#34;&#34;
+    Authorize.jwt_optional()
+    current_user = Authorize.get_jwt_subject()
     logs = crud.get_logs(db, skip=skip, limit=limit)
     pcs = []
     for log in logs:
@@ -165,8 +210,13 @@ async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Sessi
     pc_obj = crud.find_pcs(db, pcs)
     teams = crud.get_teams(db, skip=skip, limit=limit)
     licenses = crud.get_licenses(db, skip=skip, limit=limit)
-    return templates.TemplateResponse(&#34;logs.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
-                                                    &#34;licenses&#34;: licenses})</code></pre>
+    if current_user == &#34;admin&#34;:
+        return templates.TemplateResponse(&#34;logs.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
+                                                        &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})
+    else:
+        current_user = &#34;guest&#34;
+        return templates.TemplateResponse(&#34;logs_normal.html&#34;, {&#34;request&#34;: request, &#34;logs&#34;: logs, &#34;pcs&#34;: pc_obj, &#34;teams&#34;: teams,
+                                                        &#34;licenses&#34;: licenses, &#34;user&#34;: current_user})</code></pre>
 </details>
 </dd>
 </dl>
@@ -187,6 +237,7 @@ async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Sessi
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="sql_app.api.usb_logs_web.crossroad" href="#sql_app.api.usb_logs_web.crossroad">crossroad</a></code></li>
 <li><code><a title="sql_app.api.usb_logs_web.filter_logs" href="#sql_app.api.usb_logs_web.filter_logs">filter_logs</a></code></li>
 <li><code><a title="sql_app.api.usb_logs_web.get_db" href="#sql_app.api.usb_logs_web.get_db">get_db</a></code></li>
 <li><code><a title="sql_app.api.usb_logs_web.read_logs" href="#sql_app.api.usb_logs_web.read_logs">read_logs</a></code></li>
