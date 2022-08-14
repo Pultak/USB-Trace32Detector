@@ -2,17 +2,15 @@ import json
 import logging
 from time import sleep
 
-from .usb_reader import read_connected_devices
-
-
 _listeners_connected = []       # list of listeners (USB devices is connected)
 _listeners_disconnected = []    # list of listeners (USB devices is disconnected)
 
 _last_connected_devices = []    # list of the lastly connected USB devices
 _config = None                  # instance of Config (config manager)
+_usb_reader = None
 
 
-def usb_detector_set_config(config):
+def usb_detector_set_config(config, usbReader):
     """Initializes the usb detector module (file).
 
     This function is meant to be called prior to calling
@@ -20,11 +18,13 @@ def usb_detector_set_config(config):
     an instance of the Config class which is then used
     by other functions within this file.
 
+    :param usbReader: .]
     :param config: instance of Config (config manager)
     """
     # Store the instance into the global variable.
-    global _config
+    global _config, _usb_reader
     _config = config
+    _usb_reader = usbReader
 
 
 def register_listener(callback, connected: bool = True):
@@ -168,7 +168,7 @@ def _update():
     # Retrieve a list of the currently plugged USB devices
     # and store it globally within the file.
     global _last_connected_devices
-    detected_devices = read_connected_devices()
+    detected_devices = _usb_reader.read_connected_devices_power_shell()
 
     # Figure out what USB devices were connected to the PC since
     # the last time this function was called.
