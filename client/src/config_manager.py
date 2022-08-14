@@ -1,5 +1,6 @@
 from sys import exit
 from configparser import RawConfigParser
+import json
 
 
 class Config:
@@ -43,6 +44,8 @@ class Config:
         """
         section_name = "usb_detector"
         self.scan_period_seconds = float(self.config[section_name]["scan_period_seconds"])
+        strings = self.config[section_name]["pnp_device_instance_id_suffix"]
+        self.pnp_device_id_suffixes = json.loads(strings)
         self.connected_devices_filename = self.config[section_name]["connected_devices_filename"]
 
     def _parse_server_section(self):

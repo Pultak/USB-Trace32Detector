@@ -7,6 +7,7 @@ from tendo import singleton
 from sys import exit
 
 from config_manager import Config
+from usb_detector.usb_reader import UsbReader
 from usb_detector.detector import register_listener, usb_detector_run, usb_detector_set_config
 from usb_detector.event_listener import usb_connected_callback, usb_disconnected_callback
 from usb_detector.api_client import api_client_run, api_client_set_config
@@ -29,7 +30,7 @@ def init_logging(app_config: Config):
 
         # Initialize the rest of the application.
         api_client_set_config(app_config)
-        usb_detector_set_config(app_config)
+        usb_detector_set_config(app_config, usbReader=UsbReader(app_config))
     else:
         # If the file does not exist, terminate the application.
         print(f"Cannot find logger configuration \"{app_config.logger_config_file}\"! Please specify valid a path or define a new one.")
