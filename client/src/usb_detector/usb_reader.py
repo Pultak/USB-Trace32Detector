@@ -15,7 +15,7 @@ class UsbReader:
                                                    stdin=subprocess.PIPE,
                                                    stderr=subprocess.PIPE,
                                                    startupinfo=None)
-        self.pnp_command = b"Get-PnpDevice -Class 'HIDClass' -Status 'OK' -FriendlyName 'USB Input Device' |" \
+        self.pnp_command = b"Get-PnpDevice -Class 'HIDClass' -Status 'OK' |" \
                            b" Select-Object InstanceId | ConvertTo-Json\n"
         self.config = config
         # list of devices from which the application
