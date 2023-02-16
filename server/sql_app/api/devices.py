@@ -29,11 +29,11 @@ def create_device(device: schemas.DeviceTemp, db: Session = Depends(get_db)):
 
 
 @device.get("/devices", response_model=List[schemas.Device])
-def read_devices(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_devices(skip: int = 0, db: Session = Depends(get_db)):
     """
     Endpoint returns all devices in database
     """
-    devices = crud.get_devices(db, skip=skip, limit=limit)
+    devices = crud.get_devices(db, skip=skip)
     return devices
 
 

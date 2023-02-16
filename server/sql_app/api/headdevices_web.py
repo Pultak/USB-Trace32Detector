@@ -30,7 +30,7 @@ def get_db():
 
 
 @head_device_web.get("/head-devices-web", response_class=HTMLResponse)
-async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+async def read_devices(request: Request, skip: int = 0, db: Session = Depends(get_db),
                        Authorize: AuthJWT = Depends()):
     """
     Returns template with all head devices and necessary attributes
@@ -39,12 +39,12 @@ async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Se
     current_user = Authorize.get_jwt_subject()
 
     device_dict = []
-    devices = crud.get_head_devices(db, skip=skip, limit=limit)
-    teams = crud.get_teams(db, skip=skip, limit=limit)
+    devices = crud.get_head_devices(db, skip=skip)
+    teams = crud.get_teams(db, skip=skip)
     for dev in devices:
         lic = crud.get_license(db, dev.license_id)
         device_dict.append({"device": dev, "license": lic, "log": dev.h_logs[len(dev.h_logs) - 1]})
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    licenses = crud.get_licenses(db, skip=skip)
     if current_user == "admin":
         return templates.TemplateResponse("head_devices.html", {"request": request, "devices": device_dict,
                                                                 "devs": devices, "teams": teams, "licenses": licenses,
@@ -59,7 +59,7 @@ async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Se
 
 
 @head_device_web.post("/head-devices-web", response_class=HTMLResponse)
-async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
+async def filter_devices(request: Request, skip: int = 0,
                          body_id: str = Form("all"), lic_id: str = Form("all"), team: str = Form("all"),
                          db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     """
@@ -74,11 +74,11 @@ async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
     for d in devices_f:
         ids.append(d[0])
     devices = crud.get_headdevices_with_ids(db, ids)
-    teams = crud.get_teams(db, skip=skip, limit=limit)
+    teams = crud.get_teams(db, skip=skip)
     for dev in devices:
         lic = crud.get_license(db, dev.license_id)
         device_dict.append({"device": dev, "license": lic, "log": dev.h_logs[len(dev.h_logs) - 1]})
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    licenses = crud.get_licenses(db, skip=skip)
     if body_id == "all":
         body_id = ""
     if lic_id == "all":
@@ -111,12 +111,12 @@ async def connect_dev_lic(request: Request, device_id: int, db: Session = Depend
     if current_user != "admin":
         return RedirectResponse(url=f"/logs-web", status_code=303)
     device = crud.get_head_device(db, device_id)
-    licenses = crud.get_licenses(db, 0, 100)
+    licenses = crud.get_licenses(db, 0)
     lic_left = []
     for lic in licenses:
         if lic != device.license:
             lic_left.append(lic)
-    teams = crud.get_teams(db, 0, 100)
+    teams = crud.get_teams(db, 0)
     return templates.TemplateResponse("headlicense.html",
                                       {"request": request, "device": device, "licenses": lic_left, "teams": teams})
 

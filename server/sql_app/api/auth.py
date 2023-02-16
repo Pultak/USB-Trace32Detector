@@ -88,7 +88,7 @@ async def signup(username: str = Form(...), password: str = Form(...), db: Sessi
     """
     Endpoint called form signup template. Creates new user with role guest that can be changed by admin user
     """
-    users = crud.get_users(db, 0, 100)
+    users = crud.get_users(db, 0)
     users_names = []
     for u in users:
         users_names.append(u.username)

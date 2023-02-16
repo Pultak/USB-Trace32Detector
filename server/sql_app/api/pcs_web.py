@@ -28,14 +28,14 @@ def get_db():
 
 
 @pcs_web.get("/pcs-web", response_class=HTMLResponse)
-async def read_pcs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+async def read_pcs(request: Request, skip: int = 0, db: Session = Depends(get_db),
                    Authorize: AuthJWT = Depends()):
     """
     Returns template with all pcs currently saved in database
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
-    pcs = crud.get_pcs(db, skip=skip, limit=limit)
+    pcs = crud.get_pcs(db, skip=skip)
     if current_user == "admin":
         return templates.TemplateResponse("pcs.html", {"request": request, "pcs": pcs, "user": current_user})
     else:

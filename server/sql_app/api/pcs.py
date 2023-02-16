@@ -28,11 +28,11 @@ def create_pc(pc: schemas.PCCreate, db: Session = Depends(get_db)):
 
 
 @pcs.get("/pcs", response_model=List[schemas.PC])
-def read_pcs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_pcs(skip: int = 0, db: Session = Depends(get_db)):
     """
     Returns all pcs currently saved in database
     """
-    pcs = crud.get_pcs(db, skip=skip, limit=limit)
+    pcs = crud.get_pcs(db, skip=skip)
     return pcs
 
 

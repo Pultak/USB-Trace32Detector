@@ -29,14 +29,14 @@ def get_db():
 
 
 @teams_web.get("/teams-web", response_class=HTMLResponse)
-async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+async def read_devices(request: Request, skip: int = 0, db: Session = Depends(get_db),
                        Authorize: AuthJWT = Depends()):
     """
     Returns template with all teams currently saved in database
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
-    teams = crud.get_teams(db, skip=skip, limit=limit)
+    teams = crud.get_teams(db, skip=skip)
     if current_user == "admin":
         return templates.TemplateResponse("teams.html", {"request": request, "teams": teams, "user": current_user})
     else:
@@ -65,7 +65,7 @@ def create_team(name: str = Form(...), db: Session = Depends(get_db), Authorize:
     current_user = Authorize.get_jwt_subject()
     if current_user != "admin":
         return RedirectResponse(url=f"/logs-web", status_code=303)
-    teams = crud.get_teams(db, 0, 100)
+    teams = crud.get_teams(db, 0)
     teams_names = []
     for t in teams:
         teams_names.append(t.name)
@@ -99,7 +99,7 @@ async def team_change_process(team_id: int, db:Session = Depends(get_db), name: 
     current_user = Authorize.get_jwt_subject()
     if current_user != "admin":
         return RedirectResponse(url=f"/logs-web", status_code=303)
-    teams = crud.get_teams(db, 0, 100)
+    teams = crud.get_teams(db, 0)
     teams_names = []
     for t in teams:
         teams_names.append(t.name)

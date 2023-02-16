@@ -30,7 +30,7 @@ def get_db():
 
 
 @device_web.get("/devices-web", response_class=HTMLResponse)
-async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+async def read_devices(request: Request, skip: int = 0, db: Session = Depends(get_db),
                        Authorize: AuthJWT = Depends()):
     """
     Returns template with all devices and its necessary attributes
@@ -39,8 +39,8 @@ async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Se
     current_user = Authorize.get_jwt_subject()
 
     device_dict = []
-    devices = crud.get_devices(db, skip=skip, limit=limit)
-    teams = crud.get_teams(db, skip=skip, limit=limit)
+    devices = crud.get_devices(db, skip=skip)
+    teams = crud.get_teams(db, skip=skip)
     # adding dictionary entry with all inforamtions needed in template
     for dev in devices:
         if len(dev.licenses) > 0:
@@ -48,7 +48,7 @@ async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Se
                 device_dict.append({"device": dev, "license": lic.licenses, "log": dev.logs[len(dev.logs) - 1]})
         else:
             device_dict.append({"device": dev, "license": dev.licenses, "log": dev.logs[len(dev.logs) - 1]})
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    licenses = crud.get_licenses(db, skip=skip)
     if current_user == "admin":
         return templates.TemplateResponse("devices.html", {"request": request, "devices": device_dict,
                                                            "licenses": licenses, "devs": devices, "keyman_val": "",
@@ -63,7 +63,7 @@ async def read_devices(request: Request, skip: int = 0, limit: int = 100, db: Se
 
 
 @device_web.post("/devices-web", response_class=HTMLResponse)
-async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
+async def filter_devices(request: Request, skip: int = 0,
                          keyman_id: str = Form("all"), lic_name: str = Form("all"),
                          lic_id: str = Form("all"), team: str = Form("all"),
                          db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
@@ -79,7 +79,7 @@ async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
     for d in devices_f:
         ids.append(d[0])
     devices = crud.get_devices_with_ids(db, ids)
-    teams = crud.get_teams(db, skip=skip, limit=limit)
+    teams = crud.get_teams(db, skip=skip)
     # adding dictionary entry with all inforamtions needed in template
     for dev in devices:
         if len(dev.licenses) > 0:
@@ -87,7 +87,7 @@ async def filter_devices(request: Request, skip: int = 0, limit: int = 100,
                 device_dict.append({"device": dev, "license": lic.licenses, "log": dev.logs[len(dev.logs) - 1]})
         else:
             device_dict.append({"device": dev, "license": dev.licenses, "log": dev.logs[len(dev.logs) - 1]})
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    licenses = crud.get_licenses(db, skip=skip)
     if keyman_id == "all":
         keyman_id = ""
     if lic_name == "all":
@@ -128,12 +128,12 @@ async def connect_dev_lic(request: Request, device_id: int, db: Session = Depend
         dev_lics.append(dev_lic.licenses)
     for dev_lic in dev_licenses:
         lic_ids.append(dev_lic.licenses.license_id)
-    licenses = crud.get_licenses(db, 0, 100)
+    licenses = crud.get_licenses(db, 0)
     lic_left = []
     for lic in licenses:
         if lic.license_id not in lic_ids and lic not in lic_left:
             lic_left.append(lic)
-    teams = crud.get_teams(db, 0, 100)
+    teams = crud.get_teams(db, 0)
     return templates.TemplateResponse("devicelicense.html",
                                       {"request": request, "device": device, "licenses": lic_left, "dev_lic": dev_lics,
                                        "teams": teams})

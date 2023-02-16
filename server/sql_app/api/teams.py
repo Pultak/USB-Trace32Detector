@@ -28,11 +28,11 @@ def create_device(team: schemas.TeamCreate, db: Session = Depends(get_db)):
 
 
 @teams.get("/teams", response_model=List[schemas.Device])
-def read_devices(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_devices(skip: int = 0, db: Session = Depends(get_db)):
     """
     Returns all pcs saved in database
     """
-    teams = crud.get_teams(db, skip=skip, limit=limit)
+    teams = crud.get_teams(db, skip=skip)
     return teams
 
 

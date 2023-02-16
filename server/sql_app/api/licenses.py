@@ -22,11 +22,11 @@ def get_db():
 
 
 @licenses.get("/licenses", response_model=List[schemas.License])
-def read_licenses(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_licenses(skip: int = 0, db: Session = Depends(get_db)):
     """
     Returns all licenses currently saved in database.
     """
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    licenses = crud.get_licenses(db, skip=skip)
     return licenses
 
 

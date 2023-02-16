@@ -28,14 +28,14 @@ def get_db():
 
 
 @users.get("/users-web", response_class=HTMLResponse)
-async def read_usrs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+async def read_usrs(request: Request, skip: int = 0, db: Session = Depends(get_db),
                    Authorize: AuthJWT = Depends()):
     """
     Returns template with all users currently saved in database
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
-    users = crud.get_users(db, skip, limit)
+    users = crud.get_users(db, skip)
     if current_user == "admin":
         return templates.TemplateResponse("users.html", {"request": request, "users": users, "user": current_user})
     else:

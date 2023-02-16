@@ -12,11 +12,11 @@ def get_device(db: Session, device_id: int):
     return db.query(models.Device).filter(models.Device.id == device_id).first()
 
 
-def get_devices(db: Session, skip: int = 0, limit: int = 100):
+def get_devices(db: Session, skip: int = 0):
     """
     returns all devices in database
     """
-    return db.query(models.Device).offset(skip).limit(limit).all()
+    return db.query(models.Device).offset(skip).all()
 
 
 def find_device(db: Session, device: schemas.DeviceTemp):
@@ -108,11 +108,11 @@ def get_license(db: Session, license_id: int):
     return db.query(models.License).filter(models.License.id == license_id).first()
 
 
-def get_licenses(db: Session, skip: int = 0, limit: int = 100):
+def get_licenses(db: Session, skip: int = 0):
     """
     returns all licenses in database
     """
-    return db.query(models.License).offset(skip).limit(limit).all()
+    return db.query(models.License).offset(skip).all()
 
 
 def find_license(db: Session, name: str):
@@ -271,11 +271,11 @@ def change_role(db: Session, usr_id: int, role: str):
     return old_usr
 
 
-def get_pcs(db: Session, skip: int = 0, limit: int = 100):
+def get_pcs(db: Session, skip: int = 0):
     """
     returns all pcs in database
     """
-    return db.query(models.PC).offset(skip).limit(limit).all()
+    return db.query(models.PC).offset(skip).all()
 
 
 def find_pc(db: Session, username: str, hostname: str):
@@ -297,7 +297,7 @@ def find_pc_by_name_all(db: Session, username: str):
     """
     Finds all pcs with same username
     """
-    return db.query(models.PC).filter(models.PC.username == username).offset(0).limit(100).all()
+    return db.query(models.PC).filter(models.PC.username == username).offset(0).all()
 
 
 def find_pcs(db: Session, pcs: []):
@@ -325,11 +325,11 @@ def get_team(db: Session, team_id: int):
     return db.query(models.Team).filter(models.Team.id == team_id).first()
 
 
-def get_teams(db: Session, skip: int = 0, limit: int = 100):
+def get_teams(db: Session, skip: int = 0):
     """
     returns all teams currently saved in database
     """
-    return db.query(models.Team).offset(skip).limit(limit).all()
+    return db.query(models.Team).offset(skip).all()
 
 
 def find_team(db: Session, name: str):
@@ -363,6 +363,19 @@ def change_team(db: Session, team_id: int, name: str):
     return old_team
 
 
+def change_license(db: Session, license_id: int, name: str, lic_id: str, expdate: date):
+    """
+    Updates license information of license given by license_id
+    """
+    old_license = get_license(db, license_id)
+    new = {'id': old_license.id, 'name': name, 'license_id': lic_id, 'expiration_date': expdate}
+    for key, value in new.items():
+        setattr(old_license, key, value)
+    db.commit()
+    db.refresh(old_license)
+    return old_license
+
+
 def get_head_device(db: Session, head_id: int):
     """
     Returns one specific head device by given id
@@ -370,11 +383,11 @@ def get_head_device(db: Session, head_id: int):
     return db.query(models.HeadDevice).filter(models.HeadDevice.id == head_id).first()
 
 
-def get_head_devices(db: Session, skip: int = 0, limit: int = 100):
+def get_head_devices(db: Session, skip: int = 0):
     """
     Returns all head devices saved in database
     """
-    return db.query(models.HeadDevice).offset(skip).limit(limit).all()
+    return db.query(models.HeadDevice).offset(skip).all()
 
 
 def find_head_device(db: Session, serial: schemas.HeadDeviceTemp):
@@ -402,11 +415,11 @@ def get_body_device(db: Session, body_id: int):
     return db.query(models.BodyDevice).filter(models.BodyDevice.id == body_id).first()
 
 
-def get_body_devices(db: Session, skip: int = 0, limit: int = 100):
+def get_body_devices(db: Session, skip: int = 0):
     """
     Returns all body devices saved in database
     """
-    return db.query(models.BodyDevice).offset(skip).limit(limit).all()
+    return db.query(models.BodyDevice).offset(skip).all()
 
 
 def find_body_device(db: Session, serial: schemas.BodyDeviceTemp):
@@ -557,11 +570,11 @@ def update_headdevice_comm(db: Session, device_id: int, comm: str):
     return old_dev
 
 
-def get_ld_logs(db: Session, skip: int = 0, limit: int = 100):
+def get_ld_logs(db: Session, skip: int = 0):
     """
     Returns all ld debugger logs in database
     """
-    return db.query(models.LDLog).order_by(desc(models.LDLog.timestamp)).offset(skip).limit(limit).all()
+    return db.query(models.LDLog).order_by(desc(models.LDLog.timestamp)).offset(skip).all()
 
 
 def create_ld_logs(db: Session, item: schemas.LDTempBase, head_id: int, body_id: int, pc_id: int, date: datetime):
@@ -575,18 +588,18 @@ def create_ld_logs(db: Session, item: schemas.LDTempBase, head_id: int, body_id:
     return db_ld
 
 
-def get_logs(db: Session, skip: int = 0, limit: int = 100):
+def get_logs(db: Session, skip: int = 0):
     """
     Returns all usb logs in database ordered by timestamp
     """
-    return db.query(models.USBLog).order_by(desc(models.USBLog.timestamp)).offset(skip).limit(limit).all()
+    return db.query(models.USBLog).order_by(desc(models.USBLog.timestamp)).offset(skip).all()
 
 
-def get_log(db: Session, device_id: int, skip: int = 0, limit: int = 100):
+def get_log(db: Session, device_id: int, skip: int = 0):
     """
     Returns all usb logs in database sorted by id
     """
-    return db.query(models.USBLog).filter(models.USBLog.device_id == device_id).offset(skip).limit(limit).all()
+    return db.query(models.USBLog).filter(models.USBLog.device_id == device_id).offset(skip).all()
 
 
 def find_filtered_logs(db: Session, logs: []):
@@ -1024,11 +1037,11 @@ def create_device_logs(db: Session, item: schemas.USBTempBase, dev_id: int, pc_i
     return db_log
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
+def get_users(db: Session, skip: int = 0):
     """
     Returns all users saved in database
     """
-    return db.query(models.User).offset(skip).limit(limit).all()
+    return db.query(models.User).offset(skip).all()
 
 
 def find_user(db: Session, name: str):

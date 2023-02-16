@@ -60,11 +60,11 @@ def create_ld_logs(log: schemas.LDTempBase, db: Session = Depends(get_db)):
 
 
 @usblogs.get("/logs", response_model=List[schemas.USBLog])
-def read_logs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_logs(skip: int = 0, db: Session = Depends(get_db)):
     """
     Returns all usb logs saved in database
     """
-    items = crud.get_logs(db, skip=skip, limit=limit)
+    items = crud.get_logs(db, skip=skip)
     return items
 
 

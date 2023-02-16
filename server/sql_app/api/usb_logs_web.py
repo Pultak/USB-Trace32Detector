@@ -29,21 +29,21 @@ def get_db():
 
 
 @usblogs_web.get("/logs-web", response_class=HTMLResponse)
-async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+async def read_logs(request: Request, skip: int = 0, db: Session = Depends(get_db),
                     Authorize: AuthJWT = Depends()):
     """
     Returns template with all usb logs currently saved in database with its pcs, teams and licenses.
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
-    logs = crud.get_logs(db, skip=skip, limit=limit)
+    logs = crud.get_logs(db, skip=skip)
     pcs = []
     for log in logs:
         if log.pc_id not in pcs:
             pcs.append(log.pc_id)
     pc_obj = crud.find_pcs(db, pcs)
-    teams = crud.get_teams(db, skip=skip, limit=limit)
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    teams = crud.get_teams(db, skip=skip)
+    licenses = crud.get_licenses(db, skip=skip)
     if current_user == "admin":
         return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "pcs": pc_obj, "teams": teams,
                                                         "licenses": licenses, "user": current_user, "pc_val": "",
@@ -57,7 +57,7 @@ async def read_logs(request: Request, skip: int = 0, limit: int = 100, db: Sessi
 
 @usblogs_web.post("/logs-web", response_class=HTMLResponse)
 async def filter_logs(request: Request, pc: str = Form("all"), team: str = Form("all"), lic: str = Form("all"),
-                      skip: int = 0, limit: int = 100, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
+                      skip: int = 0, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     """
     Endpoint used for filtering usb logs by user given form inputs.
     """
@@ -68,9 +68,9 @@ async def filter_logs(request: Request, pc: str = Form("all"), team: str = Form(
     for l in log:
         logs_ids.append(l[0])
     logs = crud.find_filtered_logs(db, logs_ids)
-    pc_obj = crud.get_pcs(db, skip=skip, limit=limit)
-    teams = crud.get_teams(db, skip=skip, limit=limit)
-    licenses = crud.get_licenses(db, skip=skip, limit=limit)
+    pc_obj = crud.get_pcs(db, skip=skip)
+    teams = crud.get_teams(db, skip=skip)
+    licenses = crud.get_licenses(db, skip=skip)
     if team == "all":
         team = ""
     if pc == "all":
