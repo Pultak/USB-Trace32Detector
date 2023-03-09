@@ -17,6 +17,7 @@
 #devices tr:hover {background-color: #ddd;}
 
 #devices th {
+  cursor: pointer;
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
@@ -54,6 +55,7 @@
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
+      <option value="/lauterbach-types-web">Lauterbach Names</option>
   </select>
   <input type="submit" value="OK">
 </form>
@@ -83,15 +85,15 @@
 </form>
     <table id="devices">
     <TR>
-        <TH>ID</TH>
-        <TH>PC Username</TH>
-        <TH>PC Hostname</TH>
-        <TH>Head Team</TH>
-        <TH>Body Team</TH>
-        <TH>Timestamp</TH>
-        <TH>Status</TH>
-        <TH>Lauterbach Head ID</TH>
-        <TH>Lauterbach Body ID</TH>
+        <TH onclick="sortTable(0)">ID</TH>
+        <TH onclick="sortTable(1)">PC Username</TH>
+        <TH onclick="sortTable(2)">PC Hostname</TH>
+        <TH onclick="sortTable(3)">Head Team</TH>
+        <TH onclick="sortTable(4)">Body Team</TH>
+        <TH onclick="sortTable(5)">Timestamp</TH>
+        <TH onclick="sortTable(6)">Status</TH>
+        <TH onclick="sortTable(7)">Lauterbach Head ID</TH>
+        <TH onclick="sortTable(8)">Lauterbach Body ID</TH>
     </TR>
     {% for log in logs %}
     <TR>
@@ -107,5 +109,44 @@
     </TR>
         {% endfor %}
 </table>
+
+<script>
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("devices");
+  switching = true;
+  dir = "asc";
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+</script>
 </body>
 </html>

@@ -25,7 +25,7 @@
   color: black;
 }
     </style>
-    <title>Pcs Details</title>
+    <title>Licenses Details</title>
 </head>
 <body>
 <div style='float:left;padding-right:20px'>
@@ -53,27 +53,25 @@
       <option value="/body-devices-web">Lauterbach Body Devices</option>
       <option value="/head-devices-web">Lauterbach Head Devices</option>
       <option value="/teams-web">Teams</option>
-      <option value="/pcs-web" selected>PCs</option>
+      <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
-      <option value="/lauterbach-types-web">Lauterbach Names</option>
+      <option value="/lauterbach-types-web" selected>Lauterbach Names</option>
+      <option value="/users-web">Users</option>
   </select>
   <input type="submit" value="OK">
 </form>
 <table id="devices">
     <TR>
         <TH onclick="sortTable(0)">ID</TH>
-        <TH onclick="sortTable(1)">Username</TH>
-        <TH onclick="sortTable(2)">Hostname</TH>
+        <TH onclick="sortTable(1)">Lauterbach Name</TH>
     </TR>
-    {% for pc in pcs %}
+    {% for lauterbach in lauterbachs %}
     <TR>
-        <TD class="ID">{{pc.id}}</TD>
-        <TD class="Username">{{pc.username}}</TD>
-        <TD class="Hostname">{{pc.hostname}}</TD>
+        <TD class="ID">{{lauterbach.id}}</TD>
+        <TD class="Lauterbach Name">{{lauterbach.name}}</TD>
     </TR>
     {% endfor %}
 </table>
-
 <script>
 function sortTable(n) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;

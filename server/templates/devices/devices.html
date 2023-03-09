@@ -17,6 +17,7 @@
 #devices tr:hover {background-color: #ddd;}
 
 #devices th {
+  cursor: pointer;
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
@@ -54,11 +55,12 @@
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
+      <option value="/lauterbach-types-web">Lauterbach Names</option>
       <option value="/users-web">Users</option>
   </select>
   <input type="submit" value="OK">
 </form>
-<form action="/devices-web" method="post">
+<!-- <form action="/devices-web" method="post">
     <label for="keyman_id">Keyman ID:</label>
     <input id="keyman_id" name="keyman_id" type="text" list="keyman_ids" value="{{keyman_val}}" placeholder="all" onClick="this.select();">
     <datalist id="keyman_ids">
@@ -88,20 +90,28 @@
         {% endfor %}
     </datalist>
   <input type="submit" value="Filter">
-</form>
+</form> -->
+<label for="myInput">Keyman ID:</label>
+<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="myInput" onkeyup="myFunction()" placeholder="Search for Keyman ID">
+<label for="myInput2">License Type:</label>
+<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="myInput2" onkeyup="myFunction()" placeholder="Search for license type">
+<label for="myInput3">License ID:</label>
+<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="myInput3" onkeyup="myFunction()" placeholder="Search for license ID">
+<label for="myInput4">Team:</label>
+<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="myInput4" onkeyup="myFunction()" placeholder="Search for team name">
 <table id="devices">
     <TR>
-        <TH>ID</TH>
-        <TH>Keyman ID</TH>
-        <TH>License Type</TH>
-        <TH>License ID</TH>
-        <TH>Inventory Number</TH>
-        <TH>Team</TH>
-        <TH>Last Username</TH>
-        <TH>Last Hostname</TH>
-        <TH>Last Detection</TH>
-        <TH>Status</TH>
-        <TH>Comment</TH>
+        <TH onclick="sortTable(0)">ID</TH>
+        <TH onclick="sortTable(1)">Keyman ID</TH>
+        <TH onclick="sortTable(2)">License Type</TH>
+        <TH onclick="sortTable(3)">License ID</TH>
+        <TH onclick="sortTable(4)">Inventory Number</TH>
+        <TH onclick="sortTable(5)">Team</TH>
+        <TH onclick="sortTable(6)">Last Username</TH>
+        <TH onclick="sortTable(7)">Last Hostname</TH>
+        <TH onclick="sortTable(8)">Last Detection</TH>
+        <TH onclick="sortTable(9)">Status</TH>
+        <TH onclick="sortTable(10)">Comment</TH>
     </TR>
     {% for dev in devices %}
     <TR>
@@ -119,5 +129,74 @@
     </TR>
     {% endfor %}
 </table>
+
+<script>
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("devices");
+  switching = true;
+  dir = "asc";
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+
+function myFunction() {
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("myInput");
+  input2 = document.getElementById("myInput2")
+  input3 = document.getElementById("myInput3")
+  input4 = document.getElementById("myInput4")
+  filter = input.value.toUpperCase();
+  filter2 = input2.value.toUpperCase();
+  filter3 = input3.value.toUpperCase();
+  filter4 = input4.value.toUpperCase();
+  table = document.getElementById("devices");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[1];
+    td2 = tr[i].getElementsByTagName("td")[2];
+    td3 = tr[i].getElementsByTagName("td")[4];
+    td4 = tr[i].getElementsByTagName("td")[5];
+    if (td && td2 && td3 && td4) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1 &&
+      td2.innerHTML.toUpperCase().indexOf(filter2) > -1 &&
+      td3.innerHTML.toUpperCase().indexOf(filter3) > -1 &&
+      td4.innerHTML.toUpperCase().indexOf(filter4)) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
 </body>
 </html>

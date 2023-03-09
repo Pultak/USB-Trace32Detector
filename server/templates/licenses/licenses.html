@@ -17,6 +17,7 @@
 #devices tr:hover {background-color: #ddd;}
 
 #devices th {
+  cursor: pointer;
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
@@ -49,20 +50,22 @@
       <option value="/logs-web">Vector Logs</option>
       <option value="/ldlogs-web">Lauterbach Logs</option>
       <option value="/devices-web">Keyman Devices</option>
-      <option value="/body-devices-web">Lauterbach Devices</option>
+      <option value="/body-devices-web">Lauterbach Body Devices</option>
+      <option value="/head-devices-web">Lauterbach Head Devices</option>
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web" selected>Licenses</option>
+      <option value="/lauterbach-types-web">Lauterbach Names</option>
       <option value="/users-web">Users</option>
   </select>
   <input type="submit" value="OK">
 </form>
 <table id="devices">
     <TR>
-        <TH>ID</TH>
-        <TH>License Type</TH>
-        <TH>License ID</TH>
-        <TH>Expiration Date</TH>
+        <TH onclick="sortTable(0)">ID</TH>
+        <TH onclick="sortTable(1)">License Type</TH>
+        <TH onclick="sortTable(2)">License ID</TH>
+        <TH onclick="sortTable(3)">Expiration Date</TH>
     </TR>
     {% for license in licenses %}
     <TR>
@@ -76,5 +79,44 @@
 <form action="/license-create" method="get">
     <input type="submit" value="Add">
 </form>
+
+<script>
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("devices");
+  switching = true;
+  dir = "asc";
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+</script>
 </body>
 </html>

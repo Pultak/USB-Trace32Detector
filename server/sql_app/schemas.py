@@ -217,6 +217,25 @@ class License(LicenseCreate):
         orm_mode = True
 
 
+class LicenseTypeBase(BaseModel):
+    name: str
+
+
+class LicenseTypeCreate(LicenseTypeBase):
+    pass
+
+
+class LicenseType(LicenseTypeCreate):
+    """
+    Class used for creating and reading licenses names entries
+    """
+    id: int
+    body_devices: List[BodyDevice] = []
+    head_devices: List[HeadDevice] = []
+    class Config:
+        orm_mode = True
+
+
 class USBTempBase(BaseModel):
     """
     Class used for reading data from keyman detecting client messages

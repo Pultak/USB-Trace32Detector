@@ -17,6 +17,7 @@
 #devices tr:hover {background-color: #ddd;}
 
 #devices th {
+  cursor: pointer;
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
@@ -54,13 +55,14 @@
       <option value="/teams-web" selected>Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
+      <option value="/lauterbach-types-web">Lauterbach Names</option>
   </select>
   <input type="submit" value="OK">
 </form>
 <table id="devices">
     <TR>
-        <TH>ID</TH>
-        <TH>Name</TH>
+        <TH onclick="sortTable(0)">ID</TH>
+        <TH onclick="sortTable(1)">Name</TH>
     </TR>
     {% for team in teams %}
     <TR>
@@ -69,5 +71,44 @@
     </TR>
     {% endfor %}
 </table>
+<script>
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("devices");
+  switching = true;
+  dir = "asc";
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+</script>
+
 </body>
 </html>

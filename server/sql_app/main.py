@@ -14,6 +14,7 @@ from sql_app.api.ld_logs_web import ldlogs_web
 from sql_app.api.bodydevices_web import body_device_web
 from sql_app.api.headdevices_web import head_device_web
 from sql_app.api.users_web import users
+from sql_app.api.licenses_names_web import lauterbach_types_web
 from fastapi import FastAPI
 
 
@@ -37,6 +38,7 @@ app.include_router(body_device_web)
 app.include_router(users)
 app.include_router(head_device_web)
 app.include_router(auth)
+app.include_router(lauterbach_types_web)
 
 '''
 if __name__ == "__main__":

@@ -17,6 +17,7 @@
 #devices tr:hover {background-color: #ddd;}
 
 #devices th {
+  cursor: pointer;
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
@@ -54,52 +55,35 @@
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
+      <option value="/lauterbach-types-web">Lauterbach Names</option>
       <option value="/users-web">Users</option>
   </select>
   <input type="submit" value="OK">
 </form>
-<form action="/head-devices-web" method="post">
-    <label for="body_id">Head Device ID:</label>
-    <input id="body_id" name="body_id" type="text" list="body_ids" value="{{body_val}}" placeholder="all" onClick="this.select();">
-    <datalist id="body_ids">
-        {% for dev in devs %}
-        <option value="{{dev.serial_number}}"></option>
-        {% endfor %}
-    </datalist>
-    <label for="lic_id">License ID:</label>
-    <input id="lic_id" name="lic_id" type="text" list="licenses_ids" value="{{lic_val}}" placeholder="all" onClick="this.select();">
-    <datalist id="licenses_ids">
-        {% for license in licenses %}
-        <option value="{{license.license_id}}"></option>
-        {% endfor %}
-    </datalist>
-    <label for="team">Team:</label>
-    <input id="team" name="team" type="text" list="teams" value="{{team_val}}" placeholder="all" onClick="this.select();">
-    <datalist id="teams">
-        {% for team in teams %}
-        <option value="{{team.name}}">{{team.name}}</option>
-        {% endfor %}
-    </datalist>
-  <input type="submit" value="Filter">
-</form>
+<label for="myInput">Head Device ID:</label>
+<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="myInput" onkeyup="myFunction()" placeholder="Search for HeadDevice ID">
+<label for="myInput2">License Name:</label>
+<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="myInput2" onkeyup="myFunction()" placeholder="Search for LB name">
+<label for="myInput3">Team:</label>
+<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="myInput3" onkeyup="myFunction()" placeholder="Search for team name">
 <table id="devices">
     <TR>
-        <TH>ID</TH>
-        <TH>Lauterbach Head ID</TH>
-        <TH>License ID</TH>
-        <TH>Inventory Number</TH>
-        <TH>Team</TH>
-        <TH>Last Username</TH>
-        <TH>Last Hostname</TH>
-        <TH>Last Detection</TH>
-        <TH>Status</TH>
-        <TH>Comment</TH>
+        <TH onclick="sortTable(0)">ID</TH>
+        <TH onclick="sortTable(1)">Lauterbach Head ID</TH>
+        <TH onclick="sortTable(2)">Lauterbach Name</TH>
+        <TH onclick="sortTable(3)">Inventory Number</TH>
+        <TH onclick="sortTable(4)">Team</TH>
+        <TH onclick="sortTable(5)">Last Username</TH>
+        <TH onclick="sortTable(6)">Last Hostname</TH>
+        <TH onclick="sortTable(7)">Last Detection</TH>
+        <TH onclick="sortTable(8)">Status</TH>
+        <TH onclick="sortTable(9)">Comment</TH>
     </TR>
     {% for dev in devices %}
     <TR>
-        <TD class="ID"><a href="/head-device-license/{{dev['device'].id}}">{{dev['device'].id}}</a></TD>
+        <TD class="ID"><a href="/head-device-lbtype/{{dev['device'].id}}">{{dev['device'].id}}</a></TD>
         <TD class="Lauterbach Head ID">{{dev['device'].serial_number}}</TD>
-        <TD class="License ID">{{dev['license'].license_id}}</TD>
+        <TD class="Lauterbach Name">{{dev['ltype'].name}}</TD>
         <TD class="Inventory Number">{{dev['device'].inventory_number}}</TD>
         <TD class="Team">{{dev['device'].team.name}}</TD>
         <TD class="Last Username">{{dev['log'].ldpc.username}}</TD>
@@ -110,5 +94,70 @@
     </TR>
     {% endfor %}
 </table>
+
+<script>
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("devices");
+  switching = true;
+  dir = "asc";
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount ++;
+    } else {
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+
+function myFunction() {
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("myInput");
+  input2 = document.getElementById("myInput2")
+  input3 = document.getElementById("myInput3")
+  filter = input.value.toUpperCase();
+  filter2 = input2.value.toUpperCase();
+  filter3 = input3.value.toUpperCase();
+  table = document.getElementById("devices");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[1];
+    td2 = tr[i].getElementsByTagName("td")[2];
+    td3 = tr[i].getElementsByTagName("td")[4];
+    if (td && td2 && td3) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1 &&
+      td2.innerHTML.toUpperCase().indexOf(filter2) > -1 &&
+      td3.innerHTML.toUpperCase().indexOf(filter3) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
 </body>
 </html>
