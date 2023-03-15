@@ -8,14 +8,11 @@
 <h6>
     <p>Serial Number: {{device.serial_number}}</p>
 </h6>
-<h4>
-    License ID: {{device.license.license_id}}
-</h4>
-<form action="/body-devices-web-lic/{{device.id}}" method="post">
-  <label for="lic">Licenses:</label>
-  <select id="lic" name="lic">
-      {% for license in licenses %}
-    <option value={{license.id}}>{{license.license_id}}</option>
+<form action="/body-devices-web-lbt/{{device.id}}" method="post">
+  <label for="ltype">Lauterbach Types:</label>
+  <select id="ltype" name="ltype">
+      {% for ltype in ltypes %}
+    <option value={{ltype.id}}>{{ltype.name}}</option>
       {% endfor %}
   </select>
   <input type="submit" value="Connect">

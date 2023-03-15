@@ -507,14 +507,14 @@ def create_body_device(db: Session, log: schemas.BodyDeviceTemp):
     return db_body
 
 
-def update_bodydevice_license(db: Session, device_id: int, lic_id: int):
+def update_bodydevice_lbt(db: Session, device_id: int, l_id: int):
     """
     Updates body devices license with one given by user
     """
     old_dev = get_body_device(db, device_id)
-    lic = get_license(db, lic_id)
+    ltype = get_lauterbach_type(db, l_id)
     new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': old_dev.inventory_number,
-           'comment': old_dev.comment, 'team_id': old_dev.team_id, 'license_id': lic.id}
+           'comment': old_dev.comment, 'team_id': old_dev.team_id, 'license_type_id': ltype.id}
     for key, value in new.items():
         setattr(old_dev, key, value)
     db.commit()
@@ -529,7 +529,7 @@ def update_bodydevice_team(db: Session, device_id: int, team_id: int):
     old_dev = get_body_device(db, device_id)
     team = get_team(db, team_id)
     new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': old_dev.inventory_number,
-           'comment': old_dev.comment, 'team_id': team.id, 'license_id': old_dev.license_id}
+           'comment': old_dev.comment, 'team_id': team.id, 'license_type_id': old_dev.license_type_id}
     for key, value in new.items():
         setattr(old_dev, key, value)
     db.commit()
@@ -543,7 +543,7 @@ def update_bodydevice_inv(db: Session, device_id: int, dev_inv: str):
     """
     old_dev = get_body_device(db, device_id)
     new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': dev_inv,
-           'comment': old_dev.comment, 'team_id': old_dev.team_id, 'license_id': old_dev.license_id}
+           'comment': old_dev.comment, 'team_id': old_dev.team_id, 'license_type_id': old_dev.license_type_id}
     for key, value in new.items():
         setattr(old_dev, key, value)
     db.commit()
@@ -557,7 +557,7 @@ def update_bodydevice_comm(db: Session, device_id: int, comm: str):
     """
     old_dev = get_body_device(db, device_id)
     new = {'id': old_dev.id, 'serial_number': old_dev.serial_number, 'inventory_number': old_dev.inventory_number,
-           'comment': comm, 'team_id': old_dev.team_id, 'license_id': old_dev.license_id}
+           'comment': comm, 'team_id': old_dev.team_id, 'license_type_id': old_dev.license_type_id}
     for key, value in new.items():
         setattr(old_dev, key, value)
     db.commit()
@@ -565,7 +565,7 @@ def update_bodydevice_comm(db: Session, device_id: int, comm: str):
     return old_dev
 
 
-def update_headdevice_license(db: Session, device_id: int, l_type: int):
+def update_headdevice_lbtype(db: Session, device_id: int, l_type: int):
     """
     Updates head devices license with one given by user
     """

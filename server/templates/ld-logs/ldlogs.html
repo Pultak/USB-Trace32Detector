@@ -55,12 +55,12 @@
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
-      <option value="/lauterbach-types-web">Lauterbach Names</option>
+      <option value="/lauterbach-types-web">Lauterbach Types</option>
       <option value="/users-web">Users</option>
   </select>
   <input type="submit" value="OK">
 </form>
-<form action="/ldlogs-web" method="post">
+<!-- <form action="/ldlogs-web" method="post">
   <label for="pc">PC:</label>
   <input id="pc" name="pc" type="text" list="pcs" value="{{pc_val}}" placeholder="all" onClick="this.select();">
     <datalist id="pcs">
@@ -83,7 +83,14 @@
         {% endfor %}
     </datalist>
   <input type="submit" value="Filter">
-</form>
+</form> -->
+<label for="myInput">PC:</label>
+<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="myInput" onkeyup="myFunction()" placeholder="Search for pc name">
+<label for="myInput2">Team:</label>
+<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="myInput2" onkeyup="myFunction()" placeholder="Search for team name">
+<label for="myInput3">Lauterbach Type:</label>
+<input type="text" onClick="this.setSelectionRange(0, this.value.length)" id="myInput3" onkeyup="myFunction()" placeholder="Search for lauterbach type">
+
     <table id="devices">
     <TR>
         <TH onclick="sortTable(0)">ID</TH>
@@ -95,19 +102,33 @@
         <TH onclick="sortTable(6)">Status</TH>
         <TH onclick="sortTable(7)">Lauterbach Head ID</TH>
         <TH onclick="sortTable(8)">Lauterbach Body ID</TH>
+        <TH onclick="sortTable(9)">Head Lauterbach Type</TH>
+        <TH onclick="sortTable(10)">Body Lauterbach Type</TH>
     </TR>
     {% for log in logs %}
-    <TR>
-        <TD class="ID">{{log.id}}</TD>
-        <TD class="Username">{{log.ldpc.username}}</TD>
-        <TD class="Hostname">{{log.ldpc.hostname}}</TD>
-        <TD class="Head Team">{{log.head_device.team.name}}</TD>
-        <TD class="Body Team">{{log.body_device.team.name}}</TD>
-        <TD class="Timestamp">{{log.timestamp}}</TD>
-        <TD class="Status">{{log.status}}</TD>
-        <TD class="HeadDeviceSerialNumber">{{log.head_device.serial_number}}</TD>
-        <TD class="BodyDeviceSerialNumber">{{log.body_device.serial_number}}</TD>
-    </TR>
+        <TR>
+            <TD class="ID">{{log.id}}</TD>
+            <TD class="Username">{{log.ldpc.username}}</TD>
+            <TD class="Hostname">{{log.ldpc.hostname}}</TD>
+            <TD class="Head Team">{{log.head_device.team.name}}</TD>
+            <TD class="Body Team">{{log.body_device.team.name}}</TD>
+            <TD class="Timestamp">{{log.timestamp}}</TD>
+            <TD class="Status">{{log.status}}</TD>
+            <TD class="HeadDeviceSerialNumber">{{log.head_device.serial_number}}</TD>
+            <TD class="BodyDeviceSerialNumber">{{log.body_device.serial_number}}</TD>
+
+            {% if log.head_device.hlicense_t == None %}
+                <TD class="Head Lauterbach Type">NONE</TD>
+            {% else %}
+                <TD class="Head Lauterbach Type">{{log.head_device.hlicense_t.name}}</TD>
+            {% endif %}
+
+            {% if log.body_device.blicense_t == None %}
+                <TD class="Body Lauterbach Type">NONE</TD>
+            {% else %}
+                <TD class="Body Lauterbach Type">{{log.body_device.blicense_t.name}}</TD>
+            {% endif %}
+        </TR>
     {% endfor %}
 </table>
 
@@ -144,6 +165,34 @@ function sortTable(n) {
       if (switchcount == 0 && dir == "asc") {
         dir = "desc";
         switching = true;
+      }
+    }
+  }
+}
+
+function myFunction() {
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("myInput");
+  input2 = document.getElementById("myInput2")
+  input3 = document.getElementById("myInput3")
+  filter = input.value.toUpperCase();
+  filter2 = input2.value.toUpperCase();
+  filter3 = input3.value.toUpperCase();
+  table = document.getElementById("devices");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[1];
+    td2 = tr[i].getElementsByTagName("td")[3];
+    td22 = tr[i].getElementsByTagName("td")[4];
+    td3 = tr[i].getElementsByTagName("td")[9];
+    td33 = tr[i].getElementsByTagName("td")[10];
+    if (td && td2 && td3 && td22 && td33) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1 &&
+      (td2.innerHTML.toUpperCase().indexOf(filter2) > -1 || td22.innerHTML.toUpperCase().indexOf(filter2) > -1) &&
+      (td3.innerHTML.toUpperCase().indexOf(filter3) > -1 || td33.innerHTML.toUpperCase().indexOf(filter3) > -1)) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
       }
     }
   }

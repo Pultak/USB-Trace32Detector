@@ -40,66 +40,59 @@ async def read_devices(request: Request, skip: int = 0, db: Session = Depends(ge
 
     device_dict = []
     devices = crud.get_body_devices(db, skip=skip)
-    teams = crud.get_teams(db, skip=skip)
     for dev in devices:
-        lic = crud.get_license(db, dev.license_id)
-        device_dict.append({"device": dev, "license": lic, "log": dev.b_logs[len(dev.b_logs) - 1]})
+        ltype = crud.get_lauterbach_type(db, dev.license_type_id)
+        device_dict.append({"device": dev, "ltype": ltype, "log": dev.b_logs[len(dev.b_logs) - 1]})
     licenses = crud.get_licenses(db, skip=skip)
     if current_user == "admin":
-        return templates.TemplateResponse("body_devices.html", {"request": request, "devices": device_dict,
-                                                                "devs": devices, "teams": teams, "licenses": licenses,
-                                                                "user": current_user, "body_val": "", "lic_val": "",
-                                                                "team_val": ""})
+        return templates.TemplateResponse("body_devices.html", {"request": request, "devices": device_dict})
     else:
         current_user = "guest"
-        return templates.TemplateResponse("body_devices_normal.html", {"request": request, "devices": device_dict,
-                                                                "devs": devices, "teams": teams, "licenses": licenses,
-                                                                "user": current_user, "body_val": "", "lic_val": "",
-                                                                "team_val": ""})
+        return templates.TemplateResponse("body_devices_normal.html", {"request": request, "devices": device_dict})
 
 
-@body_device_web.post("/body-devices-web", response_class=HTMLResponse)
-async def filter_devices(request: Request, skip: int = 0,
-                         body_id: str = Form("all"), lic_id: str = Form("all"), team: str = Form("all"),
-                         db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
-    """
-    Endpoint used for filtering body devices by user given inputs. returns html template with only
-    body devices that has attributes defined by user input
-    """
-    Authorize.jwt_optional()
-    current_user = Authorize.get_jwt_subject()
-    device_dict = []
-    devices_f = crud.get_filtered_bodydevices(db, body_id, lic_id, team)
-    ids = []
-    for d in devices_f:
-        ids.append(d[0])
-    devices = crud.get_bodydevices_with_ids(db, ids)
-    teams = crud.get_teams(db, skip=skip)
-    for dev in devices:
-        lic = crud.get_license(db, dev.license_id)
-        device_dict.append({"device": dev, "license": lic, "log": dev.b_logs[len(dev.b_logs) - 1]})
-    licenses = crud.get_licenses(db, skip=skip)
-    if body_id == "all":
-        body_id = ""
-    if lic_id == "all":
-        lic_id = ""
-    if team == "all":
-        team = ""
-    if current_user == "admin":
-        return templates.TemplateResponse("body_devices.html", {"request": request, "devices": device_dict,
-                                                                "devs": devices, "teams": teams, "licenses": licenses,
-                                                                "user": current_user, "body_val": body_id, "lic_val": lic_id,
-                                                                "team_val": team})
-    else:
-        current_user = "guest"
-        return templates.TemplateResponse("body_devices_normal.html", {"request": request, "devices": device_dict,
-                                                                       "devs": devices, "teams": teams,
-                                                                       "licenses": licenses,
-                                                                       "user": current_user, "body_val": body_id, "lic_val": lic_id,
-                                                                       "team_val": team})
+# @body_device_web.post("/body-devices-web", response_class=HTMLResponse)
+# async def filter_devices(request: Request, skip: int = 0,
+#                          body_id: str = Form("all"), lic_id: str = Form("all"), team: str = Form("all"),
+#                          db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
+#     """
+#     Endpoint used for filtering body devices by user given inputs. returns html template with only
+#     body devices that has attributes defined by user input
+#     """
+#     Authorize.jwt_optional()
+#     current_user = Authorize.get_jwt_subject()
+#     device_dict = []
+#     devices_f = crud.get_filtered_bodydevices(db, body_id, lic_id, team)
+#     ids = []
+#     for d in devices_f:
+#         ids.append(d[0])
+#     devices = crud.get_bodydevices_with_ids(db, ids)
+#     teams = crud.get_teams(db, skip=skip)
+#     for dev in devices:
+#         lic = crud.get_license(db, dev.license_id)
+#         device_dict.append({"device": dev, "license": lic, "log": dev.b_logs[len(dev.b_logs) - 1]})
+#     licenses = crud.get_licenses(db, skip=skip)
+#     if body_id == "all":
+#         body_id = ""
+#     if lic_id == "all":
+#         lic_id = ""
+#     if team == "all":
+#         team = ""
+#     if current_user == "admin":
+#         return templates.TemplateResponse("body_devices.html", {"request": request, "devices": device_dict,
+#                                                                 "devs": devices, "teams": teams, "licenses": licenses,
+#                                                                 "user": current_user, "body_val": body_id, "lic_val": lic_id,
+#                                                                 "team_val": team})
+#     else:
+#         current_user = "guest"
+#         return templates.TemplateResponse("body_devices_normal.html", {"request": request, "devices": device_dict,
+#                                                                        "devs": devices, "teams": teams,
+#                                                                        "licenses": licenses,
+#                                                                        "user": current_user, "body_val": body_id, "lic_val": lic_id,
+#                                                                        "team_val": team})
 
 
-@body_device_web.get("/body-device-license/{device_id}", response_class=HTMLResponse)
+@body_device_web.get("/body-device-lbtype/{device_id}", response_class=HTMLResponse)
 async def connect_dev_lic(request: Request, device_id: int, db: Session = Depends(get_db),
                           Authorize: AuthJWT = Depends()):
     """
@@ -111,28 +104,24 @@ async def connect_dev_lic(request: Request, device_id: int, db: Session = Depend
     if current_user != "admin":
         return RedirectResponse(url=f"/logs-web", status_code=303)
     device = crud.get_body_device(db, device_id)
-    licenses = crud.get_licenses(db, 0)
-    lic_left = []
-    for lic in licenses:
-        if lic != device.license:
-            lic_left.append(lic)
+    ltypes = crud.get_lauterbach_types(db)
     teams = crud.get_teams(db, 0)
-    return templates.TemplateResponse("body_device_license.html",
-                                      {"request": request, "device": device, "licenses": lic_left, "teams": teams})
+    return templates.TemplateResponse("body_device_lbtype.html",
+                                      {"request": request, "device": device, "ltypes": ltypes, "teams": teams})
 
 
-@body_device_web.post("/body-devices-web-lic/{device_id}")
-async def connect_post(device_id: int, lic: str = Form(...), db: Session = Depends(get_db),
+@body_device_web.post("/body-devices-web-lbt/{device_id}")
+async def connect_post(device_id: int, ltype: str = Form(...), db: Session = Depends(get_db),
                        Authorize: AuthJWT = Depends()):
     """
-    Endpoint called from template from body_device_license.html template. Connects body device with license
+    Endpoint called from template from body_device_lbtype.html template. Connects body device with license
     and redirects to body-devices-web endpoint
     """
     Authorize.jwt_optional()
     current_user = Authorize.get_jwt_subject()
     if current_user != "admin":
         return RedirectResponse(url=f"/logs-web", status_code=303)
-    crud.update_bodydevice_license(db, device_id, int(lic))
+    crud.update_bodydevice_lbt(db, device_id, int(ltype))
     return RedirectResponse(url=f"/body-devices-web", status_code=303)
 
 

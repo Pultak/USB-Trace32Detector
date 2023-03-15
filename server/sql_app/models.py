@@ -57,7 +57,7 @@ class License(Base):
 
     # relationships for foreign keys, thus connecting table with devices table
     devices = relationship("DeviceLicense", back_populates="licenses")
-    bodydevice_lic = relationship("BodyDevice", back_populates="license")
+    # bodydevice_lic = relationship("BodyDevice", back_populates="license")
     # headdevice_lic = relationship("HeadDevice", back_populates="license")
 
 
@@ -69,7 +69,8 @@ class LauterbachType(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=True)
 
-    headdevice_lbtype = relationship("HeadDevice", back_populates="license_t")
+    headdevice_lbtype = relationship("HeadDevice", back_populates="hlicense_t")
+    bodydevice_lbtype = relationship("BodyDevice", back_populates="blicense_t")
 
 
 class DeviceLicense(Base):
@@ -135,7 +136,7 @@ class HeadDevice(Base):
 
     # relationships for foreign keys, thus connecting table with ld_logs table
     h_logs = relationship("LDLog", back_populates="head_device")
-    license_t = relationship("LauterbachType", back_populates="headdevice_lbtype")
+    hlicense_t = relationship("LauterbachType", back_populates="headdevice_lbtype")
     team = relationship("Team", back_populates="head_devices")
 
 
@@ -151,11 +152,11 @@ class BodyDevice(Base):
     comment = Column(String, index=True, nullable=True)
 
     team_id = Column(Integer, ForeignKey("teams.id"))
-    license_id = Column(Integer, ForeignKey("licenses.id"))
+    license_type_id = Column(Integer, ForeignKey("lauterbach_types.id"))
 
     # relationships for foreign keys, thus connecting table with ld_logs table
     b_logs = relationship("LDLog", back_populates="body_device")
-    license = relationship("License", back_populates="bodydevice_lic")
+    blicense_t = relationship("LauterbachType", back_populates="bodydevice_lbtype")
     team = relationship("Team", back_populates="body_devices")
 
 

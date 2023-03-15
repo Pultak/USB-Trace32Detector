@@ -55,7 +55,7 @@
       <option value="/teams-web">Teams</option>
       <option value="/pcs-web">PCs</option>
       <option value="/licenses-web">Licenses</option>
-      <option value="/lauterbach-types-web">Lauterbach Names</option>
+      <option value="/lauterbach-types-web">Lauterbach Types</option>
   </select>
   <input type="submit" value="OK">
 </form>
@@ -114,7 +114,7 @@
     </TR>
     {% for dev in devices %}
     <TR>
-        <TD class="ID"><a href="/device-license/{{dev['device'].id}}">{{dev['device'].id}}</a></TD>
+        <TD class="ID">{{dev['device'].id}}</TD>
         <TD class="Serial Number">{{dev['device'].serial_number}}</TD>
         <TD class="License">{{dev['license'].name}}</TD>
         <TD class="License ID">{{dev['license'].license_id}}</TD>
@@ -188,7 +188,7 @@ function myFunction() {
       if (td.innerHTML.toUpperCase().indexOf(filter) > -1 &&
       td2.innerHTML.toUpperCase().indexOf(filter2) > -1 &&
       td3.innerHTML.toUpperCase().indexOf(filter3) > -1 &&
-      td4.innerHTML.toUpperCase().indexOf(filter4)) {
+      td4.innerHTML.toUpperCase().indexOf(filter4) > -1) {
         tr[i].style.display = "";
       } else {
         tr[i].style.display = "none";

@@ -105,7 +105,7 @@ async def connect_dev_lic(request: Request, device_id: int, db: Session = Depend
     device = crud.get_head_device(db, device_id)
     ltypes = crud.get_lauterbach_types(db)
     teams = crud.get_teams(db, 0)
-    return templates.TemplateResponse("headlicense.html",
+    return templates.TemplateResponse("head_device_lbtype.html",
                                       {"request": request, "device": device, "ltypes": ltypes, "teams": teams})
 
 
@@ -119,7 +119,7 @@ async def connect_post(device_id: int, ltype: str = Form(...), db: Session = Dep
     current_user = Authorize.get_jwt_subject()
     if current_user != "admin":
         return RedirectResponse(url=f"/logs-web", status_code=303)
-    crud.update_headdevice_license(db, device_id, int(ltype))
+    crud.update_headdevice_lbtype(db, device_id, int(ltype))
     return RedirectResponse(url=f"/head-devices-web", status_code=303)
 
 

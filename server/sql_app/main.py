@@ -14,7 +14,7 @@ from sql_app.api.ld_logs_web import ldlogs_web
 from sql_app.api.bodydevices_web import body_device_web
 from sql_app.api.headdevices_web import head_device_web
 from sql_app.api.users_web import users
-from sql_app.api.licenses_names_web import lauterbach_types_web
+from sql_app.api.licenses_types_web import lauterbach_types_web
 from fastapi import FastAPI
 
 

@@ -210,8 +210,6 @@ class License(LicenseCreate):
     """
     id: int
     devices: List[DeviceLicense] = []
-    head_devices: List[HeadDevice] = []
-    body_devices: List[BodyDevice] = []
 
     class Config:
         orm_mode = True
