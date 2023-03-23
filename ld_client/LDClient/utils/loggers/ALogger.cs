@@ -1,14 +1,17 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 
-namespace LDClient.utils.loggers {
-
+namespace LDClient.utils.loggers
+{
     /// <summary>
     /// This class implements all abstract functions of the logger.
     /// It contains all functions (error, info, debug) that are present in any other standard logger.
     /// Class is used as singleton design pattern
     /// </summary>
-    public abstract class ALogger : IDisposable {
-
+    public abstract class ALogger : IDisposable
+    {
         /// <summary>
         /// Logger verbosity type identifies how much information should be actually logged
         /// </summary>
@@ -46,16 +49,18 @@ namespace LDClient.utils.loggers {
         /// Instance of the default logger initialized with the lazy binding mechanism
         /// </summary>
         private static readonly Lazy<ALogger> LazyLog = new(()
-            => {
-                switch (Program.Config.LogFlowType) {
-                    case LogFlow.File:
-                        return new FileLogger();
-                    case LogFlow.Console:
-                    default:
-                        return new ConsoleLogger();
+            =>
+        {
+            switch (Program.Config.LogFlowType)
+            {
+                case LogFlow.File:
+                    return new FileLogger();
+                case LogFlow.Console:
+                default:
+                    return new ConsoleLogger();
 
-                }
             }
+        }
         );
 
         /// <summary>
@@ -66,7 +71,8 @@ namespace LDClient.utils.loggers {
         /// <summary>
         /// Singleton constructor that initialized and starts the logger with arguments parsed by the config loader
         /// </summary>
-        protected ALogger() {
+        protected ALogger()
+        {
             _verbosity = Program.Config.LogVerbosityType;
             _logFlow = Program.Config.LogFlowType;
             _loggingThread = new Thread(ProcessQueue) { IsBackground = true };
@@ -77,7 +83,8 @@ namespace LDClient.utils.loggers {
         /// Creates new log with Info identifier
         /// </summary>
         /// <param name="message">Desired message to be logged</param>
-        public void Info(string message) {
+        public void Info(string message)
+        {
             Log(message, LogType.Info);
         }
 
@@ -85,7 +92,8 @@ namespace LDClient.utils.loggers {
         /// Creates new log with Debug identifier
         /// </summary>
         /// <param name="message">Desired message to be logged</param>
-        public void Debug(string message) {
+        public void Debug(string message)
+        {
             Log(message, LogType.Debug);
         }
 
@@ -93,7 +101,8 @@ namespace LDClient.utils.loggers {
         /// Creates new log with Error identifier
         /// </summary>
         /// <param name="message">Desired message to be logged</param>
-        public void Error(string message) {
+        public void Error(string message)
+        {
             Log(message, LogType.Error);
         }
 
@@ -101,8 +110,10 @@ namespace LDClient.utils.loggers {
         /// Creates new log from the catched exception
         /// </summary>
         /// <param name="e">catched exception tha should be logged</param>
-        public void Error(Exception e) {
-            if (_verbosity != LogVerbosity.None) {
+        public void Error(Exception e)
+        {
+            if (_verbosity != LogVerbosity.None)
+            {
                 Log(UnwrapExceptionMessages(e), LogType.Error);
             }
         }
@@ -112,7 +123,7 @@ namespace LDClient.utils.loggers {
         /// </summary>
         /// <returns></returns>
         public override string ToString() => $"Logger settings: [Type: {this.GetType().Name}, Verbosity: {_verbosity}, ";
-        
+
         protected abstract void CreateLog(string message);
 
         /// <summary>
@@ -123,7 +134,8 @@ namespace LDClient.utils.loggers {
         /// <summary>
         /// Function stops the logger thread
         /// </summary>
-        public void Dispose() {
+        public void Dispose()
+        {
             _terminate.Set();
             _loggingThread.Join();
         }
@@ -144,12 +156,14 @@ namespace LDClient.utils.loggers {
         /// <returns></returns>
         protected virtual string UnwrapExceptionMessages(Exception? ex) =>
             ex == null ? string.Empty : $"{ex}, Inner exception: {UnwrapExceptionMessages(ex.InnerException)} ";
-        
+
         /// <summary>
         /// Function that periodically processes message queue
         /// </summary>
-        private void ProcessQueue() {
-            while (true) {
+        private void ProcessQueue()
+        {
+            while (true)
+            {
                 _waiting.Set();
                 //wait until there is new item in the queue or until termination invoked
                 var i = WaitHandle.WaitAny(new WaitHandle[] { _hasNewItems, _terminate });
@@ -159,12 +173,14 @@ namespace LDClient.utils.loggers {
                 _waiting.Reset();
 
                 Queue<Action> queueCopy;
-                lock (_queue) {
+                lock (_queue)
+                {
                     queueCopy = new Queue<Action>(_queue);
                     _queue.Clear();
                 }
 
-                foreach (var log in queueCopy) {
+                foreach (var log in queueCopy)
+                {
                     log();
                 }
             }
@@ -175,14 +191,16 @@ namespace LDClient.utils.loggers {
         /// </summary>
         /// <param name="message"></param>
         /// <param name="logType"></param>
-        private void Log(string message, LogType logType) {
+        private void Log(string message, LogType logType)
+        {
             if (string.IsNullOrEmpty(message))
                 return;
 
             var logRow = ComposeLogRow(message, logType);
             System.Diagnostics.Debug.WriteLine(logRow);
 
-            if (_verbosity == LogVerbosity.Full) {
+            if (_verbosity == LogVerbosity.Full)
+            {
                 lock (_queue)
                     _queue.Enqueue(() => CreateLog(logRow));
 

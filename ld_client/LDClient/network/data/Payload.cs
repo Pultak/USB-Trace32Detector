@@ -3,13 +3,14 @@ using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace LDClient.network.data {
-    
+namespace LDClient.network.data
+{
     /// <summary>
     /// This class represents a single payload that is sent to the server.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    public class Payload {
+    public class Payload
+    {
 
         /// <summary>
         /// Username of the currently logged user.
@@ -39,19 +40,20 @@ namespace LDClient.network.data {
         /// Information about the body of the debugger.
         /// </summary>
         [JsonPropertyName("body_device")]
-        public DebuggerInfo?  BodyDevice { get; set; }
-        
+        public DebuggerInfo? BodyDevice { get; set; }
+
         /// <summary>
         /// Status of the debugger (connected/disconnected).
         /// </summary>
         [JsonPropertyName("status")]
         public ConnectionStatus Status { get; set; }
-        
+
         /// <summary>
         /// Returns a string representation of the payload.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() {
+        public override string ToString()
+        {
             return ParseToJson(this);
         }
 
@@ -59,7 +61,8 @@ namespace LDClient.network.data {
         /// Parses (converts) the payload into JSON format.
         /// </summary>
         /// <returns></returns>
-        public string ParseToJson() {
+        public string ParseToJson()
+        {
             return Payload.ParseToJson(this);
         }
 
@@ -68,9 +71,11 @@ namespace LDClient.network.data {
         /// </summary>
         /// <param name="payload">payload to be serialized into JSON</param>
         /// <returns></returns>
-        public static string ParseToJson(Payload payload) {
+        public static string ParseToJson(Payload payload)
+        {
             // Create options for serialization.
-            var options = new JsonSerializerOptions {
+            var options = new JsonSerializerOptions
+            {
                 Converters = {
                     new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                 }

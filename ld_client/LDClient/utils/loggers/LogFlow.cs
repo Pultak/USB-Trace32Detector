@@ -1,8 +1,10 @@
-﻿namespace LDClient.utils.loggers {
+﻿namespace LDClient.utils.loggers
+{
     /// <summary>
     /// This enum specifies all possible types of loggers
     /// </summary>
-    public enum LogFlow {
+    public enum LogFlow
+    {
         /// <summary>
         /// Console logger
         /// </summary>

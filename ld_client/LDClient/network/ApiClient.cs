@@ -1,19 +1,23 @@
-﻿using System.Diagnostics;
-using System.Net.Http.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 using DiskQueue;
 using LDClient.network.data;
 
-namespace LDClient.network {
-    
+namespace LDClient.network
+{
     /// <summary>
     /// This class implements IApiClient which is an interface
     /// defining all the functionality required from an API client.
     /// </summary>
-    public sealed class ApiClient : IApiClient {
-        
+    public sealed class ApiClient : IApiClient
+    {
+
         /// <summary>
         /// Instance of an HTTP client the is used to send data off to the server 
         /// </summary>
@@ -28,12 +32,12 @@ namespace LDClient.network {
         /// Number of milliseconds after which the class tries to resend failed payloads to the server.
         /// </summary>
         private readonly uint _retryPeriod;
-        
+
         /// <summary>
         /// Maximum number of entries (payloads) that can be sent to the server within one period (_retryPeriod).
         /// </summary>
         private readonly uint _maxEntries;
-        
+
         /// <summary>
         /// Maximum number of failed payloads to be kept in the file-based cache (FIFO - when the maximum number is reached)
         /// </summary>
@@ -50,10 +54,11 @@ namespace LDClient.network {
         /// <param name="maxEntries">maximum number of entries (payloads) that can be sent to the server within one period</param>
         /// <param name="maxRetries">maximum number of failed payloads to be kept in the file-based cache</param>
         /// <param name="cache">instance of a persistent cache for storing failed payloads</param>
-        public ApiClient(string url, uint port, string path, uint retryPeriod, uint maxEntries, uint maxRetries, IPersistentQueue cache) {
+        public ApiClient(string url, uint port, string path, uint retryPeriod, uint maxEntries, uint maxRetries, IPersistentQueue cache)
+        {
             // Construct the entire path to the API.
             var uri = $"{url}:{port}{path}";
-            
+
             // Store the values into class variables.
             _retryPeriod = retryPeriod;
             _maxEntries = maxEntries;
@@ -69,24 +74,28 @@ namespace LDClient.network {
         /// Sends a payload to the server (API).
         /// </summary>
         /// <param name="payload">instance of a payload to be sent off to the server</param>
-        public async Task SendPayloadAsync(Payload payload) {
+        public async Task SendPayloadAsync(Payload payload)
+        {
             Program.DefaultLogger.Debug("SendPayloadAsync called.");
-            try {
+            try
+            {
                 // Create an instance of Stopwatch (to measure how much
                 // the action took).
                 Stopwatch stopWatch = new();
-                
+
                 // Send the payload to the server.
                 stopWatch.Start();
                 var response = await _client.PostAsJsonAsync(payload);
                 stopWatch.Stop();
-                
+
                 // Create a log message.
                 CreateRequestLog(payload, response, stopWatch.ElapsedMilliseconds);
-                
+
                 // Make sure the request was successful.
                 response.EnsureSuccessStatusCode();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Program.DefaultLogger.Error($"Failed to send {payload} to the server. Due to: {e.Message}");
                 CachePayload(payload);
             }
@@ -98,55 +107,63 @@ namespace LDClient.network {
         /// <param name="payload">payload involved in the process of sending data to the server</param>
         /// <param name="response">response from the server</param>
         /// <param name="durationMs">duration in milliseconds (how much time it took to send off the payload)</param>
-        private static void CreateRequestLog(Payload payload, HttpResponseMessage response, long durationMs) {
+        private static void CreateRequestLog(Payload payload, HttpResponseMessage response, long durationMs)
+        {
             // Create the log message.
-            var responseToLog = new {
+            var responseToLog = new
+            {
                 statusCode = response.StatusCode,
                 content = response.Content,
                 headers = response.Headers,
                 errorMessage = response.RequestMessage,
             };
-            
+
             // Log the message using the logger defined in Program (main class).
             Program.DefaultLogger.Info($"Request completed in {durationMs} ms,\n" +
                                        $"Request body: {payload},\n" +
                                        $"Response: {responseToLog}");
         }
-        
+
         /// <summary>
         /// Resends unsuccessful payloads to the server.
         /// </summary>
-        private async Task ResendPayloadsAsync() {
+        private async Task ResendPayloadsAsync()
+        {
             // Calculate the maximum number of payloads to be sent to the server.
             var numberOfPayloadsToResend = Math.Min(_maxRetries, _cache.EstimatedCountOfItemsInQueue);
-            
+
             // Create a list for those payloads
             var payloads = new List<Payload>();
-            
+
             // Retrieve the payloads from the cache.
-            if (numberOfPayloadsToResend > 0) {
+            if (numberOfPayloadsToResend > 0)
+            {
                 // Open up a session to the cache.
                 using var session = _cache.OpenSession();
-                
+
                 // Pop out payloads, deserialize them, and store them into the list.
-                for (var i = 0; i < numberOfPayloadsToResend; i++) {
+                for (var i = 0; i < numberOfPayloadsToResend; i++)
+                {
                     var rawBytes = session.Dequeue();
                     var payload = JsonSerializer.Deserialize<Payload>(rawBytes);
-                    if (payload is not null) {
+                    if (payload is not null)
+                    {
                         payloads.Add(payload);
                     }
                 }
                 // Flush the changes.
                 session.Flush();
             }
-            
+
             // If there are some payloads to be resent to the server.
-            if (payloads.Count > 0) {
+            if (payloads.Count > 0)
+            {
                 Program.DefaultLogger.Debug($"ResendPayloadAsync -> {payloads.Count} unsent payloads");
                 var tasks = new List<Task>();
-                
+
                 // Create a separate task for each payload - resend them to the server.
-                foreach (var payload in payloads) {
+                foreach (var payload in payloads)
+                {
                     Program.DefaultLogger.Info($"Resending {payload}.");
                     tasks.Add(SendPayloadAsync(payload));
                 }
@@ -154,30 +171,32 @@ namespace LDClient.network {
                 await Task.WhenAll(tasks);
             }
         }
-        
+
         /// <summary>
         /// Stores a failed payload into a persistent cache.
         /// </summary>
         /// <param name="payload"></param>
-        private void CachePayload(Payload payload) {
+        private void CachePayload(Payload payload)
+        {
             Program.DefaultLogger.Info($"Storing {payload} into the cache.");
-            
+
             // Number of payloads stored in the cache.
             var numberOfCachedPayloads = _cache.EstimatedCountOfItemsInQueue;
-            
+
             // Open up a session to the cache.
             using var session = _cache.OpenSession();
-            
+
             // If the cache is "full", make room for the latest failed
             // payload by discarding the oldest one.
-            if (numberOfCachedPayloads >= _maxEntries) {
+            if (numberOfCachedPayloads >= _maxEntries)
+            {
                 session.Dequeue();
             }
-            
+
             // Store the payload into the cache.
             var payloadJson = JsonSerializer.Serialize(payload);
             session.Enqueue(Encoding.UTF8.GetBytes(payloadJson));
-            
+
             // Flush the changes.
             session.Flush();
         }
@@ -186,16 +205,18 @@ namespace LDClient.network {
         /// Runs the periodical retrieval of failed payloads stored
         /// in a file-based cache. This method is instantiated as a thread.
         /// </summary>
-        public async void Run() {
+        public async void Run()
+        {
             Program.DefaultLogger.Info("Api Client thread has started");
-            
+
             // Keep the thread running.
             ClientRunning = true;
-            
+
             // Keep resending failed payloads to the server.
-            while (ClientRunning) {
+            while (ClientRunning)
+            {
                 await ResendPayloadsAsync();
-                Thread.Sleep((int) _retryPeriod);
+                Thread.Sleep((int)_retryPeriod);
             }
         }
     }
