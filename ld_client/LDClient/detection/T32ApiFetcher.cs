@@ -11,9 +11,9 @@ namespace LDClient.detection
         /// <summary>
         /// Path to the Trace32 API library
         /// </summary>
-        private const string T32DllLibrary = "./lib/t32api64.dll";
+        private const string T32DllLibrary = "./lib/t32api.dll";
 #else
-        private const string T32DllLibrary = "./lib/t32api64.so";
+        private const string T32DllLibrary = "./lib/t32api.so";
 #endif
         /// <summary>
         /// Address of the listening t32 application

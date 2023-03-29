@@ -13,14 +13,14 @@
 
 	<ItemGroup>
     <None Remove="appsettings.json" />
-    <None Remove="t32api64.dll" />
+    <None Remove="t32api.dll" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="lib\t32api64.dll">
+    <EmbeddedResource Include="lib\t32api.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
